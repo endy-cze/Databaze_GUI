@@ -37,7 +37,6 @@ import sablony.tabulka.QueryTableModel;
 import sablony.tabulka.TableColumnAdjuster;
 import sqlstorage.SQLStor;
 import storage.SkladOdkazu;
-import tisk.FungujiciTabulka;
 
 /**
  * Implementovane interface pro PanelFitr na hledani zakazek, zakazniku, modelu a fyzických kusù.
@@ -246,7 +245,7 @@ public class HledejListener implements ActionListener, MouseListener {
 				JOptionPane.showMessageDialog(hlavniOkno, "PDF vytvoøeno");
 			}
 		} 
-		if(!isVypis && !exist){
+		/*if(!isVypis && !exist){
 			if (this.table.getModel().getColumnName(0).equalsIgnoreCase("Jmeno_zakaznika") && this.table.getModel().getColumnName(1).equalsIgnoreCase("Jmeno_modelu")) {
 				if (actionComand.equalsIgnoreCase("PDFZaklPlan")) {
 					FungujiciTabulka tab = new FungujiciTabulka(hlavniOkno);
@@ -264,7 +263,7 @@ public class HledejListener implements ActionListener, MouseListener {
 			} else {
 				JOptionPane.showMessageDialog(hlavniOkno, "Špatný (neimplementovaný) tisk, Hledejlistener 240 ");
 			}
-		}
+		}*/
 		
 	}
 	
@@ -380,11 +379,11 @@ public class HledejListener implements ActionListener, MouseListener {
 				columAdjuster.adjustColumns();
 				rs.close();
 			}
-		}else {
+		}/*else {
 			FungujiciTabulka pdf = new FungujiciTabulka(hlavniOkno);
 			Date pom = new Date();
 			pdf.createPdfTable("Odlitky_KgKc_" + sdt.format(pom), table.getModel(), FungujiciTabulka.vypisOdlitkuVKgKc);
-		}
+		}*/
 		
 	}
 	private void vypisTiskZpozdeneVyroby(boolean isVypis) throws Exception{
@@ -397,11 +396,11 @@ public class HledejListener implements ActionListener, MouseListener {
 				columAdjuster.adjustColumns();
 				rs.close();
 			}
-		} else {
+		} /*else {
 			FungujiciTabulka pdf = new FungujiciTabulka(hlavniOkno);
 			Date pom = new Date();
 			pdf.createPdfTable("Zpozdena_vyroba_" + sdt.format(pom), table.getModel(), FungujiciTabulka.zpozdeniVyroby);
-		}
+		}*/
 	}
 	
 	private void vypisDleTerminuExpedice(boolean isVypis) throws Exception{
@@ -416,11 +415,11 @@ public class HledejListener implements ActionListener, MouseListener {
 					rs.close();
 				}
 			}
-		} else {
+		}/* else {
 			FungujiciTabulka pdf = new FungujiciTabulka(hlavniOkno);
 			Date pom = new Date();
 			pdf.createPdfTable("Terminy_expedice_" + sdt.format(pom), table.getModel(), FungujiciTabulka.vypisSTerminExp);
-		}
+		}*/
 		
 	}
 	private void vypisPolozekSOdhadHmot(boolean isVypis) throws Exception{
@@ -432,11 +431,11 @@ public class HledejListener implements ActionListener, MouseListener {
 				columAdjuster.adjustColumns();
 				rs.close();
 			}
-		} else {
+		}/* else {
 			FungujiciTabulka pdf = new FungujiciTabulka(hlavniOkno);
 			Date pom = new Date();
 			pdf.createPdfTable("Polozky_s_odhad_hmot_" + sdt.format(pom), table.getModel(), FungujiciTabulka.vypisOdhadHmot);
-		}
+		}*/
 	}
 	private void vypisMzdySlevacu(boolean isVypis) throws Exception{
 		if (isVypis) {
@@ -448,11 +447,11 @@ public class HledejListener implements ActionListener, MouseListener {
 				columAdjuster.adjustColumns();
 				//st.close(); kvuli optimalizaci
 			}
-		} else {
+		}/* else {
 			FungujiciTabulka pdf = new FungujiciTabulka(hlavniOkno);
 			Date pom = new Date();
 			pdf.createPdfTable("Mzdy_slevacu_" + sdt.format(pom), table.getModel(), FungujiciTabulka.mezdySlevacu);
-		}		
+		}	*/	
 	}
 	private void vypisOdlitychKusuOdDo(boolean isVypis) throws Exception{
 		if (isVypis) {
@@ -464,11 +463,11 @@ public class HledejListener implements ActionListener, MouseListener {
 				columAdjuster.adjustColumns();
 				rs.close();
 			}
-		} else {
+		}/* else {
 			FungujiciTabulka pdf = new FungujiciTabulka(hlavniOkno);
 			Date pom = new Date();
 			pdf.createPdfTable("Odlitky_od_do_" + sdt.format(pom), table.getModel(), FungujiciTabulka.vypisOdlitkuOdDo);
-		}
+		}*/
 		
 	}
 	private void vypisVycistenychKusuOdDo(boolean isVypis) throws Exception{  // vypis vycistených kusu za období
@@ -481,11 +480,11 @@ public class HledejListener implements ActionListener, MouseListener {
 				columAdjuster.adjustColumns();
 				rs.close();
 			}
-		} else {
+		} /*else {
 			FungujiciTabulka pdf = new FungujiciTabulka(hlavniOkno);
 			Date pom = new Date();
 			pdf.createPdfTable("Vycisteno_od_do_" + sdt.format(pom), table.getModel(), FungujiciTabulka.vypisVycistenychOdDo);
-		}
+		}*/
 	}
 	private void inventuraRozpracVyroby(boolean isVypis) throws Exception{
 		if (isVypis) {
@@ -496,11 +495,11 @@ public class HledejListener implements ActionListener, MouseListener {
 				columAdjuster.adjustColumns();
 				rs.close();
 			}
-		} else {
+		}/* else {
 			FungujiciTabulka pdf = new FungujiciTabulka(hlavniOkno);
 			Date pom = new Date();
 			pdf.createPdfTable("Inventura_vyroby_" + sdt.format(pom), table.getModel(), FungujiciTabulka.inventuraVyroby);
-		}
+		}*/
 		
 	}
 
@@ -514,11 +513,11 @@ public class HledejListener implements ActionListener, MouseListener {
 				columAdjuster.adjustColumns();
 				rs.close();
 			}
-		}else {
+		}/*else {
 			FungujiciTabulka pdf = new FungujiciTabulka(hlavniOkno);
 			Date pom = new Date();
 			pdf.createPdfTable("Expedovane_kusyOdDo_" + sdt.format(pom), table.getModel(), FungujiciTabulka.vypisExpediceOdDo);
-		}
+		}*/
 	}
 	
 	private void vypisSkladuKeDnesnimuDni(boolean isVypis) throws Exception{
@@ -530,11 +529,11 @@ public class HledejListener implements ActionListener, MouseListener {
 				columAdjuster.adjustColumns();
 				rs.close();
 			}
-		} else {
+		} /*else {
 			FungujiciTabulka pdf = new FungujiciTabulka(hlavniOkno);
 			Date pom = new Date();
 			pdf.createPdfTable("Vypis_skladu_" + sdt.format(pom), table.getModel(), FungujiciTabulka.vypisSkladu);		
-		}
+		}*/
 		
 	}
 	
