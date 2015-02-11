@@ -843,9 +843,10 @@ public class ExpediceZmetek extends JPanel implements ActionListener, NastavOkno
 		oznacZmetek.setActionCommand("OznacZmetek");
 		
 		dateOdliti = new JDateChooser(new Date());
+		dateOdliti.setFont(fonty[0]);
 		GridBagConstraints gbc_dateOdliti = new GridBagConstraints();
 		gbc_dateOdliti.insets = new Insets(0, 0, 5, 5);
-		gbc_dateOdliti.fill = GridBagConstraints.HORIZONTAL;
+		gbc_dateOdliti.fill = GridBagConstraints.BOTH;
 		gbc_dateOdliti.gridx = 2;
 		gbc_dateOdliti.gridy = 12;
 		add(dateOdliti, gbc_dateOdliti);
@@ -862,10 +863,11 @@ public class ExpediceZmetek extends JPanel implements ActionListener, NastavOkno
 		add(oznacVycisteno, gbc_oznacVycisteno);
 		
 		datumVycisteni = new JDateChooser(new Date());
+		datumVycisteni.setFont(fonty[0]);
 		GridBagConstraints gbc_datumVycisteni = new GridBagConstraints();
 		gbc_datumVycisteni.gridwidth = 2;
 		gbc_datumVycisteni.insets = new Insets(0, 0, 5, 5);
-		gbc_datumVycisteni.fill = GridBagConstraints.HORIZONTAL;
+		gbc_datumVycisteni.fill = GridBagConstraints.BOTH;
 		gbc_datumVycisteni.gridx = 6;
 		gbc_datumVycisteni.gridy = 12;
 		add(datumVycisteni, gbc_datumVycisteni);
@@ -881,10 +883,11 @@ public class ExpediceZmetek extends JPanel implements ActionListener, NastavOkno
 		add(btnExpedovno, gbc_btnExpedovno);
 		
 		dateExpedice = new JDateChooser(new Date());
+		dateExpedice.setFont(fonty[0]);
 		GridBagConstraints gbc_dateExpedice = new GridBagConstraints();
 		gbc_dateExpedice.gridwidth = 2;
 		gbc_dateExpedice.insets = new Insets(0, 0, 5, 5);
-		gbc_dateExpedice.fill = GridBagConstraints.HORIZONTAL;
+		gbc_dateExpedice.fill = GridBagConstraints.BOTH;
 		gbc_dateExpedice.gridx = 11;
 		gbc_dateExpedice.gridy = 12;
 		add(dateExpedice, gbc_dateExpedice);
@@ -909,9 +912,10 @@ public class ExpediceZmetek extends JPanel implements ActionListener, NastavOkno
 		*/
 		
 		dateZadaniZmetku = new JDateChooser(new Date());
+		dateZadaniZmetku.setFont(fonty[0]);
 		GridBagConstraints gbc_dateZadaniZmetku = new GridBagConstraints();
 		gbc_dateZadaniZmetku.insets = new Insets(0, 0, 5, 5);
-		gbc_dateZadaniZmetku.fill = GridBagConstraints.HORIZONTAL;
+		gbc_dateZadaniZmetku.fill = GridBagConstraints.BOTH;
 		gbc_dateZadaniZmetku.gridx = 2;
 		gbc_dateZadaniZmetku.gridy = 13;
 		add(dateZadaniZmetku, gbc_dateZadaniZmetku);
