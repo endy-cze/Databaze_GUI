@@ -8,7 +8,15 @@ import org.apache.poi.ss.usermodel.Workbook;
 
 public class TableToExcel {
 	
-	public TableToExcel(TableModel model, String path, int cisloVypisu){
+	/**
+	 * Vytvoøí tøídu, která vytvoøí .xls soubor do dané složky. Table model a èíslo výpisu spolu souvisí, jelokož
+	 * podle èísla výpisu se vybere daná šablona, do které se budou data vkládat.
+	 * @param model ze kterého èerpáme data
+	 * @param path kam chceme uložit soubor
+	 * @param cisloVypisu èíslo výpisu (èíslo šablony, kterou použijeme pro soubor xls)
+	 * @throws Exception vyhodí chybu, pokud nìco nesouhlasí
+	 */
+	public TableToExcel(TableModel model, String path, int cisloVypisu) throws Exception{
 		this.export(model, path, cisloVypisu);
 	}
 	
@@ -21,8 +29,8 @@ public class TableToExcel {
 	private void export(TableModel model, String path, int cisloVypis){
 		Workbook wb = new HSSFWorkbook();
 		Sheet sheet = this.createSheet(wb, cisloVypis);
-		this.insertData(model, sheet);
-
+		this.insertData(model, sheet, cisloVypis);
+		
 	}
 	
 	/**
@@ -30,8 +38,9 @@ public class TableToExcel {
 	 * Ještì musím vymyslet jak. Nìjaky jednoduhcy øešení. :)
 	 * @param model ze kterého budeme èíst data
 	 * @param sheet do kterého budeme data vkládat
+	 * @param cisloVypis èíslo vypisu
 	 */
-	private void insertData(TableModel model, Sheet sheet){
+	private void insertData(TableModel model, Sheet sheet, int cisloVypis){
 		
 	}
 	

@@ -8,6 +8,7 @@ import org.apache.poi.hssf.usermodel.HeaderFooter;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.Footer;
+import org.apache.poi.ss.usermodel.PrintSetup;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -15,6 +16,10 @@ import org.apache.poi.ss.util.CellRangeAddress;
 
 public class Funkce {
 
+	/**
+	 * na stranku se vejde 8 bunìk o šíøce 2500 pøí základním veliksti písma
+	 * @param args
+	 */
 	public static void main(String[] args) {
 		try {
 			//funkce();
@@ -24,10 +29,26 @@ public class Funkce {
 		}
 
 	}
-	
+	/**
+     * Font metric for the "0" zero character is 556/1000 x 10 POINTS = 5.56
+POINTS per CHARACTER. 
+     * 5.56 POINTS 		= 	1 CHARACTER.
+     * 256 WIDTH UNITS 	= 	1 CHARACTER
+     * 256 WIDTH UNITS 	= 	5.56 points
+     * 1 WIDTH UNITS 	= 	1 / 256 CHARACTER
+     *               	= 	5.56 / 256 POINTS
+     *               	= 	0.0217 POINTS
+     *               	= 	0.0217 / 72 INCHES
+     *               	= 	0.0003 INCHES
+     *               
+     */
 	public static void merge() throws IOException{
 		Workbook wb = new HSSFWorkbook();
 		Sheet sheet = wb.createSheet("new sheet");
+		sheet.getPrintSetup().setPaperSize(PrintSetup.A4_PAPERSIZE);
+		
+		sheet.setDisplayGridlines(true);
+		sheet.setPrintGridlines(true);
 
 		Row row = sheet.createRow((short) 1);
 		Cell cell = row.createCell((short) 1);
@@ -35,13 +56,23 @@ public class Funkce {
 		
 		// je to vicemene (x,y) odkud kam (x,y)
 		CellRangeAddress sloucit = new CellRangeAddress(1,1,1,2);
-
+		
 		sheet.addMergedRegion(new CellRangeAddress(1, // first row (0-based)
 				1, // last row (0-based)
 				1, // first column (0-based)
 				2 // last column (0-based)
 		));
-
+		
+		row = sheet.createRow(0);
+		for(int i = 0; i < 10; i++){
+			cell = row.createCell(i);
+			cell.setCellValue("Ahooj");
+			sheet.setColumnWidth(i, 2500);
+		}
+		
+		System.out.println(sheet.getColumnWidth(0));
+		System.out.println(sheet.getColumnWidth(1));
+		
 		// Write the output to a file
 		FileOutputStream fileOut = new FileOutputStream("workbook.xls");
 		wb.write(fileOut);
