@@ -17,11 +17,35 @@ public class Funkce {
 
 	public static void main(String[] args) {
 		try {
-			funkce();
+			//funkce();
+			merge();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 
+	}
+	
+	public static void merge() throws IOException{
+		Workbook wb = new HSSFWorkbook();
+		Sheet sheet = wb.createSheet("new sheet");
+
+		Row row = sheet.createRow((short) 1);
+		Cell cell = row.createCell((short) 1);
+		cell.setCellValue("This is a test of merging");
+		
+		// je to vicemene (x,y) odkud kam (x,y)
+		CellRangeAddress sloucit = new CellRangeAddress(1,1,1,2);
+
+		sheet.addMergedRegion(new CellRangeAddress(1, // first row (0-based)
+				1, // last row (0-based)
+				1, // first column (0-based)
+				2 // last column (0-based)
+		));
+
+		// Write the output to a file
+		FileOutputStream fileOut = new FileOutputStream("workbook.xls");
+		wb.write(fileOut);
+		fileOut.close();
 	}
 	
 	public static void funkce() throws IOException{
@@ -59,6 +83,18 @@ public class Funkce {
 		
 		sheet.setMargin(Sheet.HeaderMargin, 0.5);
 		sheet.setMargin(Sheet.FooterMargin, 0.5);
+		
+		// merging
+		row = sheet.createRow((short) 1);
+		cell = row.createCell((short) 1);
+		cell.setCellValue("This is a test of merging");
+
+		sheet.addMergedRegion(new CellRangeAddress(1, // first row (0-based)
+				1, // last row (0-based)
+				1, // first column (0-based)
+				2 // last column (0-based)
+		));
+		
 		
 		// Write the output to a file
 		FileOutputStream fileOut = new FileOutputStream("workbook.xls");
