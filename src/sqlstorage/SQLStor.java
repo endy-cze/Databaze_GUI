@@ -1029,8 +1029,18 @@ public class SQLStor {
 			naposledyPouzito[i][j] = new Date();
 		}
 		c = cst[i][j];
-		c.setInt("cisloTydne", cisloTydne);
-		c.setInt("rok", rok);
+		Calendar cal = Calendar.getInstance();
+		cal.set(Calendar.YEAR, rok);
+		cal.set(Calendar.WEEK_OF_YEAR, cisloTydne);
+		cal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+		java.util.Date datum = cal.getTime();
+		java.sql.Date pomDate = new java.sql.Date (datum.getTime());
+		c.setDate(1, pomDate);
+		cal.set(Calendar.DAY_OF_WEEK, Calendar.SATURDAY);
+		datum = cal.getTime();
+		pomDate = new java.sql.Date (datum.getTime());
+		c.setDate(2, pomDate);
+
 		rs = c.executeQuery();
 		return rs;
 	}
@@ -1166,7 +1176,6 @@ public class SQLStor {
 			JOptionPane.showMessageDialog(hlavniOkno, "Datum do nesmí být prázdné");
 			return null;
 		}
-		JOptionPane.showMessageDialog(hlavniOkno, "Není dodìlané");
 		int i = 5, j = 8;
 		if(cst[i][j] == null){
 			cst[i][j] = conn.prepareCall(sqlPrikazy[i][j]);

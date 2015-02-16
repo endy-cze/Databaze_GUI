@@ -71,6 +71,7 @@ public class MainActionMenuItemListener implements ActionListener {
 			// vyprazdnime tabulku prohledávání
 			sklad.getPromOknoNovyZakaznikSearchColorTable().setModel(sklad.getPrazdneTabulky()[5]);
 			sklad.getPromOknoNovyZakaznikAndSearchColumAdjuster().adjustColumns();
+			
 			if (i != 0) {
 				hlavniOkno.setWindow(0);
 				((NastavOkno) promOkna[0]).nastavOkno(i, j);

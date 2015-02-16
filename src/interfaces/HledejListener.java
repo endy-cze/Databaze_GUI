@@ -560,8 +560,7 @@ public class HledejListener implements ActionListener, MouseListener {
 			pole[1] = ((JYearChooser) vypisy[6]).getYear();
 			return pole;
 		} catch (NumberFormatException e) {
-			JOptionPane.showMessageDialog(hlavniOkno,
-					"Špatnì zapsané èíslo u èísla týdne");
+			JOptionPane.showMessageDialog(hlavniOkno, "Špatnì zapsané èíslo u èísla týdne");
 			return null;
 		}
 	}
