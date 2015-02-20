@@ -73,7 +73,7 @@ public class QueryTableModel extends AbstractTableModel {
 		return cache.size();
 	}
 	
-	public Object getValueAt(int row, int col) {
+	public String getValueAt(int row, int col) {
 		return ((String[]) cache.elementAt(row))[col];
 		//return ((Object[]) cache.elementAt(row))[col];
 	}
