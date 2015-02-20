@@ -1,6 +1,7 @@
 package tiskExcel;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 
 import javax.swing.JFrame;
@@ -107,7 +108,7 @@ public class TableToExcel {
 		
 		// Write it into the output to a file
 		
-		File f = new File("./vypisy");
+		File f = new File(atr[2]);
 		try {
 			if (f.mkdir()) {
 				//System.out.println("Directory Created");
@@ -117,11 +118,22 @@ public class TableToExcel {
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(hlavniOkno, "Jméno zákazníka je prázdné");
 		}
-
-		FileOutputStream fileOut = new FileOutputStream("./vypisy/"+name+".xls");
+		
+		try {
+			FileOutputStream fileOut = new FileOutputStream(atr[2]+"/"+name+".xls");
+			wb.write(fileOut);
+			wb.close();
+			fileOut.close();
+			JOptionPane.showMessageDialog(hlavniOkno, "Excel soubor "+name+".xls vytvoøen.");
+		} catch (FileNotFoundException e) {
+			JOptionPane.showMessageDialog(hlavniOkno, "Máte otevøený soubor, do kterého se zapisuje. Zavøete jej prosím");
+			wb.close();
+		}
+		
+		/*FileOutputStream fileOut = new FileOutputStream("./vypisy/"+name+".xls");
 		wb.write(fileOut);
 		wb.close();
-		fileOut.close();
+		fileOut.close();*/
 	}
 	
 	/**
@@ -180,16 +192,46 @@ public class TableToExcel {
 	 *  <li>Cestu kam uložit (relativní)</li>
 	 * </ol>
 	 * @param cisloExportu Èíslo exportu, o kterém chceme znát atributy
-	 * @return String [] o 3 prvcích nebo null pokud neexistuje
+	 * @return String [] o 3 prvcích nikdy <code>null</code>
 	 */
 	private String [] getAtributes(int cisloExportu){
 		String [] atr = {"prazdnyatr","prazdnyatr","prazdnyatr"};
 		switch(cisloExportu){
 		case 0:
-			String [] atr1 = {"Stav neuzavøených zakázek", "Stav neuzavøených zakázek", ".//"};
-			atr = atr1;
+			atr[0] = "Stav neuzavøených zakázek";atr[1] = atr[0];atr[2] = "./vypisy";
+			break;
+		case 1:
+			atr[0] = "Výpis odlitých kusù ke dni";atr[1] = atr[0];atr[2] = "./vypisy";
 			break;
 		case 2:
+			atr[0] = "Výpis vyèištìných kusù za období";atr[1] = atr[0];atr[2] = "./vypisy";
+			break;
+		case 3:
+			atr[0] = "Mzdy slévaèù ke dni";atr[1] = atr[0];atr[2] = "./vypisy";
+			break;
+		case 4:
+			atr[0] = "Výpis odlitkù v kg/kè za období";atr[1] = atr[0];atr[2] = "./vypisy";
+			break;
+		case 5:
+			atr[0] = "Výpis vyrobených kusù za období";atr[1] = atr[0];atr[2] = "./vypisy";
+			break;
+		case 6:
+			atr[0] = "Výpis položek s odhadovanou hmotností";atr[1] = atr[0];atr[2] = "./vypisy";
+			break;
+		case 7:
+			atr[0] = "Výpis zakázek s termínem expedice v daném týdnu";atr[1] = atr[0];atr[2] = "./vypisy";
+			break;
+		case 8:
+			atr[0] = "Výpis expedice zboží za období";atr[1] = atr[0];atr[2] = "./vypisy";
+			break;
+		case 9:
+			atr[0] = "Výpis zpoždìné výroby ke dni";atr[1] = atr[0];atr[2] = "./vypisy";
+			break;
+		case 10:
+			atr[0] = "Inventura rozpracované výroby";atr[1] = atr[0];atr[2] = "./vypisy";
+			break;
+		case 11:
+			atr[0] = "Výpis skladu ke dnešnímu dni";atr[1] = atr[0];atr[2] = "./vypisy";
 			break;
 		}
 		return atr;		
