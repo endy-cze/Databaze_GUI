@@ -44,6 +44,12 @@ import javax.swing.JCheckBox;
 
 import com.toedter.calendar.JYearChooser;
 
+/**
+ * Tøída, které rozšiøuje JPanel a reprezentuje oddíl v aplikaci, ve které vyplnujeme parametry pro vyhledávání.
+ * Nastavují se zde actionComandy pro tisk a také pro vyhledávání zákazníku, modelu, zakázek, atd.
+ * @author Ondøej Havlíèek
+ *
+ */
 public class ParametryFiltr extends JPanel {
 	
 	/**
@@ -148,10 +154,11 @@ public class ParametryFiltr extends JPanel {
 			}
 		}
 		
-		HledejListener lt = new HledejListener(vyhledej, this, table, pole, vypisy, hlavniOkno, columAdjuster);
+		HledejListener lt = new HledejListener(vyhledej, prevodDoPdf, this, table, pole, vypisy, hlavniOkno, columAdjuster);
 		vyhledej.addActionListener(lt);
 		vyhledej.addMouseListener(lt);
-		this.prevodDoPdf.addActionListener(lt);
+		prevodDoPdf.addActionListener(lt);
+		prevodDoPdf.addMouseListener(lt);
 	}
 	
 	public void setZakaznik(){
@@ -327,24 +334,24 @@ public class ParametryFiltr extends JPanel {
 	 */
 	public void setVypisy(int j){
 		this.setZakazka();
-		vyhledej.setActionCommand(sklad.getCommands()[4][j]);
 		for(int i = 0; i < pole.length; i++){
 			pole[i].setVisible(false);
 		}
 		status = 6;
 		
 		String [] com = sklad.getCommands()[4];
+		//nastavime ActionComandy, pro vyhledavani a pro tisk
+		vyhledej.setActionCommand(com[j]);
 		prevodDoPdf.setActionCommand("PDF"+com[j]);
 		prevodDoPdf.setVisible(false); // uložit jako pdf
 		switch(j){
 		case 0: // 1.	Výpis stavu neuzavøené zakázky 
 			this.setZakazka();
 			status = 6;
-			vyhledej.setActionCommand(sklad.getCommands()[4][j]);
-			prevodDoPdf.setActionCommand("PDF"+com[j]);
 			checkVcetneUzavZak.setVisible(false);
-			prevodDoPdf.setVisible(false); // uložit jako pdf
-			//prevodDoPdf.setActionCommand("PDFSoucetHmotnostiNorem");
+			// musim nastavit actionComand ještì jednou paè, setZakazka() se zmenil
+			vyhledej.setActionCommand(com[j]); 
+			prevodDoPdf.setVisible(true); // uložit jako pdf
 			this.napovedaDate.setText("Vypíše stav všech neuzavøených zakázek, (maximálnì ale 100 øádkù)");
 			break;
 		case 1: // 2.	Denní výpis odlitých kusù
@@ -806,10 +813,15 @@ public class ParametryFiltr extends JPanel {
 		gbc_vyhledej.gridy = 5;
 		panel.add(vyhledej, gbc_vyhledej);
 		
-		prevodDoPdf = new JButton("Ulo\u017Eit jako PDF");
+		//prevodDoPdf = new JButton("Ulo\u017Eit jako PDF");
+		prevodDoPdf = new MyJButton("P\u0159evod do Excelu", 13,4, sklad);
 		prevodDoPdf.setActionCommand("PDFuloz");
+		prevodDoPdf.removeMouseListener(sklad.getMyJButonnListener());
+		prevodDoPdf.setPreferredSize(new Dimension(100, 22));
+		prevodDoPdf.setBorder(new LineBorder(barvy[15]));
 		vypisy[9] = prevodDoPdf;
 		GridBagConstraints gbc_prevodDoPdf = new GridBagConstraints();
+		gbc_prevodDoPdf.gridwidth = 2;
 		gbc_prevodDoPdf.fill = GridBagConstraints.BOTH;
 		gbc_prevodDoPdf.insets = new Insets(0, 0, 5, 5);
 		gbc_prevodDoPdf.gridx = 5;

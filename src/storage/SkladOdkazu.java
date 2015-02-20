@@ -32,8 +32,6 @@ import app.Planovani;
 
 /**
  * V teto tride se pouze ukladaji odkazy, jedine co se tu vytvari jsou texty ActionCommand pro ItemMenu (v postranim menu)
- */
-/**
  * @author Ondøej Havlíèek
  *
  */
@@ -42,7 +40,8 @@ public class SkladOdkazu {
 	private SQLStor sql;
 	
 	/**
-	 * Action comandy jednotlivych oken (každy MenuItem v PopUpMenu ma vlastni)
+	 * Action comandy jednotlivych oken (každy MenuItem v PopUpMenu ma vlastni). Tyto comandy jsou použity i jako actionComandy pro tisk, 
+	 * jenom se pøed nì pøidá ještì øetìzec "PDF". Comandy se nastavujjí v tøíde ParametryFiltr a srovnavaji se v tøíde HledejListener (ActionListener)
 	 */
 	private final String [][] commands = {
 			{"PridejZakaznika", "PridejModel", "PridejZakazku"},

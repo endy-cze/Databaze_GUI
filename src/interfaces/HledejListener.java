@@ -23,6 +23,7 @@ import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.table.TableModel;
 
 import com.itextpdf.text.DocumentException;
 import com.toedter.calendar.JDateChooser;
@@ -37,9 +38,11 @@ import sablony.tabulka.QueryTableModel;
 import sablony.tabulka.TableColumnAdjuster;
 import sqlstorage.SQLStor;
 import storage.SkladOdkazu;
+import tiskExcel.TableToExcel;
 
 /**
  * Implementovane interface pro PanelFitr na hledani zakazek, zakazniku, modelu a fyzických kusù.
+ * Action listener pto tisk.
  * @author Havlicek
  *
  */
@@ -88,13 +91,15 @@ public class HledejListener implements ActionListener, MouseListener {
 	 */
 	private Component [] vypisy;
 	private JButton vyhledej;
+	private JButton prevodDoPdf;
 	private Color [] barvy;
 	private static final int vyskaNadTabulkou = 270;
 	
 	private static final String acesDenied = "execute command denied to user";
 	
-	public HledejListener(JButton but, ParametryFiltr filtr, ColorCellTable table, Component [] pole, Component [] vypisy, MainFrame hlavniOkno, TableColumnAdjuster columAdjuster){
-		this.vyhledej = but;
+	public HledejListener(JButton vyhledej, JButton prevodDoPdf, ParametryFiltr filtr, ColorCellTable table, Component [] pole, Component [] vypisy, MainFrame hlavniOkno, TableColumnAdjuster columAdjuster){
+		this.vyhledej = vyhledej;
+		this.prevodDoPdf = prevodDoPdf;
 		this.filtr = filtr;
 		this.table = table;
 		this.pole = pole;
@@ -314,6 +319,7 @@ public class HledejListener implements ActionListener, MouseListener {
 	}
 	
 	private void vypisStavuNeuzavrenychZakazek(boolean isVypis) throws Exception{
+		//vypis
 		if(isVypis){
 			int idModelu = 0, idZakazky = 0;
 			String idModeliString = ((JTextField) pole[7]).getText();
@@ -344,12 +350,15 @@ public class HledejListener implements ActionListener, MouseListener {
 			table.setModel(tm);
 			columAdjuster.adjustColumns();
 			rs.close();
-
-		} /*else {
-			FungujiciTabulka pdf = new FungujiciTabulka(hlavniOkno);
-			Date pom = new Date();
-			pdf.createPdfTable("Odlitky_KgKc_" + sdt.format(pom), table.getModel(), FungujiciTabulka.vypisOdlitkuVKgKc);
-		}*/
+		}
+		//export do Excelu
+		else {
+			TableModel mod = table.getModel();
+			TableToExcel.exportToExcel(hlavniOkno,
+					mod,
+					"Stav_neuzavrenych_zakazek", 0);
+			System.out.println("Export");
+		}
 	}
 	private void denniVypisOdlitku(boolean isVypis) throws Exception{
 		if(isVypis){
@@ -737,12 +746,12 @@ public class HledejListener implements ActionListener, MouseListener {
 		columAdjuster.adjustColumns();
 	}
 	
-	public void onButton(){
-		vyhledej.setBackground(barvy[14]);
+	public void onButton(JButton but){
+		but.setBackground(barvy[14]);
 	}
 	
-	public void offButton(){
-		vyhledej.setBackground(barvy[13]);
+	public void offButton(JButton but){
+		but.setBackground(barvy[13]);
 	}
 	
 
@@ -752,12 +761,18 @@ public class HledejListener implements ActionListener, MouseListener {
 
 	@Override
 	public void mouseEntered(MouseEvent arg0) {
-		onButton();
+		Component com = arg0.getComponent();
+		if(com instanceof JButton){
+			onButton((JButton)com);
+		}
 	}
 
 	@Override
 	public void mouseExited(MouseEvent arg0) {
-		offButton();
+		Component com = arg0.getComponent();
+		if(com instanceof JButton){
+			offButton((JButton)com);
+		}
 	}
 
 	@Override

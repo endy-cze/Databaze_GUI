@@ -5,12 +5,15 @@ import java.io.FileOutputStream;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.table.TableModel;
 
+import org.apache.poi.hssf.usermodel.HSSFHeader;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.usermodel.HeaderFooter;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Footer;
+import org.apache.poi.ss.usermodel.Header;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.util.CellRangeAddress;
@@ -33,17 +36,30 @@ public class TableToExcel {
 	private JFrame hlavniOkno;
 	
 	/**
-	 * Vytvoøí tøídu, která vytvoøí .xls soubor do dané složky. Table model a èíslo výpisu spolu souvisí, jelikož
-	 * podle èísla výpisu se vybere daná šablona, do které se budou data vkládat.
+	 * Vytvoøí .xls soubor do pøedem dané složky s jednoøádkovou hlavièkou.
+	 * (Doporuèení: údaje by se mìli vejít na A4 na výšku)
 	 * @param hlavniOkno pouzití na zobrazení chyby (metoda export())
-	 * @param model ze kterého èerpáme data
+	 * @param model ze kterého èerpáme data. Musí být <code>QueryTableModel</code>
 	 * @param name jméno souboru bez koncovky
 	 * @param cisloExportu èíslo exportu (èíslo šablony, kterou použijeme pro soubor xls)
 	 * @throws Exception vyhodí chybu, pokud nìco nesouhlasí
 	 */
-	public TableToExcel(JFrame hlavniOkno, QueryTableModel model, String name, int cisloExportu) throws Exception{
+	public static void exportToExcel(JFrame hlavniOkno, TableModel model, String name, int cisloExportu) throws Exception{
+		new TableToExcel(hlavniOkno, model, name, cisloExportu);
+	}
+	
+	/**
+	 * Vytvoøí tøídu, která vytvoøí .xls soubor do pøedem dané složky s jednoøádkovou hlavièkou.
+	 * (Doporuèení: údaje by se mìli vejít na A4 na výšku)
+	 * @param hlavniOkno pouzití na zobrazení chyby (metoda export())
+	 * @param model ze kterého èerpáme data. Musí být <code>QueryTableModel</code>
+	 * @param name jméno souboru bez koncovky
+	 * @param cisloExportu èíslo exportu (èíslo šablony, kterou použijeme pro soubor xls)
+	 * @throws Exception vyhodí chybu, pokud nìco nesouhlasí
+	 */
+	public TableToExcel(JFrame hlavniOkno, TableModel model, String name, int cisloExportu) throws Exception{
 		this.hlavniOkno = hlavniOkno;
-		this.export(model, name, cisloExportu);
+		this.export((QueryTableModel) model, name, cisloExportu);
 	}
 	
 	/**
@@ -58,6 +74,17 @@ public class TableToExcel {
 		String [] atr = this.getAtributes(cisloExportu);
 		HSSFSheet sheet = wb.createSheet(atr[0]);
 		
+		//set header
+		Header header = sheet.getHeader();
+		header.setCenter(HSSFHeader.font("Stencil-Normal", "Italic")
+				+ HSSFHeader.fontSize((short) 14)
+				+ "Center Header");
+		//header.setLeft("Left Header");
+		/*header.setRight(HSSFHeader.font("Stencil-Normal", "Italic")
+				+ HSSFHeader.fontSize((short) 16)
+				+ "Right w/ Stencil-Normal Italic font and size 16");
+		*/
+		
 		//number of pages
 		Footer footer = sheet.getFooter();
 		footer.setRight("Page " + HeaderFooter.page() + " of " + HeaderFooter.numPages());
@@ -65,17 +92,16 @@ public class TableToExcel {
 		sheet.setPrintGridlines(true);
 	    
 		sheet.setMargin(Sheet.BottomMargin, 0.5);
-		sheet.setMargin(Sheet.TopMargin, 0.5);
+		sheet.setMargin(Sheet.TopMargin, 0.6);
 		sheet.setMargin(Sheet.LeftMargin, 0.5);
 		sheet.setMargin(Sheet.RightMargin, 0.5);
 		
-		sheet.setMargin(Sheet.HeaderMargin, 0.5);
-		sheet.setMargin(Sheet.FooterMargin, 0.5);
+		sheet.setMargin(Sheet.HeaderMargin, 0.1);
+		sheet.setMargin(Sheet.FooterMargin, 0.3);
 		//insert data
 		this.insertData(atr[1], model, sheet, cisloExportu);
 		//set First row as header at all printed pages
 		sheet.setRepeatingRows(CellRangeAddress.valueOf("1:1"));	
-
 	
 
 		
@@ -111,17 +137,38 @@ public class TableToExcel {
 		Row row = sheet.createRow(0);
 		Cell cell = null;
 		//insert Column name
-		for(int i = 0; i < model.getColumnCount(); i++){
+		for(int i = 0; i < model.getColumnCount() -1 ; i++){//mam totiž jeden sloupec navic aby se mi srovnali tabulky viz QuerytableModel
 			cell = row.createCell(i);
 			cell.setCellValue(model.getColumnName(i));
+		}
+		//detect data format
+		boolean [] isNumber = null;
+		if(model.getRowCount() > 0){
+			isNumber = new boolean [model.getColumnCount()-1];
+			for(int j = 0; j < model.getColumnCount() -1 ; j++){ //mam totiž jeden sloupec navic aby se mi srovnali tabulky viz QuerytableModel
+				try {
+					Double.parseDouble((model.getValueAt(0, j)));
+					isNumber[j] = true;
+				} catch (NumberFormatException nfe) {
+					isNumber[j] = false;
+				}
+			}
 		}
 		//insert data
 		for(int i = 1; i < model.getRowCount() + 1; i++){
 			row = sheet.createRow(i);
-			for(int j = 0; j < model.getColumnCount(); j++){
+			for(int j = 0; j < model.getColumnCount() -1 ; j++){ //mam totiž jeden sloupec navic aby se mi srovnali tabulky viz QuerytableModel
 				cell = row.createCell(j);
-				cell.setCellValue(model.getValueAt(i, j));
+				if(isNumber[j]){
+					cell.setCellValue(Double.parseDouble((model.getValueAt(i-1, j))));
+				} else {
+					cell.setCellValue(model.getValueAt(i-1, j));
+				}
 			}
+		}
+		//Format data
+		for(int i = 0; i < model.getColumnCount() -1 ; i++){//mam totiž jeden sloupec navic aby se mi srovnali tabulky viz QuerytableModel
+			sheet.autoSizeColumn(i);
 		}
 	}
 	
@@ -136,9 +183,9 @@ public class TableToExcel {
 	 * @return String [] o 3 prvcích nebo null pokud neexistuje
 	 */
 	private String [] getAtributes(int cisloExportu){
-		String [] atr = null;
+		String [] atr = {"prazdnyatr","prazdnyatr","prazdnyatr"};
 		switch(cisloExportu){
-		case 1:
+		case 0:
 			String [] atr1 = {"Stav neuzavøených zakázek", "Stav neuzavøených zakázek", ".//"};
 			atr = atr1;
 			break;
