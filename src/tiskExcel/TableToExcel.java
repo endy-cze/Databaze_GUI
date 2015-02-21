@@ -15,6 +15,7 @@ import org.apache.poi.hssf.usermodel.HeaderFooter;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Footer;
 import org.apache.poi.ss.usermodel.Header;
+import org.apache.poi.ss.usermodel.PrintSetup;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.util.CellRangeAddress;
@@ -75,36 +76,29 @@ public class TableToExcel {
 		String [] atr = this.getAtributes(cisloExportu);
 		HSSFSheet sheet = wb.createSheet(atr[0]);
 		
-		//set header
+		//set header (nadpis v tisku)
 		Header header = sheet.getHeader();
-		header.setCenter(HSSFHeader.font("Stencil-Normal", "Italic")
-				+ HSSFHeader.fontSize((short) 14)
-				+ "Center Header");
-		//header.setLeft("Left Header");
-		/*header.setRight(HSSFHeader.font("Stencil-Normal", "Italic")
-				+ HSSFHeader.fontSize((short) 16)
-				+ "Right w/ Stencil-Normal Italic font and size 16");
-		*/
+		header.setCenter(HSSFHeader.font("Stencil-Normal", "bold")+ HSSFHeader.fontSize((short) 14)+ atr[1]);
+		
+		sheet.getPrintSetup().setPaperSize(PrintSetup.A4_PAPERSIZE);
 		
 		//number of pages
 		Footer footer = sheet.getFooter();
-		footer.setRight("Page " + HeaderFooter.page() + " of " + HeaderFooter.numPages());
+		footer.setRight("Strana " + HeaderFooter.page() + " z " + HeaderFooter.numPages());
 		//set visibile grid lines on printed pages
 		sheet.setPrintGridlines(true);
 	    
 		sheet.setMargin(Sheet.BottomMargin, 0.5);
 		sheet.setMargin(Sheet.TopMargin, 0.6);
-		sheet.setMargin(Sheet.LeftMargin, 0.5);
-		sheet.setMargin(Sheet.RightMargin, 0.5);
+		sheet.setMargin(Sheet.LeftMargin, 0.3);
+		sheet.setMargin(Sheet.RightMargin, 0.3);
 		
 		sheet.setMargin(Sheet.HeaderMargin, 0.1);
 		sheet.setMargin(Sheet.FooterMargin, 0.3);
 		//insert data
-		this.insertData(atr[1], model, sheet, cisloExportu);
+		this.insertData(model, sheet, cisloExportu);
 		//set First row as header at all printed pages
 		sheet.setRepeatingRows(CellRangeAddress.valueOf("1:1"));	
-	
-
 		
 		// Write it into the output to a file
 		
@@ -139,13 +133,12 @@ public class TableToExcel {
 	/**
 	 * Metoda pro vložení dat do tabulky, ještì bych mìl zvážit že pøidam parametr pro mergovaní bunìk.
 	 * Ještì musím vymyslet jak. Nìjaky jednoduhcy øešení. :)
-	 * @param nadpis napis v tisku
 	 * @param model ze kterého budeme èíst data
 	 * @param sheet prazdny sheet do kterého budeme data vkládat
 	 * @param cisloExportu èíslo exportu
 	 * @throws Exception
 	 */
-	private void insertData(String nadpis, QueryTableModel model, HSSFSheet sheet, int cisloExportu) throws Exception{
+	private void insertData(QueryTableModel model, HSSFSheet sheet, int cisloExportu) throws Exception{
 		Row row = sheet.createRow(0);
 		Cell cell = null;
 		//insert Column name

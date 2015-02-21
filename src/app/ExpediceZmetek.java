@@ -418,7 +418,7 @@ public class ExpediceZmetek extends JPanel implements ActionListener, NastavOkno
 		gbc_lblParametryZakzky.gridy = 1;
 		add(lblParametryZakzky, gbc_lblParametryZakzky);
 		
-		JLabel lblIdZakaznika = new JLabel("Id zakaznika:");
+		JLabel lblIdZakaznika = new JLabel("Id z\u00E1kazn\u00EDka:");
 		popisLabels[1] = lblIdZakaznika;
 		GridBagConstraints gbc_lblIdZakaznika = new GridBagConstraints();
 		gbc_lblIdZakaznika.anchor = GridBagConstraints.WEST;
@@ -545,7 +545,7 @@ public class ExpediceZmetek extends JPanel implements ActionListener, NastavOkno
 		gbc_textDatumPrijetiZakazky.gridy = 5;
 		add(textDatumPrijetiZakazky, gbc_textDatumPrijetiZakazky);
 		
-		JLabel lblCisloModelu = new JLabel("Cislo modelu:");
+		JLabel lblCisloModelu = new JLabel("\u010C\u00EDslo modelu:");
 		popisLabels[7] = lblCisloModelu;
 		GridBagConstraints gbc_lblCisloModelu = new GridBagConstraints();
 		gbc_lblCisloModelu.anchor = GridBagConstraints.WEST;
@@ -635,7 +635,7 @@ public class ExpediceZmetek extends JPanel implements ActionListener, NastavOkno
 		gbc_textMaterial.gridy = 6;
 		add(textMaterial, gbc_textMaterial);
 		
-		JLabel lblMaterialVlastn = new JLabel("Material vlastn\u00ED:");
+		JLabel lblMaterialVlastn = new JLabel("Materi\u00E1l vlastn\u00ED:");
 		popisLabels[12] = lblMaterialVlastn;
 		GridBagConstraints gbc_lblMaterialVlastn = new GridBagConstraints();
 		gbc_lblMaterialVlastn.gridwidth = 3;
@@ -731,7 +731,7 @@ public class ExpediceZmetek extends JPanel implements ActionListener, NastavOkno
 		gbc_uzavreno.gridy = 8;
 		add(uzavreno, gbc_uzavreno);
 		
-		JLabel lblFotmovna = new JLabel("Fotmovna:");
+		JLabel lblFotmovna = new JLabel("Formovna:");
 		popisLabels[17] = lblFotmovna;
 		GridBagConstraints gbc_lblFotmovna = new GridBagConstraints();
 		gbc_lblFotmovna.anchor = GridBagConstraints.WEST;
@@ -768,7 +768,7 @@ public class ExpediceZmetek extends JPanel implements ActionListener, NastavOkno
 		gbc_textHmotnost.gridy = 8;
 		add(textHmotnost, gbc_textHmotnost);
 		
-		JLabel lblPoznamka = new JLabel("Pozn\u00E1mka k z\u00E1kace:");
+		JLabel lblPoznamka = new JLabel("Pozn\u00E1mka k z\u00E1kazce:");
 		popisLabels[19] = lblPoznamka;
 		GridBagConstraints gbc_lblPoznamka = new GridBagConstraints();
 		gbc_lblPoznamka.anchor = GridBagConstraints.WEST;
