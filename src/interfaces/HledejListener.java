@@ -351,7 +351,7 @@ public class HledejListener implements ActionListener, MouseListener {
 		//export do Excelu
 		else {
 			TableModel mod = table.getModel();
-			TableToExcel.exportToExcel(hlavniOkno, mod,"format" "Stav_neuzavrenych_zakazek", cisloVypisu);
+			TableToExcel.exportToExcel(hlavniOkno, mod, "Stav_neuzavrenych_zakazek", cisloVypisu);
 		}
 	}
 	private void denniVypisOdlitku(boolean isVypis, int cisloVypisu) throws Exception{

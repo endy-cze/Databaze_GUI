@@ -308,7 +308,7 @@ public class PromOknoNovaZakazka extends JPanel implements NastavOkno, ActionLis
 		if(index == 19) obsahComboBoxu[0] = text;
 		if(index == 1) obsahComboBoxu[1] = text;
 		if(index == 11) obsahComboBoxu[2] = text;
-		if(index == 12) obsahComboBoxu[3] = text;
+		if(index == 3) obsahComboBoxu[3] = text;
 		
 		zakaznikComboModel.removeAllElements();
 		/**
