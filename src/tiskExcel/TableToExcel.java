@@ -42,12 +42,13 @@ public class TableToExcel {
 	 * (Doporuèení: údaje by se mìli vejít na A4 na výšku)
 	 * @param hlavniOkno pouzití na zobrazení chyby (metoda export())
 	 * @param model ze kterého èerpáme data. Musí být <code>QueryTableModel</code>
+	 * @param nadpisExt rozšíøení nadpisu v tisk (obvykle datum)
 	 * @param name jméno souboru bez koncovky
 	 * @param cisloExportu èíslo exportu (èíslo šablony, kterou použijeme pro soubor xls)
 	 * @throws Exception vyhodí chybu, pokud nìco nesouhlasí
 	 */
-	public static void exportToExcel(JFrame hlavniOkno, TableModel model, String name, int cisloExportu) throws Exception{
-		new TableToExcel(hlavniOkno, model, name, cisloExportu);
+	public static void exportToExcel(JFrame hlavniOkno, TableModel model, String nadpisExt, String name, int cisloExportu) throws Exception{
+		new TableToExcel(hlavniOkno, model, nadpisExt, name, cisloExportu);
 	}
 	
 	/**
@@ -55,30 +56,32 @@ public class TableToExcel {
 	 * (Doporuèení: údaje by se mìli vejít na A4 na výšku)
 	 * @param hlavniOkno pouzití na zobrazení chyby (metoda export())
 	 * @param model ze kterého èerpáme data. Musí být <code>QueryTableModel</code>
+	 * @param nadpisExt rozšíøení nadpisu v tisk (obvykle datum)
 	 * @param name jméno souboru bez koncovky
 	 * @param cisloExportu èíslo exportu (èíslo šablony, kterou použijeme pro soubor xls)
 	 * @throws Exception vyhodí chybu, pokud nìco nesouhlasí
 	 */
-	public TableToExcel(JFrame hlavniOkno, TableModel model, String name, int cisloExportu) throws Exception{
+	public TableToExcel(JFrame hlavniOkno, TableModel model, String nadpisExt, String name, int cisloExportu) throws Exception{
 		this.hlavniOkno = hlavniOkno;
-		this.export((QueryTableModel) model, name, cisloExportu);
+		this.export((QueryTableModel) model, nadpisExt, name, cisloExportu);
 	}
 	
 	/**
 	 * Metoda, kde dìje hlavní algoritmus. Zde se vše pøevádí
 	 * @param model model, ze kretého èerpáme data
 	 * @param name nazev souboru bez koncovky
+	 * @param nadpisExt rozšíøení nadpisu v tisk (obvykle datum)
 	 * @param cisloExportu druh vypisu, podle kterého pøizpùsobíme .xls soubor
 	 * @throws Exception 
 	 */
-	private void export(QueryTableModel model, String name, int cisloExportu) throws Exception{
+	private void export(QueryTableModel model, String nadpisExt, String name, int cisloExportu) throws Exception{
 		HSSFWorkbook wb = new HSSFWorkbook();
 		String [] atr = this.getAtributes(cisloExportu);
 		HSSFSheet sheet = wb.createSheet(atr[0]);
 		
 		//set header (nadpis v tisku)
 		Header header = sheet.getHeader();
-		header.setCenter(HSSFHeader.font("Stencil-Normal", "bold")+ HSSFHeader.fontSize((short) 14)+ atr[1]);
+		header.setCenter(HSSFHeader.font("Stencil-Normal", "bold")+ HSSFHeader.fontSize((short) 14)+ atr[1] + nadpisExt);
 		
 		sheet.getPrintSetup().setPaperSize(PrintSetup.A4_PAPERSIZE);
 		
