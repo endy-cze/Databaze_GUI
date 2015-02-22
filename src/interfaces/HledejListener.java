@@ -90,6 +90,7 @@ public class HledejListener implements ActionListener, MouseListener {
 	 *  
 	 */
 	private Component [] vypisy;
+	private static final int indexComboBoxFormovna = 11;
 	private JButton vyhledej;
 	private JButton prevodDoPdf;
 	private Color [] barvy;
@@ -308,7 +309,9 @@ public class HledejListener implements ActionListener, MouseListener {
 		if (poleCi != null) {
 			this.tyden = poleCi[0];
 			this.rok = poleCi[1];
-			ResultSet rs = sql.liciPlanZakl(poleCi[0], poleCi[1]);
+			String formovna = (String)((JComboBox)vypisy[indexComboBoxFormovna]).getSelectedItem();
+			
+			ResultSet rs = sql.liciPlanZakl(poleCi[0], poleCi[1], formovna);
 			if (rs != null) {
 				QueryTableModel tm = new QueryTableModel(rs);
 				table.setModel(tm);
@@ -323,7 +326,8 @@ public class HledejListener implements ActionListener, MouseListener {
 		if (poleCi != null) {
 			this.tyden = poleCi[0];
 			this.rok = poleCi[1];
-			ResultSet rs = sql.liciPlanovaci(poleCi[0], poleCi[1]);
+			String formovna = (String)((JComboBox)vypisy[indexComboBoxFormovna]).getSelectedItem();
+			ResultSet rs = sql.liciPlanovaci(poleCi[0], poleCi[1], formovna);
 			if (rs != null) {
 				QueryTableModel tm = new QueryTableModel(rs);
 				table.setModel(tm);

@@ -61,7 +61,7 @@ public class SQLStor {
 			{"{CALL pomdb.vypisOdlituVKgKcOdDo(?,?)}", "{CALL pomdb.vypisZpozdeneVyroby(?)}", "{CALL pomdb.vypisDleTerminuExpediceCisloTydne(?,?)}", "{CALL pomdb.vypisPolozekSOdhadHmot()}", "{CALL pomdb.vypisMzdySlevacu(?)}",
 				"{CALL pomdb.vypisOdlitychKusuOdDo(?,?)}", "{CALL pomdb.vypisVycistenychKusuOdDo(?,?)}", "{CALL pomdb.vypisRozpracovaneVyroby()}", "{CALL pomdb.vypisExpedovanychKusuOdDo(?,?)}", "{CALL pomdb.vypisKusuNaSkladu()}",
 				"{CALL pomdb.vypisStavNeuzavrenychZakazek(?,?,?,?,?,?,?)}", "{CALL pomdb.vypisDenniOdlitychKusu(?)}"},
-			{"{CALL pomdb.liciPlanZakl(?,?)}", "{CALL pomdb.liciPlanPlanovaci(?,?)}", "{CALL pomdb.vyberDilciTerminy(?)}", "{CALL pomdb.vyberDilciTerminySeJmeny(?)}"}
+			{"{CALL pomdb.liciPlanZakl(?,?,?)}", "{CALL pomdb.liciPlanPlanovaci(?,?,?)}", "{CALL pomdb.vyberDilciTerminy(?)}", "{CALL pomdb.vyberDilciTerminySeJmeny(?)}"}
 	};
 	/**
 	 * Prikazy pro vybrani viniku a vad 
@@ -860,13 +860,18 @@ public class SQLStor {
 		}
 	}
 	
-	public ResultSet liciPlanZakl(int cisloTydne, int rok) throws SQLException{
+	public ResultSet liciPlanZakl(int cisloTydne, int rok, String formovna) throws SQLException{
 		if(cisloTydne < 1 || cisloTydne > 53){
 			JOptionPane.showMessageDialog(hlavniOkno, "Zadejte èíslo týdne musí být v rozmezí 1 - 53");
 			return null;
 		}
 		if(rok < 1800 || rok > 9999){
-			JOptionPane.showMessageDialog(hlavniOkno, "Rok musí být v rozmezí 1800 - 9999. Co to sakra chcete za výpis :D (SQLStor.java 820)");
+			JOptionPane.showMessageDialog(hlavniOkno, "Rok musí být v rozmezí 1800 - 9999.");
+			return null;
+		}
+		if(formovna.length() != 1){
+			JOptionPane.showMessageDialog(hlavniOkno, "Formovna je špatnì. Má mít jen 1 znak");
+			return null;
 		}
 		int i = 6, j = 0;
 		if(cst[i][j] == null){
@@ -874,19 +879,25 @@ public class SQLStor {
 			naposledyPouzito[i][j] = new Date();
 		}
 		c = cst[i][j];
-		c.setInt("cisloTydne", cisloTydne);
-		c.setInt("rok", rok);
+		c.setInt(1, cisloTydne);
+		c.setInt(2, rok);
+		c.setString(3,formovna);
 		rs = c.executeQuery();
 		return rs;
 	}
 	
-	public ResultSet liciPlanovaci(int cisloTydne, int rok) throws SQLException{
+	public ResultSet liciPlanovaci(int cisloTydne, int rok, String formovna) throws SQLException{
 		if(cisloTydne < 1 || cisloTydne > 53){
 			JOptionPane.showMessageDialog(hlavniOkno, "Zadejte èíslo týdne musí být v rozmezí 1 - 53");
 			return null;
 		}
 		if(rok < 1800 || rok > 9999){
 			JOptionPane.showMessageDialog(hlavniOkno, "Rok musí být v rozmezí 1800 - 9999. Co to sakra chcete za výpis :D (SQLStor.java 820)");
+			return null;
+		}
+		if(formovna.length() != 1){
+			JOptionPane.showMessageDialog(hlavniOkno, "Formovna je špatnì. Má mít jen 1 znak");
+			return null;
 		}
 		int i = 6, j = 1;
 		if(cst[i][j] == null){
@@ -894,8 +905,9 @@ public class SQLStor {
 			naposledyPouzito[i][j] = new Date();
 		}
 		c = cst[i][j];
-		c.setInt("cisloTydne", cisloTydne);
-		c.setInt("rok", rok);
+		c.setInt(1, cisloTydne);
+		c.setInt(2, rok);
+		c.setString(3, formovna);
 		rs = c.executeQuery();
 		return rs;
 	}

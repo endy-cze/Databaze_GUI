@@ -323,7 +323,8 @@ public class ParametryFiltr extends JPanel {
 			vyhledej.setActionCommand("PlanovaniLiti");
 			this.prevodDoPdf.setActionCommand("PDFPlanovani");
 		}
-		prevodDoPdf.setVisible(true); // uložit jako pdf
+		comboBoxFormovna.setVisible(true);
+		prevodDoPdf.setVisible(false); // uložit jako pdf
 	}
 	
 	
