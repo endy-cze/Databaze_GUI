@@ -8,18 +8,14 @@ import java.awt.GridBagLayout;
 
 import javax.swing.JLabel;
 
-import java.awt.Component;
 import java.awt.GridBagConstraints;
 import java.awt.Font;
 import java.awt.Dimension;
 import java.awt.Insets;
-import java.awt.List;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Collections;
 import java.util.Date;
 
 import javax.swing.ButtonGroup;
@@ -49,8 +45,6 @@ import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.JTextPane;
-import javax.swing.JFormattedTextField;
 import javax.swing.JScrollPane;
 import javax.swing.JCheckBox;
 import javax.swing.JList;
@@ -79,7 +73,7 @@ public class PromOknoNovaZakazka extends JPanel implements NastavOkno, ActionLis
 	private JButton [] jButtonNajdi= new JButton [2];
 	
 	private Color [] barvy;
-	private Font [] fonty;
+	//private Font [] fonty;
 	private JButton pridejUpravZakazku;
 	private JRadioButton zaKus;
 	private JRadioButton zaKg;
@@ -190,7 +184,8 @@ public class PromOknoNovaZakazka extends JPanel implements NastavOkno, ActionLis
 		idIntAktualnihoModelu = 0;
 		uzavrenaCheck.setVisible(false);
 		this.model.removeAllElements();
-		smazTermin.setVisible(true);
+		//smazTermin.setVisible(true);
+		smazTermin.setActionCommand("SmazDilciTermin");
 		
 		for(int i = 0; i < listComponents.length; i++){
 			for(int j = 0; j < listComponents[i].length; j++){
@@ -216,7 +211,9 @@ public class PromOknoNovaZakazka extends JPanel implements NastavOkno, ActionLis
 		zakaznikComboModel.removeAllElements();
 		modelComboModel.removeAllElements();
 		uzavrenaCheck.setVisible(true);
-		smazTermin.setVisible(false);
+		//smazTermin.setVisible(true);
+		smazTermin.setActionCommand("SmazDilciTerminUprava");
+
 		
 		for(int i = 0; i < listComponents.length; i++){
 			for(int j = 0; j < listComponents[i].length; j++){				
@@ -300,7 +297,8 @@ public class PromOknoNovaZakazka extends JPanel implements NastavOkno, ActionLis
 	}
 
 	/**
-	 * Velmi citliva metoda nemenit poøadi v metode initList()
+	 * Velmi citliva metoda nemenit poøadi v metode initList(), slouží pouze pøi upravìZakazky pro pøenesení údajù z tabulky
+	 * do comboBoxu
 	 * @param index
 	 * @param text
 	 */
@@ -330,8 +328,8 @@ public class PromOknoNovaZakazka extends JPanel implements NastavOkno, ActionLis
 	}
 	
 	public void initComboModels(){
-		zakaznikComboModel = new DefaultComboBoxModel();
-		modelComboModel = new DefaultComboBoxModel();
+		zakaznikComboModel = new DefaultComboBoxModel<String>();
+		modelComboModel = new DefaultComboBoxModel<String>();
 	}
 	
 	/**
@@ -343,7 +341,7 @@ public class PromOknoNovaZakazka extends JPanel implements NastavOkno, ActionLis
 		
 		this.hlavniOkno = hlavniOkno;
 		this.sklad = hlavniOkno.getSklad();
-		this.fonty = sklad.getFonty();
+		//this.fonty = sklad.getFonty();
 		this.barvy = sklad.getBarvy();
 		initComboModels();
 		setBorder(new LineBorder(barvy[6]));
@@ -376,7 +374,7 @@ public class PromOknoNovaZakazka extends JPanel implements NastavOkno, ActionLis
 		gbc_lblNewLabel.gridy = 2;
 		add(lblNewLabel, gbc_lblNewLabel);
 		
-		textVyberZakaznika = new JComboBox();
+		textVyberZakaznika = new JComboBox<String>();
 		textVyberZakaznika.setModel(zakaznikComboModel);
 		GridBagConstraints gbc_textVyberZakaznika = new GridBagConstraints();
 		gbc_textVyberZakaznika.fill = GridBagConstraints.HORIZONTAL;
@@ -425,7 +423,7 @@ public class PromOknoNovaZakazka extends JPanel implements NastavOkno, ActionLis
 		gbc_lblNewLabel_1.gridy = 3;
 		add(lblNewLabel_1, gbc_lblNewLabel_1);
 		
-		textVyberModel = new JComboBox();
+		textVyberModel = new JComboBox<String>();
 		textVyberModel.setModel(modelComboModel);
 		GridBagConstraints gbc_textVyberModel = new GridBagConstraints();
 		gbc_textVyberModel.gridwidth = 6;
@@ -770,7 +768,7 @@ public class PromOknoNovaZakazka extends JPanel implements NastavOkno, ActionLis
 	}
 	@Override
 	public void nastavOkno(int i, int j) {
-		// TODO Auto-generated method stub
+		
 	}
 
 	public int getIdIntAktualnihoZakaznika() {
@@ -866,6 +864,20 @@ public class PromOknoNovaZakazka extends JPanel implements NastavOkno, ActionLis
 					} else {
 						model.remove(selected);
 					}
+				} else if (comand.equalsIgnoreCase("SmazDilciTerminUprava")){
+					int selected = this.seznamDilcichTerminu.getSelectedIndex();
+					if (selected < 0 || selected > model.getSize()) {
+						JOptionPane.showMessageDialog(hlavniOkno, "Vyberte nìjaký prvek z tabulky dílèích termínù");
+						return;
+					}
+					DateStor pom = model.get(selected);
+					DateStor novyTermin = new DateStor(pom.getDate(), 0, sdf);
+
+					if (novyTermin.isEqualDate(pom)) {
+						model.remove(selected);
+						model.add(selected, novyTermin);
+					}
+
 				}
 			} catch (NumberFormatException e1) {
 				JOptionPane.showMessageDialog(hlavniOkno, "Špatnì zapsaný poèet kusù u dílèího termínu");
