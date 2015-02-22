@@ -147,16 +147,16 @@ public class HledejListener implements ActionListener, MouseListener {
 				this.hledejVady();
 			} 
 			else if(arg0.getActionCommand().equalsIgnoreCase("ZaklPlanLiti")){
-				this.zaklLiciPlan();
+				this.zaklLiciPlan(true, -1);
 			}
 			else if(arg0.getActionCommand().equalsIgnoreCase("PlanovaniLiti")){
-				this.liciPlan();
+				this.liciPlan(true, -1);
 			} 
 			else if(arg0.getActionCommand().equalsIgnoreCase("HledejKapacitniProcet")){
 				this.kapPropocet();
 			} else { //vypisy a tisk
 				System.out.println("Impementuje se "+arg0.getActionCommand());
-				vypisy(arg0.getActionCommand());
+				vypisyAndTisk(arg0.getActionCommand());
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -195,7 +195,7 @@ public class HledejListener implements ActionListener, MouseListener {
 	 * @param actionComand
 	 * @throws Exception
 	 */
-	public void vypisy(String actionComand) throws Exception{
+	public void vypisyAndTisk(String actionComand) throws Exception{
 		boolean isVypis = true;
 		if(actionComand.startsWith("PDF")){
 			isVypis = false;
@@ -219,6 +219,13 @@ public class HledejListener implements ActionListener, MouseListener {
 					break;
 				}
 			}
+		}
+		if(actionComand.equalsIgnoreCase("PDFZaklPlan")){
+			i = TableToExcel.liciPlanZakl;
+			exist = true;
+		} else if(actionComand.equalsIgnoreCase("PDFPlanovani")){
+			i = TableToExcel.liciPlanPlanovaci;
+			exist = true;
 		}
 		if(exist){
 			/**
@@ -262,6 +269,12 @@ public class HledejListener implements ActionListener, MouseListener {
 			case 11:
 				this.vypisSkladuKeDnesnimuDni(isVypis, i);
 				break;
+			case TableToExcel.liciPlanZakl:
+				zaklLiciPlan(isVypis, TableToExcel.liciPlanZakl);
+				break;
+			case TableToExcel.liciPlanPlanovaci:
+				this.vypisSkladuKeDnesnimuDni(isVypis, TableToExcel.liciPlanPlanovaci);
+				break;
 			default: JOptionPane.showMessageDialog(hlavniOkno, "Špatný vypis Hledejlistener vypis()");
 				break;
 			}
@@ -304,36 +317,47 @@ public class HledejListener implements ActionListener, MouseListener {
 		}
 	}
 	
-	private void zaklLiciPlan() throws Exception{
-		int[] poleCi = getWeekAndYear();
-		if (poleCi != null) {
-			this.tyden = poleCi[0];
-			this.rok = poleCi[1];
-			String formovna = (String)((JComboBox)vypisy[indexComboBoxFormovna]).getSelectedItem();
-			
-			ResultSet rs = sql.liciPlanZakl(poleCi[0], poleCi[1], formovna);
-			if (rs != null) {
-				QueryTableModel tm = new QueryTableModel(rs);
-				table.setModel(tm);
-				columAdjuster.adjustColumns();
-				rs.close();
+	private void zaklLiciPlan(boolean isVypis, int cisloExportu) throws Exception{
+		if (isVypis) {
+			int[] poleCi = getWeekAndYear();
+			if (poleCi != null) {
+				this.tyden = poleCi[0];
+				this.rok = poleCi[1];
+				String formovna = (String) ((JComboBox) vypisy[indexComboBoxFormovna]).getSelectedItem();
+				ResultSet rs = sql.liciPlanZakl(poleCi[0], poleCi[1], formovna);
+				if (rs != null) {
+					QueryTableModel tm = new QueryTableModel(rs);
+					table.setModel(tm);
+					columAdjuster.adjustColumns();
+					rs.close();
+				}
 			}
+		} else {
+			TableModel mod = table.getModel();
+			String extend = lastUsedWeekNumberAYear[0] +" v roce "+  lastUsedWeekNumberAYear[1];
+			TableToExcel.exportToExcel(hlavniOkno, mod, extend, "Zakl_lici_plan", cisloExportu);
 		}
 	}
 	
-	private void liciPlan() throws Exception{
-		int[] poleCi = getWeekAndYear();
-		if (poleCi != null) {
-			this.tyden = poleCi[0];
-			this.rok = poleCi[1];
-			String formovna = (String)((JComboBox)vypisy[indexComboBoxFormovna]).getSelectedItem();
-			ResultSet rs = sql.liciPlanovaci(poleCi[0], poleCi[1], formovna);
-			if (rs != null) {
-				QueryTableModel tm = new QueryTableModel(rs);
-				table.setModel(tm);
-				columAdjuster.adjustColumns();
-				rs.close();
+	private void liciPlan(boolean isVypis, int cisloExportu) throws Exception{
+		if (isVypis) {
+			int[] poleCi = getWeekAndYear();
+			if (poleCi != null) {
+				this.tyden = poleCi[0];
+				this.rok = poleCi[1];
+				String formovna = (String) ((JComboBox) vypisy[indexComboBoxFormovna]).getSelectedItem();
+				ResultSet rs = sql.liciPlanovaci(poleCi[0], poleCi[1], formovna);
+				if (rs != null) {
+					QueryTableModel tm = new QueryTableModel(rs);
+					table.setModel(tm);
+					columAdjuster.adjustColumns();
+					rs.close();
+				}
 			}
+		} else {
+			TableModel mod = table.getModel();
+			String extend = lastUsedWeekNumberAYear[0] +" v roce "+  lastUsedWeekNumberAYear[1];
+			TableToExcel.exportToExcel(hlavniOkno, mod, extend, "Planovaci_lici_plan", cisloExportu);
 		}
 	}
 	

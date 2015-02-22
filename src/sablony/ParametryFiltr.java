@@ -318,13 +318,14 @@ public class ParametryFiltr extends JPanel {
 		this.showCisloTydne();
 		if(isZakl){
 			vyhledej.setActionCommand("ZaklPlanLiti");
-			this.prevodDoPdf.setActionCommand("PDFZaklPlan");
+			prevodDoPdf.setActionCommand("PDFZaklPlan");
 		}else {
 			vyhledej.setActionCommand("PlanovaniLiti");
-			this.prevodDoPdf.setActionCommand("PDFPlanovani");
+			prevodDoPdf.setActionCommand("PDFPlanovani");
 		}
 		comboBoxFormovna.setVisible(true);
-		prevodDoPdf.setVisible(false); // uložit jako pdf
+		if(isZakl)
+			prevodDoPdf.setVisible(true); // uložit jako pdf
 	}
 	
 	

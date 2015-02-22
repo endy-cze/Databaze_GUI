@@ -34,7 +34,8 @@ import sablony.tabulka.QueryTableModel;
  *
  */
 public class TableToExcel {
-	
+	public final static int liciPlanZakl = 15;
+	public final static int liciPlanPlanovaci = 16;
 	private JFrame hlavniOkno;
 	
 	/**
@@ -49,6 +50,20 @@ public class TableToExcel {
 	 */
 	public static void exportToExcel(JFrame hlavniOkno, TableModel model, String nadpisExt, String name, int cisloExportu) throws Exception{
 		new TableToExcel(hlavniOkno, model, nadpisExt, name, cisloExportu);
+	}
+	
+	/**
+	 * Vytvoøí .xls soubor do pøedem dané složky specialnì pro lici plan- Bude vice radku
+	 * (Doporuèení: údaje by se mìli vejít na A4 na výšku)
+	 * @param hlavniOkno pouzití na zobrazení chyby (metoda export())
+	 * @param model ze kterého èerpáme data. Musí být <code>QueryTableModel</code>
+	 * @param nadpisExt rozšíøení nadpisu v tisk (obvykle datum)
+	 * @param name jméno souboru bez koncovky
+	 * @param cisloExportu èíslo exportu (èíslo šablony, kterou použijeme pro soubor xls)
+	 * @throws Exception vyhodí chybu, pokud nìco nesouhlasí
+	 */
+	public static void exportToExcelPlanovani(JFrame hlavniOkno, TableModel model, String nadpisExt, String name) throws Exception{
+		
 	}
 	
 	/**
@@ -230,6 +245,12 @@ public class TableToExcel {
 			break;
 		case 11:
 			atr[0] = "Výpis skladu ke dnešnímu dni";atr[1] = "Seznam kusù na skladì ke dni ";atr[2] = "./vypisy";
+			break;
+		case TableToExcel.liciPlanZakl:
+			atr[0] = "Základni licí plán";atr[1] = "Základni licí plán pro týden: ";atr[2] = "./lici_plany";
+			break;
+		case TableToExcel.liciPlanPlanovaci:
+			atr[0] = "Výpis skladu ke dnešnímu dni";atr[1] = "Seznam kusù na skladì ke dni ";atr[2] = "./lici_plany";
 			break;
 		}
 		return atr;		
