@@ -47,10 +47,8 @@ public class TableToExcel {
 	 * @param cisloExportu èíslo exportu (èíslo šablony, kterou použijeme pro soubor xls)
 	 * @throws Exception vyhodí chybu, pokud nìco nesouhlasí
 	 */
-	public static void exportToExcel(JFrame hlavniOkno, TableModel model//, String nadpisExt
-			, String name, int cisloExportu) throws Exception{
-		new TableToExcel(hlavniOkno, model,// nadpisExt,
-				name, cisloExportu);
+	public static void exportToExcel(JFrame hlavniOkno, TableModel model, String nadpisExt, String name, int cisloExportu) throws Exception{
+		new TableToExcel(hlavniOkno, model, nadpisExt, name, cisloExportu);
 	}
 	
 	/**
@@ -63,11 +61,9 @@ public class TableToExcel {
 	 * @param cisloExportu èíslo exportu (èíslo šablony, kterou použijeme pro soubor xls)
 	 * @throws Exception vyhodí chybu, pokud nìco nesouhlasí
 	 */
-	public TableToExcel(JFrame hlavniOkno, TableModel model,// String nadpisExt,
-			String name, int cisloExportu) throws Exception{
+	public TableToExcel(JFrame hlavniOkno, TableModel model,String nadpisExt, String name, int cisloExportu) throws Exception{
 		this.hlavniOkno = hlavniOkno;
-		this.export((QueryTableModel) model,// nadpisExt,
-				name, cisloExportu);
+		this.export((QueryTableModel) model, nadpisExt, name, cisloExportu);
 	}
 	
 	/**
@@ -78,15 +74,14 @@ public class TableToExcel {
 	 * @param cisloExportu druh vypisu, podle kterého pøizpùsobíme .xls soubor
 	 * @throws Exception 
 	 */
-	private void export(QueryTableModel model,// String nadpisExt,
-			String name, int cisloExportu) throws Exception{
+	private void export(QueryTableModel model, String nadpisExt, String name, int cisloExportu) throws Exception{
 		HSSFWorkbook wb = new HSSFWorkbook();
 		String [] atr = this.getAtributes(cisloExportu);
 		HSSFSheet sheet = wb.createSheet(atr[0]);
 		
 		//set header (nadpis v tisku)
 		Header header = sheet.getHeader();
-		header.setCenter(HSSFHeader.font("Stencil-Normal", "bold")+ HSSFHeader.fontSize((short) 14)+ atr[1]);// + nadpisExt);
+		header.setCenter(HSSFHeader.font("Stencil-Normal", "bold")+ HSSFHeader.fontSize((short) 14)+ atr[1] + nadpisExt);// + nadpisExt);
 		
 		sheet.getPrintSetup().setPaperSize(PrintSetup.A4_PAPERSIZE);
 		
@@ -173,7 +168,9 @@ public class TableToExcel {
 			for(int j = 0; j < model.getColumnCount() -1 ; j++){ //mam totiž jeden sloupec navic aby se mi srovnali tabulky viz QuerytableModel
 				cell = row.createCell(j);
 				if(isNumber[j]){
-					cell.setCellValue(Double.parseDouble((model.getValueAt(i-1, j))));
+					if(model.getValueAt(i-1, j).length() > 0){
+						cell.setCellValue(Double.parseDouble((model.getValueAt(i-1, j))));
+					}
 				} else {
 					cell.setCellValue(model.getValueAt(i-1, j));
 				}
@@ -199,40 +196,40 @@ public class TableToExcel {
 		String [] atr = {"prazdnyatr","prazdnyatr","prazdnyatr"};
 		switch(cisloExportu){
 		case 0:
-			atr[0] = "Stav neuzavøených zakázek";atr[1] = atr[0];atr[2] = "./vypisy";
+			atr[0] = "Stav neuzavøených zakázek";atr[1] = "Stav neuzavøených zakázek ke dni ";atr[2] = "./vypisy";
 			break;
 		case 1:
-			atr[0] = "Výpis odlitých kusù ke dni";atr[1] = atr[0];atr[2] = "./vypisy";
+			atr[0] = "Výpis odlitých kusù";atr[1] = "Výpis odlitých kusù ke dni ";atr[2] = "./vypisy";
 			break;
 		case 2:
-			atr[0] = "Výpis vyèištìných kusù za období";atr[1] = atr[0];atr[2] = "./vypisy";
+			atr[0] = "Výpis vyèištìných kusù za období";atr[1] = "Vyèištìné kusy od ";atr[2] = "./vypisy";
 			break;
 		case 3:
-			atr[0] = "Mzdy slévaèù ke dni";atr[1] = atr[0];atr[2] = "./vypisy";
+			atr[0] = "Mzdy slévaèù";atr[1] = "Mzdy slévaèù ke dni ";atr[2] = "./vypisy";
 			break;
 		case 4:
-			atr[0] = "Výpis odlitkù v kg/kè za období";atr[1] = atr[0];atr[2] = "./vypisy";
+			atr[0] = "Výpis odlitkù v kg-kè za období";atr[1] = "Výpis odlitkù v kg-kè od " ;atr[2] = "./vypisy";
 			break;
 		case 5:
 			atr[0] = "Výpis vyrobených kusù za období";atr[1] = atr[0];atr[2] = "./vypisy";
 			break;
 		case 6:
-			atr[0] = "Výpis položek s odhadovanou hmotností";atr[1] = atr[0];atr[2] = "./vypisy";
+			atr[0] = "Výpis položek s odhadovanou hmotností";atr[1] = "Položky s odhadovou hmotností ke dni ";atr[2] = "./vypisy";
 			break;
 		case 7:
 			atr[0] = "Výpis zakázek s termínem expedice v daném týdnu";atr[1] = atr[0];atr[2] = "./vypisy";
 			break;
 		case 8:
-			atr[0] = "Výpis expedice zboží za období";atr[1] = atr[0];atr[2] = "./vypisy";
+			atr[0] = "Výpis expedice zboží za období";atr[1] = "Expedice zboží od ";atr[2] = "./vypisy";
 			break;
 		case 9:
 			atr[0] = "Výpis zpoždìné výroby ke dni";atr[1] = atr[0];atr[2] = "./vypisy";
 			break;
 		case 10:
-			atr[0] = "Inventura rozpracované výroby";atr[1] = atr[0];atr[2] = "./vypisy";
+			atr[0] = "Inventura rozpracované výroby";atr[1] = "Rozpracovaná výroba ke dni ";atr[2] = "./vypisy";
 			break;
 		case 11:
-			atr[0] = "Výpis skladu ke dnešnímu dni";atr[1] = atr[0];atr[2] = "./vypisy";
+			atr[0] = "Výpis skladu ke dnešnímu dni";atr[1] = "Seznam kusù na skladì ke dni ";atr[2] = "./vypisy";
 			break;
 		}
 		return atr;		

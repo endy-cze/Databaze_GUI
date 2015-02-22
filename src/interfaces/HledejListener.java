@@ -51,7 +51,7 @@ public class HledejListener implements ActionListener, MouseListener {
 	private SkladOdkazu sklad;
 	private SQLStor sql;
 	
-	private SimpleDateFormat sdt = new SimpleDateFormat("yyyy-MM-dd");
+	private SimpleDateFormat sdf = null;
 	private CallableStatement cs = null;
 	private ParametryFiltr filtr;
 	private ColorCellTable table;
@@ -95,6 +95,14 @@ public class HledejListener implements ActionListener, MouseListener {
 	private Color [] barvy;
 	private static final int vyskaNadTabulkou = 270;
 	
+	private Date lastUsedDate1 = null;
+	private Date lastUsedDate2 = null;
+	private int [] lastUsedWeekNumberAYear = {-1,-1};
+	/**
+	 * Slouží pro metody, které nemaji jako parametr datum, ale aby bylo jasné kdy to bylo vyhledané,
+	 * tak se pøidá datum do nadpisu, kdy byla tato metoda volána.
+	 */
+	private Date datumPoslVolaniMetody = null;
 	private static final String acesDenied = "execute command denied to user";
 	
 	public HledejListener(JButton vyhledej, JButton prevodDoPdf, ParametryFiltr filtr, ColorCellTable table, Component [] pole, Component [] vypisy, MainFrame hlavniOkno, TableColumnAdjuster columAdjuster){
@@ -109,6 +117,7 @@ public class HledejListener implements ActionListener, MouseListener {
 		this.sklad = hlavniOkno.getSklad();
 		this.barvy = sklad.getBarvy();
 		this.sql = sklad.getSql();
+		this.sdf = sklad.getSdf();
 	}
 	
 	@Override
@@ -190,6 +199,11 @@ public class HledejListener implements ActionListener, MouseListener {
 		if(actionComand.startsWith("PDF")){
 			isVypis = false;
 		}
+		boolean isEmpty = this.table.getColumnName(0).equalsIgnoreCase("Prázdná tabulka");
+		if(!isVypis && isEmpty){
+			JOptionPane.showMessageDialog(hlavniOkno, "Tabulka je prázdná");
+			return;
+		}
 		String [] comands =  sklad.getCommands()[4];
 		int i = 0; boolean exist = false;
 		for(i = 0; i < comands.length; i++){
@@ -206,7 +220,11 @@ public class HledejListener implements ActionListener, MouseListener {
 			}
 		}
 		if(exist){
-			switch(i){
+			/**
+			 * Kvuli tomu aby jmena souboru mìli èisla od 1 .. n a ne od 0 tak zvìtším i o 1
+			 */
+			i++;
+			switch(i-1){
 			case 0:
 				this.vypisStavuNeuzavrenychZakazek(isVypis, i);
 				break;
@@ -323,6 +341,8 @@ public class HledejListener implements ActionListener, MouseListener {
 			String idZakazkyString = ((JTextField) pole[13]).getText();
 			if(idModeliString.equalsIgnoreCase(""))idModeliString = "0";
 			if(idZakazkyString.equalsIgnoreCase(""))idZakazkyString = "0";
+			//datum kdy byla metoda volana, kvuli datumu v tisku
+			datumPoslVolaniMetody = new Date();
 			
 			try {
 				idModelu = Integer.parseInt(idModeliString);
@@ -351,7 +371,7 @@ public class HledejListener implements ActionListener, MouseListener {
 		//export do Excelu
 		else {
 			TableModel mod = table.getModel();
-			TableToExcel.exportToExcel(hlavniOkno, mod, "Stav_neuzavrenych_zakazek", cisloVypisu);
+			TableToExcel.exportToExcel(hlavniOkno, mod, sdf.format(datumPoslVolaniMetody), cisloVypisu+". "+"Stav_neuzavrenych_zakazek", cisloVypisu);
 		}
 	}
 	private void denniVypisOdlitku(boolean isVypis, int cisloVypisu) throws Exception{
@@ -367,7 +387,7 @@ public class HledejListener implements ActionListener, MouseListener {
 			}
 		} else {
 			TableModel mod = table.getModel();
-			TableToExcel.exportToExcel(hlavniOkno, mod, "Stav_neuzavrenych_zakazek", cisloVypisu);
+			TableToExcel.exportToExcel(hlavniOkno, mod, sdf.format(lastUsedDate1), cisloVypisu+". "+"Vypis_odlitku_ke_dni", cisloVypisu);
 		}
 	}
 	/**
@@ -387,7 +407,8 @@ public class HledejListener implements ActionListener, MouseListener {
 			}
 		} else {
 			TableModel mod = table.getModel();
-			TableToExcel.exportToExcel(hlavniOkno, mod, "Stav_neuzavrenych_zakazek", cisloVypisu);
+			String datumy = sdf.format(lastUsedDate1)+" do "+ sdf.format(lastUsedDate2);
+			TableToExcel.exportToExcel(hlavniOkno, mod, datumy, cisloVypisu+". "+"Odlitky_kg_kc_za_obdobi", cisloVypisu);
 		}
 	}
 	
@@ -403,7 +424,7 @@ public class HledejListener implements ActionListener, MouseListener {
 			}
 		}  else {
 			TableModel mod = table.getModel();
-			TableToExcel.exportToExcel(hlavniOkno, mod, "Stav_neuzavrenych_zakazek", cisloVypisu);
+			//TableToExcel.exportToExcel(hlavniOkno, mod, "Stav_neuzavrenych_zakazek", cisloVypisu);
 		}
 	}
 	
@@ -421,13 +442,14 @@ public class HledejListener implements ActionListener, MouseListener {
 			}
 		} else {
 			TableModel mod = table.getModel();
-			TableToExcel.exportToExcel(hlavniOkno, mod, "Stav_neuzavrenych_zakazek", cisloVypisu);
+			//TableToExcel.exportToExcel(hlavniOkno, mod, "Stav_neuzavrenych_zakazek", cisloVypisu);
 		}
 		
 	}
 	private void vypisPolozekSOdhadHmot(boolean isVypis, int cisloVypisu) throws Exception{
 		if (isVypis) {
 			ResultSet rs = sql.vypisPolozekSOdhadHmot();
+			datumPoslVolaniMetody = new Date();
 			if (rs != null) {
 				QueryTableModel tm = new QueryTableModel(rs);
 				table.setModel(tm);
@@ -436,7 +458,7 @@ public class HledejListener implements ActionListener, MouseListener {
 			}
 		} else {
 			TableModel mod = table.getModel();
-			TableToExcel.exportToExcel(hlavniOkno, mod, "Stav_neuzavrenych_zakazek", cisloVypisu);
+			TableToExcel.exportToExcel(hlavniOkno, mod, sdf.format(datumPoslVolaniMetody), cisloVypisu+". "+"Polozky_s_odhadovou_hmotnosti", cisloVypisu);
 		}
 	}
 	private void vypisMzdySlevacu(boolean isVypis, int cisloVypisu) throws Exception{
@@ -451,7 +473,7 @@ public class HledejListener implements ActionListener, MouseListener {
 			}
 		} else {
 			TableModel mod = table.getModel();
-			TableToExcel.exportToExcel(hlavniOkno, mod, "Stav_neuzavrenych_zakazek", cisloVypisu);
+			TableToExcel.exportToExcel(hlavniOkno, mod, sdf.format(lastUsedDate1), cisloVypisu+". "+"Mzdy_slevacu", cisloVypisu);
 		}	
 	}
 	private void vypisOdlitychKusuOdDo(boolean isVypis, int cisloVypisu) throws Exception{
@@ -466,7 +488,7 @@ public class HledejListener implements ActionListener, MouseListener {
 			}
 		} else {
 			TableModel mod = table.getModel();
-			TableToExcel.exportToExcel(hlavniOkno, mod, "Stav_neuzavrenych_zakazek", cisloVypisu);
+			//TableToExcel.exportToExcel(hlavniOkno, mod, "Stav_neuzavrenych_zakazek", cisloVypisu);
 		}
 		
 	}
@@ -482,12 +504,14 @@ public class HledejListener implements ActionListener, MouseListener {
 			}
 		}  else {
 			TableModel mod = table.getModel();
-			TableToExcel.exportToExcel(hlavniOkno, mod, "Stav_neuzavrenych_zakazek", cisloVypisu);
+			String datumy = sdf.format(lastUsedDate1)+" do "+ sdf.format(lastUsedDate2);
+			TableToExcel.exportToExcel(hlavniOkno, mod, datumy, cisloVypisu+". "+"Vycistene_kusy_za_obdobi", cisloVypisu);
 		}
 	}
 	private void inventuraRozpracVyroby(boolean isVypis, int cisloVypisu) throws Exception{
 		if (isVypis) {
 			ResultSet rs = sql.vypisRozpracovaneVyroby();
+			datumPoslVolaniMetody = new Date();
 			if (rs != null) {
 				QueryTableModel tm = new QueryTableModel(rs);
 				table.setModel(tm);
@@ -496,7 +520,7 @@ public class HledejListener implements ActionListener, MouseListener {
 			}
 		} else {
 			TableModel mod = table.getModel();
-			TableToExcel.exportToExcel(hlavniOkno, mod, "Stav_neuzavrenych_zakazek", cisloVypisu);
+			TableToExcel.exportToExcel(hlavniOkno, mod, sdf.format(datumPoslVolaniMetody), cisloVypisu+". "+"Inventura_rozpracovane_vyroby", cisloVypisu);
 		}
 	}
 
@@ -512,13 +536,15 @@ public class HledejListener implements ActionListener, MouseListener {
 			}
 		} else {
 			TableModel mod = table.getModel();
-			TableToExcel.exportToExcel(hlavniOkno, mod, "Stav_neuzavrenych_zakazek", cisloVypisu);
+			String datumy = sdf.format(lastUsedDate1)+" do "+ sdf.format(lastUsedDate2);
+			TableToExcel.exportToExcel(hlavniOkno, mod, datumy, cisloVypisu+". "+"Expedovane_kusy_za_obdobi", cisloVypisu);
 		}
 	}
 	
 	private void vypisSkladuKeDnesnimuDni(boolean isVypis, int cisloVypisu) throws Exception{
 		if(isVypis){
 			ResultSet rs = sql.vypisSkladuKDnesnimuDni();
+			datumPoslVolaniMetody = new Date();
 			if(rs != null){
 				QueryTableModel tm = new QueryTableModel(rs);
 				table.setModel(tm);
@@ -527,17 +553,19 @@ public class HledejListener implements ActionListener, MouseListener {
 			}
 		}  else {
 			TableModel mod = table.getModel();
-			TableToExcel.exportToExcel(hlavniOkno, mod, "Stav_neuzavrenych_zakazek", cisloVypisu);
+			TableToExcel.exportToExcel(hlavniOkno, mod, sdf.format(datumPoslVolaniMetody),cisloVypisu+". "+ "Vypis_skladu", cisloVypisu);
 		}
 	}
 	
 	private Date get1Date() throws Exception{
 		Date od = ((JDateChooser)vypisy[1]).getDate();
+		lastUsedDate1 = od;
 		return od;
 	}
 	
 	private Date get2Date() throws Exception{
 		Date do_ = ((JDateChooser)vypisy[3]).getDate();
+		lastUsedDate2 = do_;
 		return do_;
 	}
 	
@@ -552,6 +580,8 @@ public class HledejListener implements ActionListener, MouseListener {
 			int[] pole = new int[2];
 			pole[0] = Integer.parseInt(((JTextField) vypisy[5]).getText());
 			pole[1] = ((JYearChooser) vypisy[6]).getYear();
+			lastUsedWeekNumberAYear[0] = pole[0];
+			lastUsedWeekNumberAYear[1] = pole[1];
 			return pole;
 		} catch (NumberFormatException e) {
 			JOptionPane.showMessageDialog(hlavniOkno, "Špatnì zapsané èíslo u èísla týdne");

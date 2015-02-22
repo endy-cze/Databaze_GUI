@@ -351,27 +351,27 @@ public class ParametryFiltr extends JPanel {
 			checkVcetneUzavZak.setVisible(false);
 			// musim nastavit actionComand ještì jednou paè, setZakazka() se zmenil
 			vyhledej.setActionCommand(com[j]); 
-			prevodDoPdf.setVisible(true); // uložit jako pdf
+			prevodDoPdf.setVisible(true); // uložit jako excel
 			this.napovedaDate.setText("Vypíše stav všech neuzavøených zakázek, (maximálnì ale 100 øádkù)");
 			break;
 		case 1: // 2.	Denní výpis odlitých kusù
 			this.showOd();
-			prevodDoPdf.setVisible(false);
+			prevodDoPdf.setVisible(true);
 			this.napovedaDate.setText("Denní výpis odlitkù");
 			break;
 		case 2: //3.	Výpis vyèištìných kusù za období
 			this.showOdDo();
-			prevodDoPdf.setVisible(false); // uložit jako pdf
+			prevodDoPdf.setVisible(true); // uložit jako excel
 			//prevodDoPdf.setActionCommand("PDFSoucetHmotnostiNorem");
 			this.napovedaDate.setText("Vypíše souèet hmotností a norem všech odlitkù, které se odlily za toto období");
 			break;
 		case 3: //4.	Mzdy slévaèù
 			this.showOd();
-			prevodDoPdf.setVisible(false);
+			prevodDoPdf.setVisible(true);
 			break;
 		case 4: //5.	Výpis odlitkù v kg/Kè
 			this.showOdDo();
-			prevodDoPdf.setVisible(false);
+			prevodDoPdf.setVisible(true);
 			break;
 		case 5: // 6.	Výpis odlitých (vyrobených) kusù za období
 			this.showOdDo();
@@ -379,7 +379,7 @@ public class ParametryFiltr extends JPanel {
 			break;
 		case 6: //7.	Výpis položek s odhadovou hmotností
 			this.showNothing();
-			prevodDoPdf.setVisible(false);
+			prevodDoPdf.setVisible(true);
 			break;
 		case 7: //8.	Výpis termínu expedice v daném tydnu
 			this.showCisloTydne();
@@ -389,7 +389,7 @@ public class ParametryFiltr extends JPanel {
 			break;
 		case 8: //9.	Výpis expedice zboží za odbdobí
 			this.showOdDo();
-			prevodDoPdf.setVisible(false);
+			prevodDoPdf.setVisible(true);
 			break;
 		case 9: //10.	Výpis zpoždìní výroby ke dni
 			this.showDatum();
@@ -397,11 +397,11 @@ public class ParametryFiltr extends JPanel {
 			break;
 		case 10: //11.	Inventura rozpracované výroby
 			this.showNothing();
-			prevodDoPdf.setVisible(false);
+			prevodDoPdf.setVisible(true);
 			break;
 		case 11: //12.	Výpis skladu ke dnešnímu dni
 			this.showNothing();
-			prevodDoPdf.setVisible(false);
+			prevodDoPdf.setVisible(true);
 			break;
 		default: JOptionPane.showMessageDialog(hlavniOkno, "Spatny vypis");
 			break;
@@ -817,12 +817,13 @@ public class ParametryFiltr extends JPanel {
 		prevodDoPdf = new MyJButton("P\u0159evod do Excelu", 13,4, sklad);
 		prevodDoPdf.setActionCommand("PDFuloz");
 		prevodDoPdf.removeMouseListener(sklad.getMyJButonnListener());
-		prevodDoPdf.setPreferredSize(new Dimension(100, 22));
+		prevodDoPdf.setPreferredSize(new Dimension(150, 22));
 		prevodDoPdf.setBorder(new LineBorder(barvy[15]));
 		vypisy[9] = prevodDoPdf;
 		GridBagConstraints gbc_prevodDoPdf = new GridBagConstraints();
-		gbc_prevodDoPdf.gridwidth = 2;
-		gbc_prevodDoPdf.fill = GridBagConstraints.BOTH;
+		gbc_prevodDoPdf.anchor = GridBagConstraints.WEST;
+		gbc_prevodDoPdf.gridwidth = 3;
+		gbc_prevodDoPdf.fill = GridBagConstraints.VERTICAL;
 		gbc_prevodDoPdf.insets = new Insets(0, 0, 5, 5);
 		gbc_prevodDoPdf.gridx = 5;
 		gbc_prevodDoPdf.gridy = 5;
