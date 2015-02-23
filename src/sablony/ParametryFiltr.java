@@ -324,8 +324,9 @@ public class ParametryFiltr extends JPanel {
 			prevodDoPdf.setActionCommand("PDFPlanovani");
 		}
 		comboBoxFormovna.setVisible(true);
-		if(isZakl)
+		//if(isZakl){
 			prevodDoPdf.setVisible(true); // uložit jako pdf
+		//}
 	}
 	
 	

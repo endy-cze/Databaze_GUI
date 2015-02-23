@@ -273,7 +273,7 @@ public class HledejListener implements ActionListener, MouseListener {
 				zaklLiciPlan(isVypis, TableToExcel.liciPlanZakl);
 				break;
 			case TableToExcel.liciPlanPlanovaci:
-				this.vypisSkladuKeDnesnimuDni(isVypis, TableToExcel.liciPlanPlanovaci);
+				liciPlan(isVypis, TableToExcel.liciPlanPlanovaci);
 				break;
 			default: JOptionPane.showMessageDialog(hlavniOkno, "Špatný vypis Hledejlistener vypis()");
 				break;
@@ -335,7 +335,7 @@ public class HledejListener implements ActionListener, MouseListener {
 		} else {
 			TableModel mod = table.getModel();
 			String extend = lastUsedWeekNumberAYear[0] +" v roce "+  lastUsedWeekNumberAYear[1];
-			TableToExcel.exportToExcel(hlavniOkno, mod, extend, "Zakl_lici_plan", cisloExportu);
+			TableToExcel.exportToExcelNaVysku(hlavniOkno, mod, extend, "Zakl_lici_plan", cisloExportu);
 		}
 	}
 	
@@ -357,7 +357,7 @@ public class HledejListener implements ActionListener, MouseListener {
 		} else {
 			TableModel mod = table.getModel();
 			String extend = lastUsedWeekNumberAYear[0] +" v roce "+  lastUsedWeekNumberAYear[1];
-			TableToExcel.exportToExcel(hlavniOkno, mod, extend, "Planovaci_lici_plan", cisloExportu);
+			TableToExcel.exportToExcelNaSirku(hlavniOkno, mod, extend, "Planovaci_lici_plan", cisloExportu);
 		}
 	}
 	
@@ -399,7 +399,7 @@ public class HledejListener implements ActionListener, MouseListener {
 		//export do Excelu
 		else {
 			TableModel mod = table.getModel();
-			TableToExcel.exportToExcel(hlavniOkno, mod, sdf.format(datumPoslVolaniMetody), cisloVypisu+". "+"Stav_neuzavrenych_zakazek", cisloVypisu);
+			TableToExcel.exportToExcelNaVysku(hlavniOkno, mod, sdf.format(datumPoslVolaniMetody), cisloVypisu+". "+"Stav_neuzavrenych_zakazek", cisloVypisu);
 		}
 	}
 	private void denniVypisOdlitku(boolean isVypis, int cisloVypisu) throws Exception{
@@ -415,7 +415,7 @@ public class HledejListener implements ActionListener, MouseListener {
 			}
 		} else {
 			TableModel mod = table.getModel();
-			TableToExcel.exportToExcel(hlavniOkno, mod, sdf.format(lastUsedDate1), cisloVypisu+". "+"Vypis_odlitku_ke_dni", cisloVypisu);
+			TableToExcel.exportToExcelNaVysku(hlavniOkno, mod, sdf.format(lastUsedDate1), cisloVypisu+". "+"Vypis_odlitku_ke_dni", cisloVypisu);
 		}
 	}
 	/**
@@ -436,7 +436,7 @@ public class HledejListener implements ActionListener, MouseListener {
 		} else {
 			TableModel mod = table.getModel();
 			String datumy = sdf.format(lastUsedDate1)+" do "+ sdf.format(lastUsedDate2);
-			TableToExcel.exportToExcel(hlavniOkno, mod, datumy, cisloVypisu+". "+"Odlitky_kg_kc_za_obdobi", cisloVypisu);
+			TableToExcel.exportToExcelNaVysku(hlavniOkno, mod, datumy, cisloVypisu+". "+"Odlitky_kg_kc_za_obdobi", cisloVypisu);
 		}
 	}
 	
@@ -486,7 +486,7 @@ public class HledejListener implements ActionListener, MouseListener {
 			}
 		} else {
 			TableModel mod = table.getModel();
-			TableToExcel.exportToExcel(hlavniOkno, mod, sdf.format(datumPoslVolaniMetody), cisloVypisu+". "+"Polozky_s_odhadovou_hmotnosti", cisloVypisu);
+			TableToExcel.exportToExcelNaVysku(hlavniOkno, mod, sdf.format(datumPoslVolaniMetody), cisloVypisu+". "+"Polozky_s_odhadovou_hmotnosti", cisloVypisu);
 		}
 	}
 	private void vypisMzdySlevacu(boolean isVypis, int cisloVypisu) throws Exception{
@@ -501,7 +501,7 @@ public class HledejListener implements ActionListener, MouseListener {
 			}
 		} else {
 			TableModel mod = table.getModel();
-			TableToExcel.exportToExcel(hlavniOkno, mod, sdf.format(lastUsedDate1), cisloVypisu+". "+"Mzdy_slevacu", cisloVypisu);
+			TableToExcel.exportToExcelNaVysku(hlavniOkno, mod, sdf.format(lastUsedDate1), cisloVypisu+". "+"Mzdy_slevacu", cisloVypisu);
 		}	
 	}
 	private void vypisOdlitychKusuOdDo(boolean isVypis, int cisloVypisu) throws Exception{
@@ -533,7 +533,7 @@ public class HledejListener implements ActionListener, MouseListener {
 		}  else {
 			TableModel mod = table.getModel();
 			String datumy = sdf.format(lastUsedDate1)+" do "+ sdf.format(lastUsedDate2);
-			TableToExcel.exportToExcel(hlavniOkno, mod, datumy, cisloVypisu+". "+"Vycistene_kusy_za_obdobi", cisloVypisu);
+			TableToExcel.exportToExcelNaVysku(hlavniOkno, mod, datumy, cisloVypisu+". "+"Vycistene_kusy_za_obdobi", cisloVypisu);
 		}
 	}
 	private void inventuraRozpracVyroby(boolean isVypis, int cisloVypisu) throws Exception{
@@ -548,7 +548,7 @@ public class HledejListener implements ActionListener, MouseListener {
 			}
 		} else {
 			TableModel mod = table.getModel();
-			TableToExcel.exportToExcel(hlavniOkno, mod, sdf.format(datumPoslVolaniMetody), cisloVypisu+". "+"Inventura_rozpracovane_vyroby", cisloVypisu);
+			TableToExcel.exportToExcelNaVysku(hlavniOkno, mod, sdf.format(datumPoslVolaniMetody), cisloVypisu+". "+"Inventura_rozpracovane_vyroby", cisloVypisu);
 		}
 	}
 
@@ -565,7 +565,7 @@ public class HledejListener implements ActionListener, MouseListener {
 		} else {
 			TableModel mod = table.getModel();
 			String datumy = sdf.format(lastUsedDate1)+" do "+ sdf.format(lastUsedDate2);
-			TableToExcel.exportToExcel(hlavniOkno, mod, datumy, cisloVypisu+". "+"Expedovane_kusy_za_obdobi", cisloVypisu);
+			TableToExcel.exportToExcelNaVysku(hlavniOkno, mod, datumy, cisloVypisu+". "+"Expedovane_kusy_za_obdobi", cisloVypisu);
 		}
 	}
 	
@@ -581,7 +581,7 @@ public class HledejListener implements ActionListener, MouseListener {
 			}
 		}  else {
 			TableModel mod = table.getModel();
-			TableToExcel.exportToExcel(hlavniOkno, mod, sdf.format(datumPoslVolaniMetody),cisloVypisu+". "+ "Vypis_skladu", cisloVypisu);
+			TableToExcel.exportToExcelNaVysku(hlavniOkno, mod, sdf.format(datumPoslVolaniMetody),cisloVypisu+". "+ "Vypis_skladu", cisloVypisu);
 		}
 	}
 	

@@ -9,6 +9,7 @@ import javax.swing.JOptionPane;
 import javax.swing.table.TableModel;
 
 import org.apache.poi.hssf.usermodel.HSSFHeader;
+import org.apache.poi.hssf.usermodel.HSSFPrintSetup;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.usermodel.HeaderFooter;
@@ -38,6 +39,7 @@ public class TableToExcel {
 	public final static int liciPlanPlanovaci = 16;
 	private JFrame hlavniOkno;
 	
+	
 	/**
 	 * Vytvoøí .xls soubor do pøedem dané složky s jednoøádkovou hlavièkou.
 	 * (Doporuèení: údaje by se mìli vejít na A4 na výšku)
@@ -48,13 +50,13 @@ public class TableToExcel {
 	 * @param cisloExportu èíslo exportu (èíslo šablony, kterou použijeme pro soubor xls)
 	 * @throws Exception vyhodí chybu, pokud nìco nesouhlasí
 	 */
-	public static void exportToExcel(JFrame hlavniOkno, TableModel model, String nadpisExt, String name, int cisloExportu) throws Exception{
-		new TableToExcel(hlavniOkno, model, nadpisExt, name, cisloExportu);
+	public static void exportToExcelNaVysku(JFrame hlavniOkno, TableModel model, String nadpisExt, String name, int cisloExportu) throws Exception{
+		new TableToExcel(hlavniOkno, model, nadpisExt, name, cisloExportu, true);
 	}
 	
 	/**
 	 * Vytvoøí .xls soubor do pøedem dané složky specialnì pro lici plan- Bude vice radku
-	 * (Doporuèení: údaje by se mìli vejít na A4 na výšku)
+	 * (Doporuèení: údaje by se mìli vejít na A4 na šíøku)
 	 * @param hlavniOkno pouzití na zobrazení chyby (metoda export())
 	 * @param model ze kterého èerpáme data. Musí být <code>QueryTableModel</code>
 	 * @param nadpisExt rozšíøení nadpisu v tisk (obvykle datum)
@@ -62,8 +64,8 @@ public class TableToExcel {
 	 * @param cisloExportu èíslo exportu (èíslo šablony, kterou použijeme pro soubor xls)
 	 * @throws Exception vyhodí chybu, pokud nìco nesouhlasí
 	 */
-	public static void exportToExcelPlanovani(JFrame hlavniOkno, TableModel model, String nadpisExt, String name) throws Exception{
-		
+	public static void exportToExcelNaSirku(JFrame hlavniOkno, TableModel model, String nadpisExt, String name, int cisloExportu) throws Exception{
+		new TableToExcel(hlavniOkno, model, nadpisExt, name, cisloExportu, false);
 	}
 	
 	/**
@@ -74,11 +76,12 @@ public class TableToExcel {
 	 * @param nadpisExt rozšíøení nadpisu v tisk (obvykle datum)
 	 * @param name jméno souboru bez koncovky
 	 * @param cisloExportu èíslo exportu (èíslo šablony, kterou použijeme pro soubor xls)
+	 * @param isNaVysku zda je tisk na výšku nebo šíøku. Výšku = <code>true</code>
 	 * @throws Exception vyhodí chybu, pokud nìco nesouhlasí
 	 */
-	public TableToExcel(JFrame hlavniOkno, TableModel model,String nadpisExt, String name, int cisloExportu) throws Exception{
+	public TableToExcel(JFrame hlavniOkno, TableModel model,String nadpisExt, String name, int cisloExportu, boolean isNaVysku) throws Exception{
 		this.hlavniOkno = hlavniOkno;
-		this.export((QueryTableModel) model, nadpisExt, name, cisloExportu);
+		this.export((QueryTableModel) model, nadpisExt, name, cisloExportu, isNaVysku);
 	}
 	
 	/**
@@ -89,7 +92,7 @@ public class TableToExcel {
 	 * @param cisloExportu druh vypisu, podle kterého pøizpùsobíme .xls soubor
 	 * @throws Exception 
 	 */
-	private void export(QueryTableModel model, String nadpisExt, String name, int cisloExportu) throws Exception{
+	private void export(QueryTableModel model, String nadpisExt, String name, int cisloExportu, boolean isNaVysku) throws Exception{
 		HSSFWorkbook wb = new HSSFWorkbook();
 		String [] atr = this.getAtributes(cisloExportu);
 		HSSFSheet sheet = wb.createSheet(atr[0]);
@@ -99,6 +102,9 @@ public class TableToExcel {
 		header.setCenter(HSSFHeader.font("Stencil-Normal", "bold")+ HSSFHeader.fontSize((short) 14)+ atr[1] + nadpisExt);// + nadpisExt);
 		
 		sheet.getPrintSetup().setPaperSize(PrintSetup.A4_PAPERSIZE);
+
+		sheet.getPrintSetup().setLandscape(!isNaVysku);
+		
 		
 		//number of pages
 		Footer footer = sheet.getFooter();
@@ -136,7 +142,7 @@ public class TableToExcel {
 			wb.write(fileOut);
 			wb.close();
 			fileOut.close();
-			JOptionPane.showMessageDialog(hlavniOkno, "Excel soubor "+name+".xls vytvoøen.");
+			JOptionPane.showMessageDialog(hlavniOkno, "Excel soubor "+atr[2].substring(2, atr[2].length())+"/"+name+".xls vytvoøen.");
 		} catch (FileNotFoundException e) {
 			JOptionPane.showMessageDialog(hlavniOkno, "Máte otevøený soubor, do kterého se zapisuje. Zavøete jej prosím");
 			wb.close();
@@ -169,9 +175,12 @@ public class TableToExcel {
 		if(model.getRowCount() > 0){
 			isNumber = new boolean [model.getColumnCount()-1];
 			for(int j = 0; j < model.getColumnCount() -1 ; j++){ //mam totiž jeden sloupec navic aby se mi srovnali tabulky viz QuerytableModel
+				String tmp = model.getValueAt(0, j);
 				try {
-					Double.parseDouble((model.getValueAt(0, j)));
-					isNumber[j] = true;
+					if(tmp != null){
+						Double.parseDouble((tmp));
+						isNumber[j] = true;
+					}
 				} catch (NumberFormatException nfe) {
 					isNumber[j] = false;
 				}
@@ -250,7 +259,7 @@ public class TableToExcel {
 			atr[0] = "Základni licí plán";atr[1] = "Základni licí plán pro týden: ";atr[2] = "./lici_plany";
 			break;
 		case TableToExcel.liciPlanPlanovaci:
-			atr[0] = "Výpis skladu ke dnešnímu dni";atr[1] = "Seznam kusù na skladì ke dni ";atr[2] = "./lici_plany";
+			atr[0] = "Výpis skladu ke dnešnímu dni";atr[1] = "Licí plán pro týden: ";atr[2] = "./lici_plany";
 			break;
 		}
 		return atr;		
