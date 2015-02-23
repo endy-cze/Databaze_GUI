@@ -406,6 +406,10 @@ public class ParametryFiltr extends JPanel {
 			this.showNothing();
 			prevodDoPdf.setVisible(true);
 			break;
+		case 12: //12.	Výpis zmetku za období
+			this.showOdDo();
+			prevodDoPdf.setVisible(true);
+			break;
 		default: JOptionPane.showMessageDialog(hlavniOkno, "Spatny vypis");
 			break;
 		}

@@ -269,6 +269,9 @@ public class HledejListener implements ActionListener, MouseListener {
 			case 11:
 				this.vypisSkladuKeDnesnimuDni(isVypis, i);
 				break;
+			case 12:
+				this.vypisZmetky(isVypis, i);
+				break;
 			case TableToExcel.liciPlanZakl:
 				zaklLiciPlan(isVypis, TableToExcel.liciPlanZakl);
 				break;
@@ -582,6 +585,23 @@ public class HledejListener implements ActionListener, MouseListener {
 		}  else {
 			TableModel mod = table.getModel();
 			TableToExcel.exportToExcelNaVysku(hlavniOkno, mod, sdf.format(datumPoslVolaniMetody),cisloVypisu+". "+ "Vypis_skladu", cisloVypisu);
+		}
+	}
+	
+	private void vypisZmetky(boolean isVypis, int cisloVypisu) throws Exception{
+		if(isVypis){
+			Date od = get1Date(), do_ = get2Date();
+			ResultSet rs = sql.vypisZmetky(od, do_);
+			if(rs != null){
+				QueryTableModel tm = new QueryTableModel(rs);
+				table.setModel(tm);
+				columAdjuster.adjustColumns();
+				rs.close();
+			}
+		}  else {
+			TableModel mod = table.getModel();
+			String datumy = sdf.format(lastUsedDate1)+" do "+ sdf.format(lastUsedDate2);
+			TableToExcel.exportToExcelNaSirku(hlavniOkno, mod, datumy, cisloVypisu+". "+"Vypis_zmetky", cisloVypisu);
 		}
 	}
 	

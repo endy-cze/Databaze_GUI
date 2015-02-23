@@ -35,8 +35,8 @@ import sablony.tabulka.QueryTableModel;
  *
  */
 public class TableToExcel {
-	public final static int liciPlanZakl = 15;
-	public final static int liciPlanPlanovaci = 16;
+	public final static int liciPlanZakl = 21;
+	public final static int liciPlanPlanovaci = 22;
 	private JFrame hlavniOkno;
 	
 	
@@ -217,8 +217,12 @@ public class TableToExcel {
 	 * @return String [] o 3 prvcích nikdy <code>null</code>
 	 */
 	private String [] getAtributes(int cisloExportu){
-		String [] atr = {"prazdnyatr","prazdnyatr","prazdnyatr"};
-		switch(cisloExportu){
+		String [] atr = {"prazdnyatr1","prazdnyatr2","prazdnyatr3"};
+		/**
+		 * Kvuli tomu aby jmena souboru mìli èisla od 1 .. n a ne od 0 tak zvìtším i o 1
+		 * viz metoda vypisyAndTisk(.,.) v HledejListener.java
+		 */
+		switch(cisloExportu - 1){
 		case 0:
 			atr[0] = "Stav neuzavøených zakázek";atr[1] = "Stav neuzavøených zakázek ke dni ";atr[2] = "./vypisy";
 			break;
@@ -254,6 +258,9 @@ public class TableToExcel {
 			break;
 		case 11:
 			atr[0] = "Výpis skladu ke dnešnímu dni";atr[1] = "Seznam kusù na skladì ke dni ";atr[2] = "./vypisy";
+			break;
+		case 12:
+			atr[0] = "Výpis zmetkù za období";atr[1] = "Výpis zmetkù od ";atr[2] = "./vypisy";
 			break;
 		case TableToExcel.liciPlanZakl:
 			atr[0] = "Základni licí plán";atr[1] = "Základni licí plán pro týden: ";atr[2] = "./lici_plany";
