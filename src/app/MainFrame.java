@@ -229,11 +229,15 @@ public class MainFrame extends JFrame {
 		
 		i = 7;
 		String [] jmena7 = {"Smazat z\u00E1kazn\u00EDka", "Smazat model", "Smazat zak\u00E1zku"};
-		sidePopupMenulist[i] = new MyPopUp(jmena7, sidePopupMenuItems, i, sklad);		
+		sidePopupMenulist[i] = new MyPopUp(jmena7, sidePopupMenuItems, i, sklad);
+		
+		i = 8;
+		String [] jmena8 = {"Záloha databáze"};
+		sidePopupMenulist[i] = new MyPopUp(jmena8, sidePopupMenuItems, i, sklad);
 	}
 	
 	public void initJButtons(){
-		sideListButton = new MyJButton [8];
+		sideListButton = new MyJButton [9];
 		sideListButton[0] = new MyJButton("Nov\u00E1 zak\u00E1zka",10,1, sklad);
 		sideListButton[1] = new MyJButton("Pl\u00E1nov\u00E1n\u00ED a prohl\u00ED\u017Een\u00ED",10,1, sklad);	
 		sideListButton[2] = new MyJButton("Zad\u00E1v\u00E1n\u00ED a \u00FAprava odlitk\u016F", 10, 1, sklad);
@@ -242,6 +246,7 @@ public class MainFrame extends JFrame {
 		sideListButton[5] = new MyJButton("\u00DAprava zak\u00E1zky",10,1, sklad);
 		sideListButton[6] = new MyJButton("Pøidat vady nebo viníky", 10, 1, sklad);
 		sideListButton[7] = new MyJButton("Smazat zak\u00E1zku", 10, 1, sklad);
+		sideListButton[8] = new MyJButton("Záloha databáze", 10, 1, sklad);
 		
 		/**
 		 * Zatim necham tlaèitko smazat neviditelné, protože není implementováno

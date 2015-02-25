@@ -53,7 +53,8 @@ public class SkladOdkazu {
 				"VypisZpozdeneVyroby", "InventuraRozpracVyroby", "VypisSkladuKeDnesnimuDni", "VypisZmetkuZaObdobi"},
 			{"UpravaZakaznika", "UpravaModelu", "UpravaZakazky"},
 			{"Pøidat viníky", "Pøidat druhy vad"},
-			{"SmazatZakaznika", "SmazatModel", "SmazatZakazku",}
+			{"SmazatZakaznika", "SmazatModel", "SmazatZakazku"},
+			{"ZalohaDB"}
 	};
 
 	// hlavni okno

@@ -191,6 +191,7 @@ public class TableToExcel {
 			row = sheet.createRow(i);
 			for(int j = 0; j < model.getColumnCount() -1 ; j++){ //mam totiž jeden sloupec navic aby se mi srovnali tabulky viz QuerytableModel
 				cell = row.createCell(j);
+				//cell.getCellStyle().setWrapText(true);
 				if(isNumber[j]){
 					if(model.getValueAt(i-1, j).length() > 0){
 						cell.setCellValue(Double.parseDouble((model.getValueAt(i-1, j))));

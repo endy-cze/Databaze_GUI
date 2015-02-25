@@ -111,6 +111,9 @@ public class MainActionMenuItemListener implements ActionListener {
 			case 7:
 				index7(j);
 				break;
+			case 8:
+				index8(j);
+				break;
 			default:
 				System.out.println("Nothing hapend, MainActionListener 115");
 				throw new Exception("Jsou spatne naindexovany okna. Mas vic sidebutonu. MainActionListener 115 ");
@@ -310,6 +313,17 @@ public class MainActionMenuItemListener implements ActionListener {
 		case 2:
 			tmp = (PromOknoNovyZakaznikAndSearch) promOkna[0];
 			tmp.setVyhledejZakazku();
+			break;
+		default: JOptionPane.showMessageDialog(hlavniOkno, "Nìco je špatnì v MainActionMenuItemListener, index7()");	
+			break;
+		}
+	}
+	
+	private void index8(int j){
+		switch(j){
+		case 0:
+			tmp = (PromOknoNovyZakaznikAndSearch) promOkna[0];
+			tmp.setZalohaDB();
 			break;
 		default: JOptionPane.showMessageDialog(hlavniOkno, "Nìco je špatnì v MainActionMenuItemListener, index7()");	
 			break;

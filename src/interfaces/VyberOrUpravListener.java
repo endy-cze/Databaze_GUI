@@ -110,19 +110,23 @@ public class VyberOrUpravListener implements ActionListener {
 			}
 			if(stop)break;
 		}
-		int selectedRow = table.getSelectedRow();
-		if(selectedRow == -1 ){
-			JOptionPane.showMessageDialog(hlavniOkno, "Vyberte nìjakého zákazníka z tabulky");
-			return;
+		if(i != 8){ //pro zaloha DB nemužu z tabulky nic vybrat a ani nepotøebuju ID objektu
+			int selectedRow = table.getSelectedRow();
+			if (selectedRow == -1) {
+				JOptionPane.showMessageDialog(hlavniOkno, "Vyberte nìjakého zákazníka z tabulky");
+				return;
+			}
+
+			// pøedpoklad že ID je vždy na 1 místì
+			String pom = (String) this.table.getValueAt(selectedRow, 0);
+			try {
+				idVybranehoObjektu = Integer.parseInt(pom);
+			} catch (NumberFormatException e) {
+				JOptionPane.showMessageDialog(hlavniOkno, "Špatná tabulka");
+				return;
+			}
 		}
 		
-		String pom = (String) this.table.getValueAt(selectedRow, 0);
-		try{
-			idVybranehoObjektu = Integer.parseInt(pom);
-		}catch(NumberFormatException e){
-			JOptionPane.showMessageDialog(hlavniOkno, "Špatná tabulka");
-			return;
-		}
 		
 		try {
 			switch (i) {
@@ -143,6 +147,10 @@ public class VyberOrUpravListener implements ActionListener {
 				break;
 			case 7:
 				index7(j);
+				break;
+			case 8: //zaloha DB
+				index8(j);
+				break;
 			}
 		} catch (Exception e) {
 			if(e.getLocalizedMessage() != null){
@@ -321,10 +329,19 @@ public class VyberOrUpravListener implements ActionListener {
 	}
 	
 	/** 
-	 * Obsluha výpisù
+	 * Obsluha smazani
 	 * @param j teoreticky by mìlo bejt rozpetí od 0 do 11
 	 */
 	private void index7(int j) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	/**
+	 * Záloha databáze
+	 * @param j index, ktery popup menu se dìla (obnova nebo zaloha, vìtšinou zaloha)
+	 */
+	private void index8(int j) {
 		// TODO Auto-generated method stub
 		
 	}

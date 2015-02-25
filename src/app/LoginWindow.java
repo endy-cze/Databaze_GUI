@@ -82,7 +82,7 @@ public class LoginWindow extends JFrame implements KeyListener {
 			}
 		});
 	}
-
+	
 	/**
 	 * Vytvoøí pøihlašovací okno
 	 */

@@ -110,8 +110,11 @@ public class PromOknoNovyZakaznikAndSearch extends JPanel implements NastavOkno 
 	private JLabel idZakaznika_1;
 	private JLabel pridatZakaznikaLabel;
 	private JLabel jmenoZakaznikaPridejLabel;
+	private JPanel jpanelFitr;
 	
 	public void nastavOkno(int i, int j){
+		jpanelFitr.setVisible(true);
+		table.setVisible(true);
 		if(i == 2 && j == 3){
 			i = 5;
 			j = 1;
@@ -128,6 +131,9 @@ public class PromOknoNovyZakaznikAndSearch extends JPanel implements NastavOkno 
 		}
 		if(i == 7){ // 7 = smazani zakazky neni implemetovano
 			setVisibleProhlizeny();
+		}
+		if(i == 8){ // zaloha DB
+			setVisibleVyhledej();
 		}
 	}
 	
@@ -245,17 +251,17 @@ public class PromOknoNovyZakaznikAndSearch extends JPanel implements NastavOkno 
 
 	public void setVyhledejUpravZakaznika(){
 		this.setVyhledejZakaznika();
-		vyberUprav.setText("Upravit vybran\u00E9ho z\u00E1kazn\u00EDka");
+		vyberUprav.setText("Upravit z\u00E1kazn\u00EDka");
 	}
 
 	public void setVyhledejUpravModel(){
 		this.setVyhledejModel();
-		vyberUprav.setText("Upravit vybran\u00FD model");		
+		vyberUprav.setText("Upravit model");		
 	}
 
 	public void setVyhledejUpravZakazku(){
 		this.setVyhledejZakazku();
-		vyberUprav.setText("Upravit vybranou zak\u00E1zku");
+		vyberUprav.setText("Upravit zak\u00E1zku");
 	}
 	
 	public void setUpravZakaznika(String idZakaznika,String jmeno){
@@ -280,6 +286,13 @@ public class PromOknoNovyZakaznikAndSearch extends JPanel implements NastavOkno 
 	
 	public void setZadejVycistenyKus(){
 		this.setVyhledejZakazku();
+	}
+	
+	public void setZalohaDB(){
+		this.setVyhledejZakazku();
+		vyberUprav.setText("Zálohovat databázi");
+		jpanelFitr.setVisible(false);
+		table.setVisible(false);
 	}
 	
 	public void addListeners(){
@@ -369,16 +382,16 @@ public class PromOknoNovyZakaznikAndSearch extends JPanel implements NastavOkno 
 		);
 		idZakaznikaPanel.setLayout(gl_idZakaznikaPanel);
 		
-		JPanel panelFitr = new JPanel();
-		panelFitr.setMaximumSize(new Dimension(32767, 150));
-		panelFitr.setBackground(barvy[11]);
-		obal.add(panelFitr);
-		panelFitr.setLayout(new BorderLayout(0, 0));
+		jpanelFitr = new JPanel();
+		jpanelFitr.setMaximumSize(new Dimension(32767, 150));
+		jpanelFitr.setBackground(barvy[11]);
+		obal.add(jpanelFitr);
+		jpanelFitr.setLayout(new BorderLayout(0, 0));
 		
 		JPanel panel = new JPanel();
 		panel.setPreferredSize(new Dimension(150, 22));
 		panel.setBackground(barvy[0]);
-		panelFitr.add(panel, BorderLayout.WEST);
+		jpanelFitr.add(panel, BorderLayout.WEST);
 		GridBagLayout gbl_panel = new GridBagLayout();
 		gbl_panel.columnWidths = new int[] {30, 50, 10};
 		gbl_panel.columnWeights = new double[]{0.0};
@@ -493,7 +506,7 @@ public class PromOknoNovyZakaznikAndSearch extends JPanel implements NastavOkno 
 		sklad.setPromOknoNovyZakaznikAndSearchColumAdjuster(pom);
 
 		panelFiltr = new ParametryFiltr(this.sklad, table);
-		panelFitr.add(panelFiltr, BorderLayout.SOUTH);
+		jpanelFitr.add(panelFiltr, BorderLayout.SOUTH);
 				
 				
 		
