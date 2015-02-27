@@ -61,7 +61,8 @@ public class SQLStor {
 			{"{CALL pomdb.vypisOdlituVKgKcOdDo(?,?)}", "{CALL pomdb.vypisZpozdeneVyroby(?)}", "{CALL pomdb.vypisDleTerminuExpediceCisloTydne(?,?)}", "{CALL pomdb.vypisPolozekSOdhadHmot()}", "{CALL pomdb.vypisMzdySlevacu(?)}",
 				"{CALL pomdb.vypisOdlitychKusuOdDo(?,?)}", "{CALL pomdb.vypisVycistenychKusuOdDo(?,?)}", "{CALL pomdb.vypisRozpracovaneVyroby()}", "{CALL pomdb.vypisExpedovanychKusuOdDo(?,?)}", "{CALL pomdb.vypisKusuNaSkladu()}",
 				"{CALL pomdb.vypisStavNeuzavrenychZakazek(?,?,?,?,?,?,?)}", "{CALL pomdb.vypisDenniOdlitychKusu(?)}", "{CALL pomdb.vypisZmetky(?,?)}"},
-			{"{CALL pomdb.liciPlanZakl(?,?,?)}", "{CALL pomdb.liciPlanPlanovaci(?,?,?)}", "{CALL pomdb.vyberDilciTerminy(?)}", "{CALL pomdb.vyberDilciTerminySeJmeny(?)}"}
+			{"{CALL pomdb.liciPlanZakl(?,?,?)}", "{CALL pomdb.liciPlanPlanovaci(?,?,?)}", "{CALL pomdb.vyberDilciTerminy(?)}", "{CALL pomdb.vyberDilciTerminySeJmeny(?)}"},
+			{"{CALL pomdb.zalohaDatabaze()}"}
 	};
 	/**
 	 * Prikazy pro vybrani viniku a vad 
@@ -1720,6 +1721,18 @@ public class SQLStor {
 			}
 		}
 		return true;
+	}
+	
+	public Statement zalohaDB() throws SQLException{
+		int i = 7, j = 0;
+		if(cst[i][j] == null){
+			cst[i][j] = conn.prepareCall(sqlPrikazy[i][j]);
+			naposledyPouzito[i][j] = new Date();
+		}
+		c = cst[i][j];
+		
+		c.execute();
+		return c;
 	}
 	
 	

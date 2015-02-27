@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.concurrent.ExecutionException;
 
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -11,6 +12,7 @@ import javax.swing.JPanel;
 import app.ExpediceZmetek;
 import app.MainFrame;
 import app.Planovani;
+import app.ProgresBarFrame;
 import app.PromOknoNovaZakazka;
 import app.PromOknoNovyModel;
 import app.PromOknoNovyZakaznikAndSearch;
@@ -18,6 +20,7 @@ import sablony.errorwin.ExceptionWin;
 import sablony.tabulka.ColorCellTable;
 import sqlstorage.SQLStor;
 import storage.SkladOdkazu;
+import thread.ZalohujObnovDB;
 
 /**
  * Listener pro Vyber nebo uprav v PromOknoNovyZakaznikAndSearch (ne ten button ve Filtru ale ten druhy)
@@ -340,10 +343,17 @@ public class VyberOrUpravListener implements ActionListener {
 	/**
 	 * Záloha databáze
 	 * @param j index, ktery popup menu se dìla (obnova nebo zaloha, vìtšinou zaloha)
+	 * @throws ExecutionException 
+	 * @throws InterruptedException 
 	 */
-	private void index8(int j) {
+	private void index8(int j) throws InterruptedException, ExecutionException {
 		// TODO Auto-generated method stub
+		ProgresBarFrame bar = sklad.getBar();
+		bar.setZalohaDB();
+		bar.setVisible(true);
+		ZalohujObnovDB zaloha = new ZalohujObnovDB(this.sklad, ZalohujObnovDB.ZALOHUJ);
+		zaloha.execute();
+		
 		
 	}
-
 }

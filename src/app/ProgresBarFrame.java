@@ -125,6 +125,17 @@ public class ProgresBarFrame extends JFrame {
 		setPripojuji();
 	}
 	
+	public void setZalohaDB(){
+		lblNewJgoodiesLabel.setText("Zálohuji databázi");
+		lblNewLabel.setText("Zálohuji databázi, mìjte chvilku strpení");
+		dbHotovo.setVisible(false);
+		apHotovo.setVisible(false);
+		dbProgressBar.setIndeterminate(true);
+		apProgresBar.setVisible(true);
+		apProgresBar.setIndeterminate(true);
+		apProgresBar.setStringPainted(false);
+	}
+	
 	public void setPripojuji(){
 		lblNewLabel.setVisible(true);
 		lblNewJgoodiesLabel.setVisible(false);

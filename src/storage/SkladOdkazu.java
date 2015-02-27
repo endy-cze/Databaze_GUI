@@ -29,6 +29,7 @@ import sqlstorage.SQLStor;
 import app.ExpediceZmetek;
 import app.MainFrame;
 import app.Planovani;
+import app.ProgresBarFrame;
 
 /**
  * V teto tride se pouze ukladaji odkazy, jedine co se tu vytvari jsou texty ActionCommand pro ItemMenu (v postranim menu)
@@ -193,8 +194,19 @@ public class SkladOdkazu {
 	/**
 	 * SimpleDateFormat ve formatu dd.MM.yyyy
 	 */
-	private SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
+	private final SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
 	
+	/**
+	 * SimpleDateFormat ve formatu dd_MM_yyyy
+	 */
+	private final SimpleDateFormat sdf2 = new SimpleDateFormat("dd_MM_yyyy");
+	
+	private ProgresBarFrame bar = new ProgresBarFrame();
+
+	public ProgresBarFrame getBar() {
+		return bar;
+	}
+
 	/**
 	 * V teto tride se pouze ukladaji odkazy, jedine co se tu vytvari jsou texty ActionCommand pro ItemMenu (v postranim menu)
 	 */
@@ -504,7 +516,6 @@ public class SkladOdkazu {
 		this.vadyVinici = vadyVinici;
 	}
 
-
 	public MyJButonnListener getMyJButonnListener() {
 		return myJButonnListener;
 	}
@@ -517,5 +528,7 @@ public class SkladOdkazu {
 		this.idZakaznikaText = idZakaznikaText;
 	} 
 	
-	
+	public SimpleDateFormat getSdf2() {
+		return sdf2;
+	}	
 }

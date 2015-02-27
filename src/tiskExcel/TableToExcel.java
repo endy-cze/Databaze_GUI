@@ -126,6 +126,7 @@ public class TableToExcel {
 		
 		// Write it into the output to a file
 		
+		//create folder
 		File f = new File(atr[2]);
 		try {
 			if (f.mkdir()) {
@@ -134,7 +135,7 @@ public class TableToExcel {
 				//System.out.println("Directory is not created");
 			}
 		} catch (Exception e) {
-			JOptionPane.showMessageDialog(hlavniOkno, "Jméno zákazníka je prázdné");
+			JOptionPane.showMessageDialog(hlavniOkno, "Složka nebyla vytvoøena");
 		}
 		
 		try {
