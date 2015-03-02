@@ -175,30 +175,41 @@ public class TableToExcel {
 		boolean [] isNumber = null;
 		if(model.getRowCount() > 0){
 			isNumber = new boolean [model.getColumnCount()-1];
-			for(int j = 0; j < model.getColumnCount() -1 ; j++){ //mam totiž jeden sloupec navic aby se mi srovnali tabulky viz QuerytableModel
-				String tmp = model.getValueAt(0, j);
-				try {
-					if(tmp != null){
-						Double.parseDouble((tmp));
-						isNumber[j] = true;
+			for (int m = 0; m < 2; m++) {
+				for (int j = 0; j < model.getColumnCount() - 1; j++) { // mam totiž jeden sloupec navic aby se mi srovnali tabulky viz QuerytableModel
+					String tmp = model.getValueAt(m, j);
+					try {
+						if (tmp != null) {
+							Double.parseDouble((tmp));
+							if(m > 0){
+								isNumber[j] = isNumber[j] && true; // ten and je jen pro nazornost
+							}else {
+								isNumber[j] = true;
+							}
+						}
+					} catch (NumberFormatException nfe) {
+						isNumber[j] = false;
 					}
-				} catch (NumberFormatException nfe) {
-					isNumber[j] = false;
 				}
 			}
 		}
 		//insert data
-		for(int i = 1; i < model.getRowCount() + 1; i++){
+		for(int i = 1; i <= model.getRowCount(); i++){
 			row = sheet.createRow(i);
 			for(int j = 0; j < model.getColumnCount() -1 ; j++){ //mam totiž jeden sloupec navic aby se mi srovnali tabulky viz QuerytableModel
 				cell = row.createCell(j);
 				//cell.getCellStyle().setWrapText(true);
-				if(isNumber[j]){
-					if(model.getValueAt(i-1, j).length() > 0){
-						cell.setCellValue(Double.parseDouble((model.getValueAt(i-1, j))));
+				try {
+					if (isNumber[j]) {
+						if (model.getValueAt(i - 1, j).length() > 0) {
+							cell.setCellValue(Double.parseDouble((model.getValueAt(i - 1, j))));
+						}
+					} else {
+						cell.setCellValue(model.getValueAt(i - 1, j));
 					}
-				} else {
-					cell.setCellValue(model.getValueAt(i-1, j));
+				} catch (NumberFormatException | NullPointerException ex ) {
+					isNumber[j] = false;
+					cell.setCellValue(model.getValueAt(i - 1, j));
 				}
 			}
 		}
@@ -224,7 +235,7 @@ public class TableToExcel {
 		 * Kvuli tomu aby jmena souboru mìli èisla od 1 .. n a ne od 0 tak zvìtším i o 1
 		 * viz metoda vypisyAndTisk(.,.) v HledejListener.java
 		 */
-		switch(cisloExportu - 1){
+		switch(cisloExportu){
 		case 0:
 			atr[0] = "Stav neuzavøených zakázek";atr[1] = "Stav neuzavøených zakázek ke dni ";atr[2] = "./vypisy";
 			break;
