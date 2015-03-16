@@ -32,6 +32,17 @@ import java.awt.Toolkit;
 
 import javax.swing.JTextField;
 
+/**
+ * Licence:
+ * Super csv Apache License Version 2.0,
+ * Jcalendar GNU Lesser General Public License http://www.gnu.org/licenses/lgpl.html
+ * mysql GNU GPL v2
+ * Opencsv Apache License V2.0
+ * POI Apache License, Version 2.0 (current)
+ * java nìjaka license? :D
+ * @author Ondøej Havlíèek
+ *
+ */
 public class LoginWindow extends JFrame implements KeyListener {
 	
 	/**

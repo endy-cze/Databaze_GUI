@@ -329,7 +329,10 @@ public class MainFrame extends JFrame {
 		setIconImage(Toolkit.getDefaultToolkit().getImage(MainFrame.class.getResource("/app/dbSlevarnaIco.png")));
 		setMinimumSize(new Dimension(1276, 668));
 		this.sklad = new SkladOdkazu(conn, barvy, fonty);
-		sklad.setHlavniOkno(this);	
+		sklad.setHlavniOkno(this);
+		
+		Odhlasit odhlasClass = new Odhlasit(sklad);
+		this.addWindowListener(odhlasClass);
 		
 		
 		progresBar.setValue(10);
@@ -374,7 +377,7 @@ public class MainFrame extends JFrame {
 		odhlasit.setBorder(new EmptyBorder(4, 9, 4, 9));
 		odhlasit.setForeground(barvy[3]);
 		odhlasit.setContentAreaFilled(false);
-		odhlasit.addActionListener(new Odhlasit(sklad));
+		odhlasit.addActionListener(odhlasClass);
 		odhlasit.setFont(fonty[0]);
 		
 		sklad.setOdhlasit(odhlasit);

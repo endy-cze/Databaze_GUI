@@ -2,6 +2,8 @@ package interfaces;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.sql.SQLException;
@@ -12,29 +14,66 @@ import javax.swing.JPanel;
 import sablony.errorwin.ExceptionWin;
 import storage.SkladOdkazu;
 
-public class Odhlasit implements ActionListener {
+public class Odhlasit implements ActionListener, WindowListener {
 	private final String odhlasitCom = "OdhlasitComand";
 	private SkladOdkazu sklad;
 	
 	public Odhlasit(SkladOdkazu s){
 		this.sklad = s;
 	}
+	
+	public void odhlasit(){
+		try {
+			sklad.getSql().closeConnections();
+			System.out.println("Vypínám všechna pøipojení");
+			sklad.getHlavniOkno().odhlasit();
+			JOptionPane.showMessageDialog(sklad.getHlavniOkno(), "Úspìšnì jste se odhlásili, ukonèuji aplikaci");
+			System.exit(0);
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			ExceptionWin win = new ExceptionWin(e1, true);
+		}
+	}
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if(e.getActionCommand().equalsIgnoreCase(odhlasitCom)){
-			try {
-				sklad.getSql().closeConnections();
-				System.out.println("Vypínám všechna pøipojení");
-				sklad.getHlavniOkno().odhlasit();
-				JOptionPane.showMessageDialog(sklad.getHlavniOkno(), "Úspìšnì jste se odhlásili, ukonèuji aplikaci");
-				System.exit(0);
-			} catch (SQLException e1) {
-				// TODO Auto-generated catch block
-				ExceptionWin win = new ExceptionWin(e1, true);
-			}
+			odhlasit();
 		} else {
 			JOptionPane.showMessageDialog(sklad.getHlavniOkno(), "Pøi odhlašování se stala nìjaká chyba nebo jsem použil špatný listener, ukonèuji aplikaci");
 			System.exit(0);
 		}
+	}
+	@Override
+	public void windowOpened(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void windowClosing(WindowEvent e) {
+
+	}
+	@Override
+	public void windowClosed(WindowEvent e) {
+		odhlasit();		
+	}
+	@Override
+	public void windowIconified(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void windowDeiconified(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void windowActivated(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void windowDeactivated(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
 	}
 }
