@@ -1,8 +1,8 @@
 package app;
 
-import interfaces.MainActionMenuItemListener;
-import interfaces.MainSideJButtonListener;
-import interfaces.Odhlasit;
+import iListeners.MainActionMenuItemListener;
+import iListeners.MainSideJButtonListener;
+import iListeners.Odhlasit;
 
 import java.awt.ComponentOrientation;
 import java.awt.Cursor;

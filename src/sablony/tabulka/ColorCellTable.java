@@ -1,6 +1,6 @@
 package sablony.tabulka;
 
-import interfaces.MyTableListener;
+import iListeners.MyTableListener;
 
 import java.awt.Color;
 import java.awt.Component;

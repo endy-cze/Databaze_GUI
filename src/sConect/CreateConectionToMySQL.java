@@ -1,4 +1,4 @@
-package security.conect;
+package sConect;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -44,7 +44,7 @@ public class CreateConectionToMySQL implements ActionListener {
 	}
 	
 	/**
-	 * Metoda vracející odkaz na vytvoøenou aplikaci. Spuští se zde thread {@link security.conect.CreateConectionToMySQL.Task Task}
+	 * Metoda vracející odkaz na vytvoøenou aplikaci. Spuští se zde thread {@link sConect.CreateConectionToMySQL.Task Task}
 	 * @param userName uživatelské jméno pro pøipojení do databáze
 	 * @param pass heslo v char [] field.
 	 * @return

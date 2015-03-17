@@ -1,9 +1,9 @@
 package storage;
 
-import interfaces.MainActionMenuItemListener;
-import interfaces.MainSideJButtonListener;
-import interfaces.MyJButonnListener;
-import interfaces.PridejZakaznikaList;
+import iListeners.MainActionMenuItemListener;
+import iListeners.MainSideJButtonListener;
+import iListeners.MyJButonnListener;
+import iListeners.PridejZakaznikaList;
 
 import java.awt.Color;
 import java.awt.Component;

@@ -19,8 +19,8 @@ import javax.swing.GroupLayout.Alignment;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 
+import sConect.CreateAppAndConnection;
 import sablony.errorwin.ExceptionWin;
-import security2.CreateAppAndConnection;
 
 import javax.swing.JPasswordField;
 

@@ -1,6 +1,6 @@
 package app;
 
-import interfaces.PridatZakazkuButtonListener;
+import iListeners.PridatZakazkuButtonListener;
 
 import javax.swing.JPanel;
 

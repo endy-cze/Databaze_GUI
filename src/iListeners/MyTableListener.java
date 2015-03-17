@@ -1,4 +1,4 @@
-package interfaces;
+package iListeners;
 
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;

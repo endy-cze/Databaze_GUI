@@ -1,6 +1,6 @@
 package app;
 
-import interfaces.VyberOrUpravListener;
+import iListeners.VyberOrUpravListener;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -30,6 +30,8 @@ import sablony.ParametryFiltr;
 import sablony.tabulka.ColorCellTable;
 import sablony.tabulka.TableColumnAdjuster;
 import storage.SkladOdkazu;
+
+
 
 
 

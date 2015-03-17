@@ -1,9 +1,8 @@
-package security2;
+package sConect;
 import javax.swing.JFrame;
 
 import app.MainFrame;
 import app.ProgresBarFrame;
-import security.conect.CreateConectionToMySQL;
 
 public class CreateAppAndConnection {
 	private CreateConectionToMySQL connToMysql;

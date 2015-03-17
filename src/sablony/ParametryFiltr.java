@@ -1,7 +1,7 @@
 package sablony;
 
-import interfaces.HledejListener;
-import interfaces.PanelFiltrListenerTextField;
+import iListeners.HledejListener;
+import iListeners.PanelFiltrListenerTextField;
 
 import javax.swing.JPanel;
 
