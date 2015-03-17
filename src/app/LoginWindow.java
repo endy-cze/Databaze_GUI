@@ -20,7 +20,7 @@ import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 
 import sablony.errorwin.ExceptionWin;
-import thread.PripojOverAVytvorApp;
+import security2.CreateAppAndConnection;
 
 import javax.swing.JPasswordField;
 
@@ -140,8 +140,9 @@ public class LoginWindow extends JFrame implements KeyListener {
 				
 					ProgresBarFrame barFrame = new ProgresBarFrame();
 					barFrame.setVisible(true);
-					PripojOverAVytvorApp vytvor = new PripojOverAVytvorApp(jmeno, heslo, okno, barFrame, url);
-					vytvor.execute();
+					//
+					CreateAppAndConnection over = new CreateAppAndConnection(okno, barFrame, url);
+					over.executeCreateApp(jmeno, heslo);
 				}
 			}
 		});

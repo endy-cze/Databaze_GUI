@@ -21,14 +21,18 @@ public class Odhlasit implements ActionListener, WindowListener {
 	public Odhlasit(SkladOdkazu s){
 		this.sklad = s;
 	}
-	
-	public void odhlasit(){
+	/**
+	 * 
+	 * @param i cislo do System.exit(i)
+	 */
+	public void odhlasit(int i){
 		try {
 			sklad.getSql().closeConnections();
 			System.out.println("Vypínám všechna pøipojení");
 			sklad.getHlavniOkno().odhlasit();
-			JOptionPane.showMessageDialog(sklad.getHlavniOkno(), "Úspìšnì jste se odhlásili, ukonèuji aplikaci");
-			System.exit(0);
+			//JOptionPane.showMessageDialog(sklad.getHlavniOkno(), "Úspìšnì jste se odhlásili, ukonèuji aplikaci");
+			System.gc();
+			System.exit(i);
 		} catch (SQLException e1) {
 			// TODO Auto-generated catch block
 			ExceptionWin win = new ExceptionWin(e1, true);
@@ -37,10 +41,10 @@ public class Odhlasit implements ActionListener, WindowListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if(e.getActionCommand().equalsIgnoreCase(odhlasitCom)){
-			odhlasit();
+			odhlasit(0);
 		} else {
 			JOptionPane.showMessageDialog(sklad.getHlavniOkno(), "Pøi odhlašování se stala nìjaká chyba nebo jsem použil špatný listener, ukonèuji aplikaci");
-			System.exit(0);
+			odhlasit(-1);
 		}
 	}
 	@Override
@@ -50,11 +54,11 @@ public class Odhlasit implements ActionListener, WindowListener {
 	}
 	@Override
 	public void windowClosing(WindowEvent e) {
-
+		odhlasit(0);
 	}
 	@Override
 	public void windowClosed(WindowEvent e) {
-		odhlasit();		
+
 	}
 	@Override
 	public void windowIconified(WindowEvent e) {

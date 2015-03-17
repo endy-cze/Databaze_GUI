@@ -1741,12 +1741,6 @@ public class SQLStor {
 	 * @throws SQLException
 	 */
 	public void closeConnections() throws SQLException {
-		if(conn != null){
-			conn.close();
-			conn = null;
-		}else{
-			JOptionPane.showMessageDialog(hlavniOkno, "Spojeni s databazí už bylo døíve pøerušeno");
-		}
 		for (int i = 0; i < cst.length; i++) {
 			for (int j = 0; j < cst[i].length; j++) {
 				if (cst[i][j] != null){
@@ -1754,6 +1748,12 @@ public class SQLStor {
 					cst[i][j] = null;
 				}
 			}
+		}
+		if(conn != null){
+			conn.close();
+			conn = null;
+		} else{
+			JOptionPane.showMessageDialog(hlavniOkno, "Spojeni s databazí už bylo døíve pøerušeno");
 		}
 	}
 	

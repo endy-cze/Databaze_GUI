@@ -4,7 +4,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.Arrays;
+
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
@@ -19,12 +21,11 @@ import sablony.errorwin.ExceptionWin;
  *
  */
 public class CreateConectionToMySQL implements ActionListener {
-	private final String url; // = "jdbc:mysql://localhost:3306/";
-	//private final String url; // = "jdbc:mysql://10.190.33.1:3306/";
+	private final String url;
 	private final String driver = "com.mysql.jdbc.Driver";
 	private final String spatneHeslo= "Access denied for user";
 	private final String neniPripojeni= "Communications link failure";
-	private JFrame hlavniOkno;
+	private JFrame loginWindow;
 	private ProgresBarFrame prgbarFrame;
 	private Task t;
 	private static final String cancelZprava = "java.util.concurrent.CancellationException";
@@ -37,7 +38,7 @@ public class CreateConectionToMySQL implements ActionListener {
 	 */
 	public CreateConectionToMySQL(JFrame okno, ProgresBarFrame progresBar, String url){
 		this.url = url;
-		this.hlavniOkno = okno;
+		this.loginWindow = okno;
 		prgbarFrame = progresBar;
 		prgbarFrame.addListener(this);
 	}
@@ -48,22 +49,11 @@ public class CreateConectionToMySQL implements ActionListener {
 	 * @param pass heslo v char [] field.
 	 * @return
 	 */
-	public MainFrame getMainFrame(String userName, char [] pass){
+	public void executeVytvor(String userName, char [] pass){
 		t = new Task(userName, pass);
 		t.execute();
-		MainFrame okno = null;
-		try {
-			okno = t.get();
-		} catch (Exception e) {			
-			if (cancelZprava.startsWith(e.toString())) {
-				JOptionPane.showMessageDialog(hlavniOkno, "Pøipojování pøerušeno");
-			} else {
-				ExceptionWin.showExceptionMessage(e);
-			}
-			
-		} 
-		return okno;
 	}
+	
 	
 	/**
 	 * <p>Tøída rozšiøující <a href="https://docs.oracle.com/javase/8/docs/api/javax/swing/SwingWorker.html">SwingWorker</a>,
@@ -101,20 +91,27 @@ public class CreateConectionToMySQL implements ActionListener {
         		if(e.getMessage().startsWith(spatneHeslo)){
         			prgbarFrame.setVisible(false);
         			if(!isCancelled()){
-        				JOptionPane.showMessageDialog(hlavniOkno, "\u0160patn\u00E9 heslo");
+        				JOptionPane.showMessageDialog(loginWindow, "\u0160patn\u00E9 heslo");
         			}
 				}
 				else if(e.getMessage().startsWith(neniPripojeni)) {
 					prgbarFrame.setVisible(false);
 					if(!isCancelled()){
-						JOptionPane.showMessageDialog(hlavniOkno, "Není zapnutý server (nebo špatná IP adresa serveru)");
+						JOptionPane.showMessageDialog(loginWindow, "Není zapnutý server (nebo špatná IP adresa serveru)");
 					}
 				}
 				else {
 					prgbarFrame.setVisible(false);
-					ExceptionWin win = new ExceptionWin(e);
-					win.nic();
+					ExceptionWin.showExceptionMessage(e);
 				}
+        		if(conn != null){
+        			try {
+						conn.close();
+					} catch (SQLException e1) {
+						ExceptionWin.showExceptionMessage(e1);
+					}
+        			conn = null;
+        		}
         		return null;
         	} finally{
         		password = " ";
@@ -136,6 +133,22 @@ public class CreateConectionToMySQL implements ActionListener {
         public void done() {
         	prgbarFrame.setVisible(false);
         	prgbarFrame.dispose();
+        	
+        	MainFrame okno = null;
+        	try {
+    			okno = t.get();
+    		} catch (Exception e) {			
+    			if (cancelZprava.startsWith(e.toString())) {
+    				JOptionPane.showMessageDialog(loginWindow, "Pøipojování pøerušeno");
+    			} else {
+    				ExceptionWin.showExceptionMessage(e);
+    			}
+    			
+    		}
+    		okno.setVisible(true);
+    		loginWindow.setVisible(false);
+    		loginWindow.dispose();
+        	
         }
     }
 	/**
@@ -147,7 +160,7 @@ public class CreateConectionToMySQL implements ActionListener {
 			boolean pom = t.cancel(true);
 			System.out.println("preruseno "+pom );
 			if(!pom){
-				JOptionPane.showMessageDialog(hlavniOkno, "Aplikace je již vytoøena");
+				JOptionPane.showMessageDialog(loginWindow, "Aplikace je již vytoøena");
 			}
 		}
 		
