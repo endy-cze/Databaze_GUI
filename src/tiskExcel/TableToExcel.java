@@ -38,7 +38,7 @@ public class TableToExcel {
 	public final static int liciPlanZakl = 21;
 	public final static int liciPlanPlanovaci = 22;
 	private JFrame hlavniOkno;
-	
+	private String [] columnNamesNotInt = {"Èíslo modelu", "Cislo_modelu"};
 	
 	/**
 	 * Vytvoøí .xls soubor do pøedem dané složky s jednoøádkovou hlavièkou.
@@ -172,28 +172,8 @@ public class TableToExcel {
 			cell.setCellValue(model.getColumnName(i));
 		}
 		//detect data format
-		boolean [] isNumber = null;
-		if(model.getRowCount() > 0){
-			isNumber = new boolean [model.getColumnCount()-1];
-			for (int m = 0; m < 2; m++) {
-				for (int j = 0; j < model.getColumnCount() - 1; j++) { // mam totiž jeden sloupec navic aby se mi srovnali tabulky viz QuerytableModel
-					String tmp = model.getValueAt(m, j);
-					try {
-						if (tmp != null) {
-							Double.parseDouble((tmp));
-							if(m > 0){
-								isNumber[j] = isNumber[j] && true; // ten and je jen pro nazornost
-							}else {
-								isNumber[j] = true;
-							}
-						}
-					} catch (NumberFormatException nfe) {
-						isNumber[j] = false;
-					}
-				}
-			}
-		}
-		//insert data
+		boolean [] isNumber = detectDataFormat(model); 
+		//insert data 
 		for(int i = 1; i <= model.getRowCount(); i++){
 			row = sheet.createRow(i);
 			for(int j = 0; j < model.getColumnCount() -1 ; j++){ //mam totiž jeden sloupec navic aby se mi srovnali tabulky viz QuerytableModel
@@ -283,5 +263,51 @@ public class TableToExcel {
 			break;
 		}
 		return atr;		
+	}
+	
+	/**
+	 * Detects whether column is a number or not based on column name or column value.
+	 * @param model Table with values a column names
+	 * @return boolean field with n-1 columns of the table with true or false values
+	 */
+	private boolean [] detectDataFormat(QueryTableModel model){
+		boolean [] isNumber = null;
+		if(model.getRowCount() > 0){
+			isNumber = new boolean [model.getColumnCount()-1];
+			/**
+			 * Moc se tady nechapu ale doposud to funguje tak to nebudu menit
+			 */
+			boolean exit = false;
+			for (int m = 0; m < 2; m++) { // kontroluju prvni dve radky
+				for (int j = 0; j < model.getColumnCount() - 1; j++) { // mam totiž jeden sloupec navic aby se mi srovnali tabulky viz QuerytableModel
+					String tmp = model.getValueAt(m, j);
+					try {
+						if (tmp != null) {
+							exit = false;
+							for(int i = 0; i < columnNamesNotInt.length;i++){ // zda sloupec neni nahodou povinny String a ne cislo
+								if(columnNamesNotInt[i].equalsIgnoreCase(model.getColumnName(j))){
+									isNumber[j] = false;
+									exit = true;
+									break;
+								}
+							}
+							if(exit){continue;}
+							
+							Double.parseDouble((tmp));
+							if(m > 0){
+								isNumber[j] = isNumber[j] && true; // ten and je jen pro nazornost // druhy radek tabulky
+							}else {
+								isNumber[j] = true; // prvni radek
+							}
+						} else {
+							isNumber[j] = false;
+						}
+					} catch (NumberFormatException nfe) {
+						isNumber[j] = false;
+					}
+				}
+			}
+		}
+		return isNumber;
 	}
 }
