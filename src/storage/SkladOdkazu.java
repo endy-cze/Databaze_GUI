@@ -51,7 +51,7 @@ public class SkladOdkazu {
 			{"Expedice", "LiciPlanZakladni", "LiciPlanPlanovaci"},
 			{"VypisStavNeuzavrenychZakazek","DenniVypisOdlitychKusu", "VypisVycistenychKusuZaObdobi", "MzdySlevacu", "VypisOdlitkuVKgKc",
 				"VypisOdlitychKusuOdDo", "VypisPolozekSOdhadHmot", "VypisDleTerminuExpedice", "VypisExpedice od-do",
-				"VypisZpozdeneVyroby", "InventuraRozpracVyroby", "VypisSkladuKeDnesnimuDni", "VypisZmetkuZaObdobi"},
+				"VypisZpozdeneVyroby", "InventuraRozpracVyroby", "VypisSkladuKeDnesnimuDni", "VypisZmetkuZaObdobi", "VypisVinikuVKgKc"},
 			{"UpravaZakaznika", "UpravaModelu", "UpravaZakazky"},
 			{"Pøidat viníky", "Pøidat druhy vad"},
 			{"SmazatZakaznika", "SmazatModel", "SmazatZakazku"},

@@ -255,6 +255,9 @@ public class TableToExcel {
 		case 12:
 			atr[0] = "Výpis zmetkù za období";atr[1] = "Výpis zmetkù od ";atr[2] = "./vypisy";
 			break;
+		case 13:
+			atr[0] = "Výpis viníkù za období";atr[1] = "Výpis viníkù od ";atr[2] = "./vypisy";
+			break;
 		case TableToExcel.liciPlanZakl:
 			atr[0] = "Základni licí plán";atr[1] = "Základni licí plán pro týden: ";atr[2] = "./lici_plany";
 			break;

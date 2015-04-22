@@ -155,7 +155,7 @@ public class HledejListener implements ActionListener, MouseListener {
 			else if(arg0.getActionCommand().equalsIgnoreCase("HledejKapacitniProcet")){
 				this.kapPropocet();
 			} else { //vypisy a tisk
-				System.out.println("Impementuje se "+arg0.getActionCommand());
+				//System.out.println("Impementuje se "+arg0.getActionCommand());
 				vypisyAndTisk(arg0.getActionCommand());
 			}
 		} catch (Exception e) {
@@ -267,6 +267,9 @@ public class HledejListener implements ActionListener, MouseListener {
 				break;
 			case 12:
 				this.vypisZmetky(isVypis, i);
+				break;
+			case 13:
+				this.vypisVinikyVKgKc(isVypis, i);
 				break;
 			case TableToExcel.liciPlanZakl:
 				zaklLiciPlan(isVypis, TableToExcel.liciPlanZakl);
@@ -598,6 +601,23 @@ public class HledejListener implements ActionListener, MouseListener {
 			TableModel mod = table.getModel();
 			String datumy = sdf.format(lastUsedDate1)+" do "+ sdf.format(lastUsedDate2);
 			TableToExcel.exportToExcelNaSirku(hlavniOkno, mod, datumy, (cisloVypisu+1)+". "+"Vypis_zmetky", cisloVypisu);
+		}
+	}
+	
+	private void vypisVinikyVKgKc(boolean isVypis, int cisloVypisu) throws Exception{
+		if(isVypis){
+			Date od = get1Date(), do_ = get2Date();
+			Statement st =sql.vypisVinikyVKgKc(od, do_);
+			if (st != null) {
+				QueryTableModel tm = new QueryTableModel(st);
+				table.setModel(tm);
+				columAdjuster.adjustColumns();
+				//st.close(); kvuli optimalizaci
+			}
+		}  else {
+			TableModel model = table.getModel();
+			String datumy = sdf.format(lastUsedDate1)+" do "+ sdf.format(lastUsedDate2);
+			TableToExcel.exportToExcelNaSirku(hlavniOkno, model, datumy, (cisloVypisu+1)+". "+"Vypis_zmetky", cisloVypisu);
 		}
 	}
 	

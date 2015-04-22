@@ -60,7 +60,7 @@ public class SQLStor {
 				"{CALL pomdb.planovaniRozvrhVycisteno(?,?)}", "{CALL pomdb.kapacitniPropocet(?,?)}", "{CALL pomdb.uzavriZakazku(?,?,?,?,?,?)}", "{CALL pomdb.obnovZakazku(?)}"},
 			{"{CALL pomdb.vypisOdlituVKgKcOdDo(?,?)}", "{CALL pomdb.vypisZpozdeneVyroby(?)}", "{CALL pomdb.vypisDleTerminuExpediceCisloTydne(?,?)}", "{CALL pomdb.vypisPolozekSOdhadHmot()}", "{CALL pomdb.vypisMzdySlevacu(?)}",
 				"{CALL pomdb.vypisOdlitychKusuOdDo(?,?)}", "{CALL pomdb.vypisVycistenychKusuOdDo(?,?)}", "{CALL pomdb.vypisRozpracovaneVyroby()}", "{CALL pomdb.vypisExpedovanychKusuOdDo(?,?)}", "{CALL pomdb.vypisKusuNaSkladu()}",
-				"{CALL pomdb.vypisStavNeuzavrenychZakazek(?,?,?,?,?,?,?)}", "{CALL pomdb.vypisDenniOdlitychKusu(?)}", "{CALL pomdb.vypisZmetky(?,?)}"},
+				"{CALL pomdb.vypisStavNeuzavrenychZakazek(?,?,?,?,?,?,?)}", "{CALL pomdb.vypisDenniOdlitychKusu(?)}", "{CALL pomdb.vypisZmetky(?,?)}", "{CALL pomdb.vypisVinikyVKgKc(?,?)}"},
 			{"{CALL pomdb.liciPlanZakl(?,?,?)}", "{CALL pomdb.liciPlanPlanovaci(?,?,?)}", "{CALL pomdb.vyberDilciTerminy(?)}", "{CALL pomdb.vyberDilciTerminySeJmeny(?)}"},
 			{"{CALL pomdb.zalohaDatabaze()}"}
 	};
@@ -1240,6 +1240,29 @@ public class SQLStor {
 		c.setDate("do_", pomDate);
 		rs = c.executeQuery();
 		return rs;
+	}
+	
+	public Statement vypisVinikyVKgKc(Date od, Date do_) throws SQLException{
+		if(od == null){
+			JOptionPane.showMessageDialog(hlavniOkno, "Datum od nesmí být prázdné");
+			return null;
+		}
+		if(do_ == null){
+			JOptionPane.showMessageDialog(hlavniOkno, "Datum do nesmí být prázdné");
+			return null;
+		}
+		int i = 5, j = 13;
+		if(cst[i][j] == null){
+			cst[i][j] = conn.prepareCall(sqlPrikazy[i][j]);
+			naposledyPouzito[i][j] = new Date();
+		}
+		c = cst[i][j];
+		java.sql.Date pomDate = new java.sql.Date (od.getTime());
+		c.setDate("od", pomDate);
+		pomDate = new java.sql.Date (do_.getTime());
+		c.setDate("do_", pomDate);
+		c.execute();
+		return c;
 	}
 	
 	/**

@@ -19,6 +19,12 @@ import app.PromOknoNovyModel;
 import app.PromOknoNovyZakaznikAndSearch;
 import myinterface.NastavOkno;
 
+/**
+ * Tøída, která obsluhuje údálosti vytvoøené PopUpMenu itemy v PopupMenu, které se vytvoøí
+ * pøi najetí tlaèitka na postrani menu v hlavním oknì
+ * @author Ondøej Havlíèek
+ *
+ */
 public class MainActionMenuItemListener implements ActionListener {
 	private SkladOdkazu sklad;
 	
