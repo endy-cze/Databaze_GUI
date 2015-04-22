@@ -327,12 +327,11 @@ public class HledejListener implements ActionListener, MouseListener {
 			if (poleCi != null) {
 				this.tyden = poleCi[0];
 				this.rok = poleCi[1];
-				ResultSet rs = sql.liciPlanZakl(poleCi[0], poleCi[1], formovna);
-				if (rs != null) {
-					QueryTableModel tm = new QueryTableModel(rs);
+				Statement st = sql.liciPlanZakl(poleCi[0], poleCi[1], formovna);
+				if (st != null) {
+					QueryTableModel tm = new QueryTableModel(st);
 					table.setModel(tm);
 					columAdjuster.adjustColumns();
-					rs.close();
 				}
 			}
 		} else {
@@ -349,12 +348,11 @@ public class HledejListener implements ActionListener, MouseListener {
 			if (poleCi != null) {
 				this.tyden = poleCi[0];
 				this.rok = poleCi[1];
-				ResultSet rs = sql.liciPlanovaci(poleCi[0], poleCi[1], formovna);
-				if (rs != null) {
-					QueryTableModel tm = new QueryTableModel(rs);
+				Statement st = sql.liciPlanovaci(poleCi[0], poleCi[1], formovna);
+				if (st != null) {
+					QueryTableModel tm = new QueryTableModel(st);
 					table.setModel(tm);
 					columAdjuster.adjustColumns();
-					rs.close();
 				}
 			}
 		} else {

@@ -861,7 +861,7 @@ public class SQLStor {
 		}
 	}
 	
-	public ResultSet liciPlanZakl(int cisloTydne, int rok, String formovna) throws SQLException{
+	public Statement liciPlanZakl(int cisloTydne, int rok, String formovna) throws SQLException{
 		if(cisloTydne < 1 || cisloTydne > 53){
 			JOptionPane.showMessageDialog(hlavniOkno, "Zadejte èíslo týdne musí být v rozmezí 1 - 53");
 			return null;
@@ -883,11 +883,11 @@ public class SQLStor {
 		c.setInt(1, cisloTydne);
 		c.setInt(2, rok);
 		c.setString(3,formovna);
-		rs = c.executeQuery();
-		return rs;
+		c.execute();
+		return c;
 	}
 	
-	public ResultSet liciPlanovaci(int cisloTydne, int rok, String formovna) throws SQLException{
+	public Statement liciPlanovaci(int cisloTydne, int rok, String formovna) throws SQLException{
 		if(cisloTydne < 1 || cisloTydne > 53){
 			JOptionPane.showMessageDialog(hlavniOkno, "Zadejte èíslo týdne musí být v rozmezí 1 - 53");
 			return null;
@@ -909,8 +909,8 @@ public class SQLStor {
 		c.setInt(1, cisloTydne);
 		c.setInt(2, rok);
 		c.setString(3, formovna);
-		rs = c.executeQuery();
-		return rs;
+		c.execute();
+		return c;
 	}
 	
 	public ResultSet vypisStavuNeuzavrenychZakazek(int idZakazky, String jmenoZakaznika, String cisloModelu, String nazevModelu, int idModelu, java.util.Date datumZakazky, String cisloObjednavky) throws SQLException{
