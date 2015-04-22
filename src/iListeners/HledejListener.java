@@ -99,6 +99,7 @@ public class HledejListener implements ActionListener, MouseListener {
 	private Date lastUsedDate1 = null;
 	private Date lastUsedDate2 = null;
 	private int [] lastUsedWeekNumberAYear = {-1,-1};
+	private String  lastUsedFormovna = null;
 	/**
 	 * Slouží pro metody, které nemaji jako parametr datum, ale aby bylo jasné kdy to bylo vyhledané,
 	 * tak se pøidá datum do nadpisu, kdy byla tato metoda volána.
@@ -322,10 +323,10 @@ public class HledejListener implements ActionListener, MouseListener {
 	private void zaklLiciPlan(boolean isVypis, int cisloExportu) throws Exception{
 		if (isVypis) {
 			int[] poleCi = getWeekAndYear();
+			String formovna = this.getFormovna();
 			if (poleCi != null) {
 				this.tyden = poleCi[0];
 				this.rok = poleCi[1];
-				String formovna = (String) ((JComboBox) vypisy[indexComboBoxFormovna]).getSelectedItem();
 				ResultSet rs = sql.liciPlanZakl(poleCi[0], poleCi[1], formovna);
 				if (rs != null) {
 					QueryTableModel tm = new QueryTableModel(rs);
@@ -336,7 +337,7 @@ public class HledejListener implements ActionListener, MouseListener {
 			}
 		} else {
 			TableModel mod = table.getModel();
-			String extend = lastUsedWeekNumberAYear[0] +" v roce "+  lastUsedWeekNumberAYear[1];
+			String extend = lastUsedWeekNumberAYear[0] +" v roce "+  lastUsedWeekNumberAYear[1] + ", " + this.lastUsedFormovna;
 			TableToExcel.exportToExcelNaVysku(hlavniOkno, mod, extend, "Zakl_lici_plan", cisloExportu);
 		}
 	}
@@ -344,10 +345,10 @@ public class HledejListener implements ActionListener, MouseListener {
 	private void liciPlan(boolean isVypis, int cisloExportu) throws Exception{
 		if (isVypis) {
 			int[] poleCi = getWeekAndYear();
+			String formovna = this.getFormovna();
 			if (poleCi != null) {
 				this.tyden = poleCi[0];
 				this.rok = poleCi[1];
-				String formovna = (String) ((JComboBox) vypisy[indexComboBoxFormovna]).getSelectedItem();
 				ResultSet rs = sql.liciPlanovaci(poleCi[0], poleCi[1], formovna);
 				if (rs != null) {
 					QueryTableModel tm = new QueryTableModel(rs);
@@ -358,7 +359,7 @@ public class HledejListener implements ActionListener, MouseListener {
 			}
 		} else {
 			TableModel mod = table.getModel();
-			String extend = lastUsedWeekNumberAYear[0] +" v roce "+  lastUsedWeekNumberAYear[1];
+			String extend = lastUsedWeekNumberAYear[0] +" v roce "+  lastUsedWeekNumberAYear[1] + ", " + this.lastUsedFormovna;
 			TableToExcel.exportToExcelNaSirku(hlavniOkno, mod, extend, "Planovaci_lici_plan", cisloExportu);
 		}
 	}
@@ -651,6 +652,20 @@ public class HledejListener implements ActionListener, MouseListener {
 			JOptionPane.showMessageDialog(hlavniOkno, "Špatnì zapsané èíslo u èísla týdne");
 			return null;
 		}
+	}
+	
+	private String getFormovna() throws Exception{
+		String formovna = (String) ((JComboBox) vypisy[indexComboBoxFormovna]).getSelectedItem();
+		if(formovna.equalsIgnoreCase("T")){
+			this.lastUsedFormovna = "Tìžká formovna";
+		} else if(formovna.equalsIgnoreCase("S")){
+			this.lastUsedFormovna = "Støední formovna";
+		} else if(formovna.equalsIgnoreCase("M")){
+			this.lastUsedFormovna = "Malá formovna";
+		} else {
+			this.lastUsedFormovna = "chyba";
+		}
+		return formovna;
 	}
 	
 	private void hledejZakaznikyVyhledej() throws Exception {
