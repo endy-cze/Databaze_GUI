@@ -1134,7 +1134,7 @@ public class SQLStor {
 	 * @return
 	 * @throws SQLException 
 	 */
-	public ResultSet vypisVycistenychKusuOdDo(Date od, Date do_) throws SQLException{
+	public Statement vypisVycistenychKusuOdDo(Date od, Date do_) throws SQLException{
 		if(od == null){
 			JOptionPane.showMessageDialog(hlavniOkno, "Datum od nesmí být prázdné");
 			return null;
@@ -1153,8 +1153,8 @@ public class SQLStor {
 		c.setDate("od", pomDate);
 		pomDate = new java.sql.Date (do_.getTime());
 		c.setDate("do_", pomDate);
-		rs = c.executeQuery();
-		return rs;
+		c.executeQuery();
+		return c;
 	}
 	
 	/**
@@ -1162,15 +1162,15 @@ public class SQLStor {
 	 * @return
 	 * @throws SQLException 
 	 */
-	public ResultSet vypisRozpracovaneVyroby() throws SQLException{
+	public Statement vypisRozpracovaneVyroby() throws SQLException{
 		int i = 5, j = 7;
 		if(cst[i][j] == null){
 			cst[i][j] = conn.prepareCall(sqlPrikazy[i][j]);
 			naposledyPouzito[i][j] = new Date();
 		}
 		c = cst[i][j];
-		rs = c.executeQuery();
-		return rs;
+		c.executeQuery();
+		return c;
 	}
 	
 	/**

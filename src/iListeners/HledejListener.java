@@ -524,12 +524,12 @@ public class HledejListener implements ActionListener, MouseListener {
 	private void vypisVycistenychKusuOdDo(boolean isVypis, int cisloVypisu) throws Exception{  // vypis vycistených kusu za období
 		if (isVypis) {
 			Date od = get1Date(), do_ = get2Date();
-			ResultSet rs = sql.vypisVycistenychKusuOdDo(od, do_);
-			if (rs != null) {
-				QueryTableModel tm = new QueryTableModel(rs);
+			Statement st = sql.vypisVycistenychKusuOdDo(od, do_);
+			if (st != null) {
+				QueryTableModel tm = new QueryTableModel(st);
 				table.setModel(tm);
 				columAdjuster.adjustColumns();
-				rs.close();
+				//st.close();
 			}
 		}  else {
 			TableModel mod = table.getModel();
@@ -539,13 +539,13 @@ public class HledejListener implements ActionListener, MouseListener {
 	}
 	private void inventuraRozpracVyroby(boolean isVypis, int cisloVypisu) throws Exception{
 		if (isVypis) {
-			ResultSet rs = sql.vypisRozpracovaneVyroby();
+			Statement st = sql.vypisRozpracovaneVyroby();
 			datumPoslVolaniMetody = new Date();
-			if (rs != null) {
-				QueryTableModel tm = new QueryTableModel(rs);
+			if (st != null) {
+				QueryTableModel tm = new QueryTableModel(st);
 				table.setModel(tm);
 				columAdjuster.adjustColumns();
-				rs.close();
+				//st.close();
 			}
 		} else {
 			TableModel mod = table.getModel();
