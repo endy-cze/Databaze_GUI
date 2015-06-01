@@ -1208,15 +1208,15 @@ public class SQLStor {
 	 * @return
 	 * @throws SQLException 
 	 */
-	public ResultSet vypisSkladuKDnesnimuDni() throws SQLException{
+	public Statement vypisSkladuKDnesnimuDni() throws SQLException{
 		int i = 5, j = 9;
 		if(cst[i][j] == null){
 			cst[i][j] = conn.prepareCall(sqlPrikazy[i][j]);
 			naposledyPouzito[i][j] = new Date();
 		}
 		c = cst[i][j];
-		rs = c.executeQuery();
-		return rs;
+		c.execute();
+		return c;
 	}
 	
 	public ResultSet vypisZmetky(Date od, Date do_) throws SQLException{

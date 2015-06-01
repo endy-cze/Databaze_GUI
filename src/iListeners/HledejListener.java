@@ -572,13 +572,13 @@ public class HledejListener implements ActionListener, MouseListener {
 	
 	private void vypisSkladuKeDnesnimuDni(boolean isVypis, int cisloVypisu) throws Exception{
 		if(isVypis){
-			ResultSet rs = sql.vypisSkladuKDnesnimuDni();
+			Statement st = sql.vypisSkladuKDnesnimuDni();
 			datumPoslVolaniMetody = new Date();
-			if(rs != null){
-				QueryTableModel tm = new QueryTableModel(rs);
+			if(st != null){
+				QueryTableModel tm = new QueryTableModel(st);
 				table.setModel(tm);
 				columAdjuster.adjustColumns();
-				rs.close();
+				// st.close();
 			}
 		}  else {
 			TableModel mod = table.getModel();
