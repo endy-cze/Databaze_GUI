@@ -1386,7 +1386,7 @@ public class SQLStor {
 	 * @throws SQLException 
 	 */
 	public void zadejOdlitek(int idFyzKusu, boolean isOdlito, Date datumOdliti, boolean isVycisteno, Date datumVycisteni, boolean isExpedovano,
-			Date datumExpedice, boolean isZmetek, Date datumZadaniZmetku, String cisloTavby, long cisloFaktury) throws SQLException{
+			Date datumExpedice, boolean isZmetek, Date datumZadaniZmetku, String cisloTavby, String cisloFaktury) throws SQLException{
 		if(idFyzKusu < 0){
 			JOptionPane.showMessageDialog(hlavniOkno, "Id fyz. kusu je špatnì zapsaný");
 			return;
@@ -1397,9 +1397,11 @@ public class SQLStor {
 			return;
 			}
 		}
-		if(cisloFaktury < 0){
-			JOptionPane.showMessageDialog(hlavniOkno, "Èíslo tavby nesmí být delší než 10 znakù");
-			return;
+		if(cisloFaktury != null){
+			if(cisloFaktury.length() >= 19){
+				JOptionPane.showMessageDialog(hlavniOkno, "Èíslo tavby nesmí být delší než 19 znakù");
+				return;
+			}
 		}
 		
 		int i = 3, j = 2;
@@ -1441,10 +1443,12 @@ public class SQLStor {
 		} else {
 			c.setString(10, cisloTavby);
 		}
-		if(cisloFaktury == 0){
-			c.setNull(11, java.sql.Types.BIGINT);
+		if(cisloFaktury == null){
+			c.setNull(11, java.sql.Types.VARCHAR);
+		} else if(cisloFaktury.equalsIgnoreCase("")){
+			c.setNull(11, java.sql.Types.VARCHAR);
 		} else {
-			c.setLong(11, cisloFaktury);
+			c.setString(11, cisloFaktury);
 		}
 		
 		c.execute();

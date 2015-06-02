@@ -1177,16 +1177,16 @@ public class ExpediceZmetek extends JPanel implements ActionListener, NastavOkno
 				}
 			} else if (event.equalsIgnoreCase("ZadatCisloFaktury")) {
 				String cislo = this.textCisloFaktury.getText();
-				if(cislo.length() > 19){
-					JOptionPane.showMessageDialog(hlavniOkno,"Èíslo faktury mùže být maximálnì 19 èíslic dlouhé");
+				if(cislo.length() >= 19){
+					JOptionPane.showMessageDialog(hlavniOkno,"Èíslo faktury mùže být maximálnì 19 znakù dlouhé");
 					return;
 				}
-				try{
+				/*try{
 					Long.parseLong(cislo);
 				}catch (NumberFormatException e){
 					JOptionPane.showMessageDialog(hlavniOkno,"Èíslo faktury není èíslo");
 					return;
-				}
+				}*/
 				for (int i = 0; i < selected.length; i++) {
 					this.tableFyzkusyEx.setValueAt(cislo, selected[i], 8);
 				}
@@ -1485,14 +1485,14 @@ public class ExpediceZmetek extends JPanel implements ActionListener, NastavOkno
 		}
 		String cisloTavby = (String) this.tableFyzkusyEx.getValueAt(i, 2);
 		String cisloFakturyStr = (String) this.tableFyzkusyEx.getValueAt(i, 8);
-		long cisloFaktury = -1;
+		/*long cisloFaktury = -1;
 		if(cisloFakturyStr == null){
 			cisloFaktury = 0;
 		} else if(cisloFakturyStr.equalsIgnoreCase("")) {
 			cisloFaktury = 0;
 		} else {
 			cisloFaktury = Long.parseLong(cisloFakturyStr);
-		}
+		}*/
 		
 		
 		if(!isOdlito){
@@ -1503,7 +1503,7 @@ public class ExpediceZmetek extends JPanel implements ActionListener, NastavOkno
 			datumExpedice = null;
 			isZmetek = false;
 		}
-		sql.zadejOdlitek(idKusu, isOdlito, datumOdliti, isVycisteno, datumVycisteni, isExpedovano, datumExpedice,  isZmetek, datumZadaniodlitku, cisloTavby, cisloFaktury);
+		sql.zadejOdlitek(idKusu, isOdlito, datumOdliti, isVycisteno, datumVycisteni, isExpedovano, datumExpedice,  isZmetek, datumZadaniodlitku, cisloTavby, cisloFakturyStr);
 	}
 
 	private boolean endZadavaniVadyAVinika(int i) throws SQLException{
