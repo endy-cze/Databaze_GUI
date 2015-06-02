@@ -38,7 +38,8 @@ public class TableToExcel {
 	public final static int liciPlanZakl = 21;
 	public final static int liciPlanPlanovaci = 22;
 	private JFrame hlavniOkno;
-	private String [] columnNamesNotInt = {"Èíslo modelu", "Cislo_modelu"};
+	private String [] columnNamesNotInt = {"Èíslo modelu", "Cislo_modelu","Jméno zákazníka","Èíslo objednávky",
+			"Jméno modelu", "Materiál", "Vlastní materiál"};
 	
 	/**
 	 * Vytvoøí .xls soubor do pøedem dané složky s jednoøádkovou hlavièkou.
