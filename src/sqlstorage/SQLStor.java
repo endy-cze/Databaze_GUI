@@ -1307,9 +1307,6 @@ public class SQLStor {
 		if(kolik < 0){
 			JOptionPane.showMessageDialog(hlavniOkno, "Poèet kusù nesmí být záporný");
 			return;
-		} else if(kolik == 0){
-			JOptionPane.showMessageDialog(hlavniOkno, "Poèet kusù byl rovný nule, dilèí termín nebyl pøidán. Datum: "+sdf.format(datum));
-			return;
 		}
 		int i = 3, j = 4;
 		if(cst[i][j] == null){

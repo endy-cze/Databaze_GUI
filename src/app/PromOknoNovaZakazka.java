@@ -847,9 +847,7 @@ public class PromOknoNovaZakazka extends JPanel implements NastavOkno, ActionLis
 						pom = model.get(i);
 						if(novyTermin.isEqualDate(pom)){
 							model.remove(i);
-							if(pocetKusu != 0){
-								model.add(i, novyTermin);
-							}
+							model.add(i, novyTermin);
 							return;
 						}
 					}
