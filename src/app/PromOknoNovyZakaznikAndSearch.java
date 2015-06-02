@@ -286,6 +286,10 @@ public class PromOknoNovyZakaznikAndSearch extends JPanel implements NastavOkno 
 		this.setVyhledejZakazku();
 	}
 	
+	public void setPlanExpedice(){
+		this.setVyhledejZakazku();
+	}
+	
 	public void setZadejVycistenyKus(){
 		this.setVyhledejZakazku();
 	}

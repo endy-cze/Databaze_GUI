@@ -329,6 +329,18 @@ public class ParametryFiltr extends JPanel {
 		//}
 	}
 	
+	public void setPlanExpedice(int j){
+		this.setZakazka();
+		for(int i = 0; i < pole.length; i++){
+			pole[i].setVisible(false);
+		}
+		String [] com = sklad.getCommands()[3];
+		vyhledej.setActionCommand(com[j]);
+		prevodDoPdf.setActionCommand("PDF"+com[j]);
+		status = 9;	
+		this.showNothing();
+		prevodDoPdf.setVisible(true);
+	}
 	
 	/**
 	 * Je tu switch blok. Nastavi okno  v Podokne parametry-filtr a zobrazi jednolitve boxy podle cisla zavolaneho vypisu.

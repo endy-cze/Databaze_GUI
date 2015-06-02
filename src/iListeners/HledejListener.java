@@ -155,6 +155,14 @@ public class HledejListener implements ActionListener, MouseListener {
 			} 
 			else if(arg0.getActionCommand().equalsIgnoreCase("HledejKapacitniProcet")){
 				this.kapPropocet();
+			}
+			else if(arg0.getActionCommand().equalsIgnoreCase("PlanExpedice")){
+				System.out.println("lol plan expedice");
+				this.planExpedice(false);
+			}
+			else if(arg0.getActionCommand().equalsIgnoreCase("PDFPlanExpedice")){
+				this.planExpedice(true);
+				System.out.println("lol PDF plan expedice");
 			} else { //vypisy a tisk
 				//System.out.println("Impementuje se "+arg0.getActionCommand());
 				vypisyAndTisk(arg0.getActionCommand());
@@ -359,6 +367,23 @@ public class HledejListener implements ActionListener, MouseListener {
 			TableModel mod = table.getModel();
 			String extend = lastUsedWeekNumberAYear[0] +" v roce "+  lastUsedWeekNumberAYear[1] + ", " + this.lastUsedFormovna;
 			TableToExcel.exportToExcelNaSirku(hlavniOkno, mod, extend, "Planovaci_lici_plan", cisloExportu);
+		}
+	}
+	
+	private void planExpedice(boolean isTisk) throws Exception{
+		if (!isTisk) {
+			Statement st = sql.planExpedice();
+			if (st != null) {
+				QueryTableModel tm = new QueryTableModel(st);
+				table.setModel(tm);
+				columAdjuster.adjustColumns();
+			}
+			//datum kdy byla metoda volana, kvuli datumu v tisku
+			datumPoslVolaniMetody = new Date();
+		} else {
+			TableModel model = table.getModel();
+			String extend = this.sdf.format(datumPoslVolaniMetody);
+			TableToExcel.exportToExcelNaSirku(hlavniOkno, model, extend, "Plan_expedice", TableToExcel.planExpedice);
 		}
 	}
 	

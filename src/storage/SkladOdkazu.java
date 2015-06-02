@@ -48,7 +48,7 @@ public class SkladOdkazu {
 			{"PridejZakaznika", "PridejModel", "PridejZakazku"},
 			{"Planovani", "VyhledejZakaznika", "VyhledejModel", "VyhledejZakazku", "VyhledejZakazku", "VyhledejZmetek", "VyhledejViniky", "VyhledejVady", "VyhledejKapPropocet"},
 			{"NovyOdlitekZmetek", "NovyVycistenyKus", "UpravaCislaTavby"},
-			{"Expedice", "LiciPlanZakladni", "LiciPlanPlanovaci"},
+			{"Expedice", "LiciPlanZakladni", "LiciPlanPlanovaci", "PlanExpedice"},
 			{"VypisStavNeuzavrenychZakazek","DenniVypisOdlitychKusu", "VypisVycistenychKusuZaObdobi", "MzdySlevacu", "VypisOdlitkuVKgKc",
 				"VypisOdlitychKusuOdDo", "VypisPolozekSOdhadHmot", "VypisDleTerminuExpedice", "VypisExpedice od-do",
 				"VypisZpozdeneVyroby", "InventuraRozpracVyroby", "VypisSkladuKeDnesnimuDni", "VypisZmetkuZaObdobi", "VypisVinikuVKgKc"},

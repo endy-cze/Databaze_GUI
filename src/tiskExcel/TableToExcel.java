@@ -37,6 +37,7 @@ import sablony.tabulka.QueryTableModel;
 public class TableToExcel {
 	public final static int liciPlanZakl = 21;
 	public final static int liciPlanPlanovaci = 22;
+	public final static int planExpedice = 23;
 	private JFrame hlavniOkno;
 	private String [] columnNamesNotInt = {"Èíslo modelu", "Cislo_modelu","Jméno zákazníka","Èíslo objednávky",
 			"Jméno modelu", "Materiál", "Vlastní materiál"};
@@ -263,7 +264,10 @@ public class TableToExcel {
 			atr[0] = "Základni licí plán";atr[1] = "Základni licí plán pro týden: ";atr[2] = "./lici_plany";
 			break;
 		case TableToExcel.liciPlanPlanovaci:
-			atr[0] = "Výpis skladu ke dnešnímu dni";atr[1] = "Licí plán pro týden: ";atr[2] = "./lici_plany";
+			atr[0] = "Licí plán";atr[1] = "Licí plán pro týden: ";atr[2] = "./lici_plany";
+			break;
+		case TableToExcel.planExpedice:
+			atr[0] = "Plán expedice";atr[1] = "Plán expedice ke dni: ";atr[2] = "./lici_plany";
 			break;
 		}
 		return atr;		
