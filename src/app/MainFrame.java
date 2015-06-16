@@ -40,10 +40,6 @@ public class MainFrame extends JFrame {
 	 * Verze
 	 */
 	private static final long serialVersionUID = 1L;
-	/*private final int monitorHeight;
-	private final int monitorWidth;
-	private static final int korekceMonitorHeight = 140;
-	*/
 
 	private SkladOdkazu sklad;
 	
@@ -134,37 +130,6 @@ public class MainFrame extends JFrame {
 	public SkladOdkazu getSklad() {
 		return sklad;
 	}
-	
-	/**
-	 * Launch the application.
-	 */
-	/*
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try { 
-					UIManager.setLookAndFeel("com.jgoodies.looks.windows.WindowsLookAndFeel");
-                    //UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
-                    //UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-                   // UIManager.put("PopupMenu.background",  new Color(88, 88, 87));
-                    
-			    } 
-			    catch(Exception e){
-			    	ExceptionWindow win = new ExceptionWindow(e);
-			    	win.nic();
-			    }
-				
-			
-                
-				try {
-					MainFrame frame = new MainFrame(null, null, null);
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}*/
 		
 	public void createAndAddListeners(){
 		this.sideButtonListener = new MainSideJButtonListener(this.sideListButton,this.sidePopupMenulist, sklad);

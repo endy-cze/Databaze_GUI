@@ -15,35 +15,24 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.JTextField;
 
 import java.awt.Dimension;
-
-import javax.swing.JButton;
-
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.awt.BorderLayout;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.border.LineBorder;
 
 import sablony.MyJButton;
 import sablony.ParametryFiltr;
 import sablony.tabulka.ColorCellTable;
 import sablony.tabulka.TableColumnAdjuster;
+
 import storage.SkladOdkazu;
 
-
-import javax.swing.border.LineBorder;
-
-import java.sql.Connection;
-import java.sql.ResultSet;
-
-
-import java.awt.FlowLayout;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
-
-import javax.swing.ScrollPaneConstants;
 import javax.swing.LayoutStyle.ComponentPlacement;
 
 public class PromOknoNovyZakaznikAndSearch extends JPanel {
@@ -57,7 +46,6 @@ public class PromOknoNovyZakaznikAndSearch extends JPanel {
 	
 	
 	private String [][] actionComands;
-	private String [][] nadpisy;
 	
 	private Color [] barvy = {
 	  	    new Color(63,63,63),       //0 cerna hlavicka
@@ -102,6 +90,11 @@ public class PromOknoNovyZakaznikAndSearch extends JPanel {
 	private JLabel jmenoZakaznikaPridejLabel;
 	private JPanel jpanelFitr;
 	
+	/**
+	 * Nastaveni okna <code>PromOknoNovyZakaznikAndSearch</code> pro daný pøíkaz (JMenuItem). Zobrazí/skryje podle daných indexu JPanely v tomto JPanelu.
+	 * @param i index <code>JMenuItem</code> v postraním menu
+	 * @param j index <code>JMenuItem</code> v postraním menu
+	 */
 	public void nastavOkno(int i, int j){
 		jpanelFitr.setVisible(true);
 		table.setVisible(true);
@@ -501,22 +494,10 @@ public class PromOknoNovyZakaznikAndSearch extends JPanel {
 
 		panelFiltr = new ParametryFiltr(this.sklad, table);
 		jpanelFitr.add(panelFiltr, BorderLayout.SOUTH);
-				
-				
-		
-		
-		
-		
+					
 		
 		
 		panelTabulka.setViewportView(table);
-		
-		
-		
-		
-		
-		
-		
 		
 		
 		
@@ -526,25 +507,24 @@ public class PromOknoNovyZakaznikAndSearch extends JPanel {
 		//defaultne 
 		setVyhledejZakazku();
 		setVisibleProhlizeny();
-		//setVisiblePridej();
-		//zkouska		
-		//setUpravZakaznika();		
 	}
+	
+	public void setPanelFiltrVypisy(int j){
+		panelFiltr.setVypisy(j);
+	}
+	
+	public void setPanelFiltrSetPlanyLiti(boolean pom){
+		panelFiltr.setPlanyLiti(pom);
+	}
+	
+	public void setPanelFiltrSetPlanExpedice(int j){
+		panelFiltr.setPlanExpedice(j);
+	}
+	
 
-	public ParametryFiltr getPanelFiltr() {
-		return panelFiltr;
-	}
+	// atributy
 	public JScrollPane getPanelTabulka() {
 		return panelTabulka;
-	}
-	public JLabel getIdZakaznikaText() {
-		return idZakaznikaText;
-	}
-	public JLabel getIdZakaznika() {
-		return idZakaznika_1;
-	}
-	public JLabel getPridatZakaznikaLabel() {
-		return pridatZakaznikaLabel;
 	}
 }
 

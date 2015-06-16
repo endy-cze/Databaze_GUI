@@ -244,23 +244,19 @@ public class MainActionMenuItemListener implements ActionListener {
 	 * @param j
 	 */
 	private void index3(int j){
-		ParametryFiltr panelFiltr;
 		switch(j){
 		case 0:
 			searchOkno.setZadejOdlitek();
 			break;
 		case 1:
-			panelFiltr = searchOkno.getPanelFiltr();
-			panelFiltr.setPlanyLiti(true);
+			searchOkno.setPanelFiltrSetPlanyLiti(true);
 			break;
 		case 2:
-			panelFiltr = searchOkno.getPanelFiltr();
-			panelFiltr.setPlanyLiti(false);
+			searchOkno.setPanelFiltrSetPlanyLiti(false);
 			break;
 		case 3:
 			searchOkno.setPlanExpedice();
-			panelFiltr = searchOkno.getPanelFiltr();
-			panelFiltr.setPlanExpedice(j);
+			searchOkno.setPanelFiltrSetPlanExpedice(j);
 			break;
 		default: JOptionPane.showMessageDialog(hlavniOkno, "Nìco je špatnì v MainActionMenuItemListener, index3()");	
 			break;
@@ -273,8 +269,7 @@ public class MainActionMenuItemListener implements ActionListener {
 	 * @param j index v PopUpMenu (cislo radku na kterem je v popupmenu umisten)
 	 */
 	private void index4(int j){
-		ParametryFiltr panelFiltr = searchOkno.getPanelFiltr();
-		panelFiltr.setVypisy(j);		
+		searchOkno.setPanelFiltrVypisy(j);
 	}
 
 	/**
