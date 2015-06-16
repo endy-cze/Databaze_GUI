@@ -56,13 +56,23 @@ public class Navigator extends JPanel {
 	private Color [] barvy;
 	
 	/**
+	 * Prozatím mi staci pouze dve jmena, indexy už znam pøedem (viz <code>MainActionMenuItemListener</code>
+	 *  v metode <code>actionPerformed()</code>). V budoucnu muzu rozsirit.
+	 */
+	public void setNavigatorLabels(String label2, String label4){
+		navigatorLabels[2].setText(label2);
+		navigatorLabels[4].setText(label4);
+	}
+	
+	/**
 	 * Create the panel.
 	 */
 	public Navigator(SkladOdkazu sklad) {
 		this.sklad = sklad;
 		this.barvy = sklad.getBarvy();
-		navigatorLabels = new JLabel [7];
-		this.sklad.setNavigatorLabels(navigatorLabels);
+		navigatorLabels = new JLabel [7];		
+		this.sklad.setNavigator(this);
+		
 		
 		setBackground(barvy[8]);
 		

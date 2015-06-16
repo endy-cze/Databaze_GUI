@@ -8,7 +8,6 @@ import iListeners.PridejZakaznikaList;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
-import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.text.SimpleDateFormat;
 
@@ -28,6 +27,7 @@ import sablony.tabulka.TableColumnAdjuster;
 import sqlstorage.SQLStor;
 import app.ExpediceZmetek;
 import app.MainFrame;
+import app.Navigator;
 import app.Planovani;
 import app.ProgresBarFrame;
 
@@ -60,9 +60,8 @@ public class SkladOdkazu {
 
 	// hlavni okno
 	private MainFrame hlavniOkno;
-	private JLabel [] hlavickaLabels;
-	private JLabel [] navigatorLabels;
 	private JScrollPane scrollPane;
+	private Navigator navigace;
 	
 	private JButton odhlasit; 
 	
@@ -357,26 +356,13 @@ public class SkladOdkazu {
 		this.hlavniOkno = hlavniOkno;
 	}
 
-
-	public JLabel[] getHlavickaLabels() {
-		return hlavickaLabels;
+	public Navigator getNavigator(){
+		return this.navigace;
 	}
-
-
-	public void setHlavickaLabels(JLabel[] hlavickaLabels) {
-		this.hlavickaLabels = hlavickaLabels;
+	
+	public void setNavigator(Navigator nav){
+		this.navigace = nav;
 	}
-
-
-	public JLabel[] getNavigatorLabels() {
-		return navigatorLabels;
-	}
-
-
-	public void setNavigatorLabels(JLabel[] navigatorLabels) {
-		this.navigatorLabels = navigatorLabels;
-	}
-
 
 	public JPanel[] getPromOkna() {
 		return promOkna;

@@ -97,35 +97,4 @@ public class MyPopUp extends JPopupMenu {
 		    this.add(item);
 		}
 	}
-
-
-	public MyPopUp(String [] nameItems){
-		super();
-		this.setBorderPainted(false);
-		this.setBorder(new EmptyBorder(10, 10, 10, 10));
-		this.setBackground(barvy[1]);	
-	
-		JMenuItem item = new JMenuItem(nameItems[0]);
-		item.setForeground(barvy[8]);
-		item.setBorder(null);
-		item.setBackground(barvy[1]);
-		item.setBorder(new EmptyBorder(5, 0, 5, 0));
-		this.add(item);
-	
-		JSeparator separator;
-	
-		for(int i = 1; i < nameItems.length; i++){
-			separator = new JSeparator();
-			separator.setForeground(null);
-			separator.setBackground(barvy[0]);
-			this.add(separator);
-		
-			item = new JMenuItem(nameItems[i]);
-			item.setForeground(barvy[8]);
-			item.setBorder(null);
-			item.setBackground(barvy[1]);
-			item.setBorder(new EmptyBorder(5, 0, 5, 0));
-			this.add(item);
-		}
-	}
 }

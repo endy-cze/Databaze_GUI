@@ -1,10 +1,8 @@
 package iListeners;
 
-import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -14,6 +12,7 @@ import sablony.ParametryFiltr;
 import sablony.errorwin.ExceptionWin;
 import storage.SkladOdkazu;
 import app.MainFrame;
+import app.Navigator;
 import app.PromOknoNovaZakazka;
 import app.PromOknoNovyModel;
 import app.PromOknoNovyZakaznikAndSearch;
@@ -39,16 +38,16 @@ public class MainActionMenuItemListener implements ActionListener {
 	private MainFrame hlavniOkno;
 	private JMenuItem [][] sidePopupMenuItems;
 	private JPanel [] promOkna;
-	private JLabel [] navigatorLabels;
+	private Navigator navigace;
 	private MyJButton [] sideListButton;
 	
  	public MainActionMenuItemListener(SkladOdkazu sklad){
 		this.sklad = sklad;
 		this.hlavniOkno = this.sklad.getHlavniOkno();
 		this.sidePopupMenuItems = sklad.getSidePopupMenuItems();
-		this.promOkna = sklad.getPromOkna();
-		this.navigatorLabels = sklad.getNavigatorLabels();
+		this.promOkna = sklad.getPromOkna();		
 		this.sideListButton = sklad.getSideListButton();
+		this.navigace = sklad.getNavigator();
 	}
 	
 
@@ -63,7 +62,7 @@ public class MainActionMenuItemListener implements ActionListener {
 					if (sidePopupMenuItems[i][j] == null) {
 						break;
 					} else {
-						pomString = sidePopupMenuItems[i][j].getText();
+						pomString = sidePopupMenuItems[i][j].getActionCommand();
 						if (pomString.equalsIgnoreCase(sourceString)) {
 							end = true;
 							break;
@@ -78,6 +77,7 @@ public class MainActionMenuItemListener implements ActionListener {
 			sklad.getPromOknoNovyZakaznikSearchColorTable().setModel(sklad.getPrazdneTabulky()[5]);
 			sklad.getPromOknoNovyZakaznikAndSearchColumAdjuster().adjustColumns();
 			
+			
 			if (i != 0) {
 				hlavniOkno.setWindow(0);
 				((NastavOkno) promOkna[0]).nastavOkno(i, j);
@@ -88,8 +88,8 @@ public class MainActionMenuItemListener implements ActionListener {
 				((NastavOkno) promOkna[j]).nastavOkno(0, j);
 			}
 
-			navigatorLabels[2].setText(sideListButton[i].getText());
-			navigatorLabels[4].setText(sidePopupMenuItems[i][j].getActionCommand());
+			// zmena navigatoru			
+			this.navigace.setNavigatorLabels(sideListButton[i].getText(), sidePopupMenuItems[i][j].getText());
 		
 			switch (i) {
 			case 0:

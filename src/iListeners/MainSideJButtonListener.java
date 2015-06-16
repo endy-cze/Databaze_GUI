@@ -14,6 +14,12 @@ import javax.swing.border.MatteBorder;
 
 import storage.SkladOdkazu;
 
+/**
+ * Tøida pro zobrazovani PopUp menus v postranim menu, kdyz se najede mysi na postrani buttony a
+ *  zaroven controler pro jejich zanik
+ * @author Havlicek
+ *
+ */
 public class MainSideJButtonListener implements MouseListener, FocusListener {
 	private SkladOdkazu sklad;
 	

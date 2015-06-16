@@ -337,10 +337,8 @@ public class MainFrame extends JFrame {
 		
 		progresBar.setValue(10);
 		
-		//hlavicka
-		hlavickaLabels = new JLabel [4];
-		sklad.setHlavickaLabels(hlavickaLabels);
-		
+		//hlavicka - nazev aplikace, jmeno uživatele, tlacitko odhlasit
+		hlavickaLabels = new JLabel [4];		
 		
 		setTitle("Datab\u00E1ze Sl\u00E9v\u00E1rna Stra\u0161ice");
 		setBounds(new Rectangle(100, 100, 1266, 668));
