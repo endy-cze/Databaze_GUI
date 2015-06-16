@@ -35,8 +35,6 @@ import storage.SkladOdkazu;
 import javax.swing.JComboBox;
 import javax.swing.JTextArea;
 
-import myinterface.NastavOkno;
-
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.border.LineBorder;
 import javax.swing.text.JTextComponent;
@@ -53,7 +51,7 @@ import com.toedter.calendar.JDateChooser;
 
 import javax.swing.ListSelectionModel;
 
-public class PromOknoNovaZakazka extends JPanel implements NastavOkno, ActionListener {
+public class PromOknoNovaZakazka extends JPanel implements ActionListener {
 	/**
 	 * Verze
 	 */
@@ -766,10 +764,7 @@ public class PromOknoNovaZakazka extends JPanel implements NastavOkno, ActionLis
 		initListComponents();
 		addListeners();
 	}
-	@Override
-	public void nastavOkno(int i, int j) {
-		
-	}
+
 
 	public int getIdIntAktualnihoZakaznika() {
 		return idIntAktualnihoZakaznika;

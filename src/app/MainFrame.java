@@ -175,8 +175,7 @@ public class MainFrame extends JFrame {
 			sideListButton[i].addFocusListener(sideButtonListener);
 		}
 		
-		
-		itemList = new MainActionMenuItemListener(sklad);
+		itemList = new MainActionMenuItemListener(sklad, promOknoNovyZakaznikAndSearch, promOknoNovyModel, promOknoNovaZakazka);
 		sklad.setItemList(itemList);
 		for(int i = 0; i < sidePopupMenuItems.length; i++){
 			for(int j = 0; j < sidePopupMenuItems[i].length; j++){

@@ -38,8 +38,6 @@ import storage.SkladOdkazu;
 
 import javax.swing.ListSelectionModel;
 
-import myinterface.NastavOkno;
-
 import com.toedter.calendar.JDateChooser;
 
 import javax.swing.JComboBox;
@@ -56,7 +54,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JList;
 import javax.swing.border.LineBorder;
 
-public class ExpediceZmetek extends JPanel implements ActionListener, NastavOkno //, ChangeListener
+public class ExpediceZmetek extends JPanel implements ActionListener //, ChangeListener
 {
 	
 	/**
@@ -144,12 +142,6 @@ public class ExpediceZmetek extends JPanel implements ActionListener, NastavOkno
 	private static final int pozicePoznamkyVParametrech = 21;
 	private static final int pozicePaganyrkyVParametech = 22;
 	private static final int poziceUzavreneZakazkyVParametrech = 20;
-	
-	@Override
-	public void nastavOkno(int i, int j) {
-		// TODO Auto-generated method stub
-		
-	}
 	
 	private String[] parametryZakazky;
 

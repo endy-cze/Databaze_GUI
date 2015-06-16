@@ -5,7 +5,6 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 
 import sablony.MyJButton;
 import sablony.ParametryFiltr;
@@ -16,7 +15,6 @@ import app.Navigator;
 import app.PromOknoNovaZakazka;
 import app.PromOknoNovyModel;
 import app.PromOknoNovyZakaznikAndSearch;
-import myinterface.NastavOkno;
 
 /**
  * Tøída, která obsluhuje údálosti vytvoøené PopUpMenu itemy v PopupMenu, které se vytvoøí
@@ -30,30 +28,34 @@ public class MainActionMenuItemListener implements ActionListener {
 	//pomocne ukazatele
 	private String sourceString;
 	private String pomString;
-	private PromOknoNovyZakaznikAndSearch tmp;
-	private PromOknoNovyModel tmp2;
-	private PromOknoNovaZakazka tmp3;
+	private PromOknoNovyZakaznikAndSearch searchOkno;
+	private PromOknoNovyModel novyModelOkno;
+	private PromOknoNovaZakazka novaZakazOkno;
 	
 	//Componenty hlavniho okna
 	private MainFrame hlavniOkno;
 	private JMenuItem [][] sidePopupMenuItems;
-	private JPanel [] promOkna;
 	private Navigator navigace;
 	private MyJButton [] sideListButton;
 	
- 	public MainActionMenuItemListener(SkladOdkazu sklad){
+ 	public MainActionMenuItemListener(SkladOdkazu sklad, PromOknoNovyZakaznikAndSearch searchOkno, PromOknoNovyModel novyModel, PromOknoNovaZakazka novaZakazOkno){
 		this.sklad = sklad;
 		this.hlavniOkno = this.sklad.getHlavniOkno();
 		this.sidePopupMenuItems = sklad.getSidePopupMenuItems();
-		this.promOkna = sklad.getPromOkna();		
 		this.sideListButton = sklad.getSideListButton();
 		this.navigace = sklad.getNavigator();
+		
+		// okna
+		this.searchOkno = searchOkno;
+		this.novyModelOkno = novyModel;
+		this.novaZakazOkno = novaZakazOkno;
 	}
 	
 
 	@Override
 	public void actionPerformed(ActionEvent arg0) {	
 		try {
+			// hledani ktery popupmenu byl zmacknut (podle indexu)
 			boolean end = false;
 			sourceString = arg0.getActionCommand();
 			int i = 0, j = 0;
@@ -77,20 +79,13 @@ public class MainActionMenuItemListener implements ActionListener {
 			sklad.getPromOknoNovyZakaznikSearchColorTable().setModel(sklad.getPrazdneTabulky()[5]);
 			sklad.getPromOknoNovyZakaznikAndSearchColumAdjuster().adjustColumns();
 			
-			
-			if (i != 0) {
-				hlavniOkno.setWindow(0);
-				((NastavOkno) promOkna[0]).nastavOkno(i, j);
-
-			} else {
-				// pro nova Zakazka model a zakaznik
-				hlavniOkno.setWindow(j);
-				((NastavOkno) promOkna[j]).nastavOkno(0, j);
-			}
+			// Nastaveni okna
+			nastavOknoAplikace(i,j);
 
 			// zmena navigatoru			
 			this.navigace.setNavigatorLabels(sideListButton[i].getText(), sidePopupMenuItems[i][j].getText());
-		
+			
+			// modifikace okna PromOknoNovyZakaznikAndSearch nebo PromOknoNovyModel nebo PromOknoNovaZakazka
 			switch (i) {
 			case 0:
 				index0(j);
@@ -131,29 +126,57 @@ public class MainActionMenuItemListener implements ActionListener {
 	}
 	
 	/**
+	 * <p>Metoda urci, ktere panely maji byt viditelne a ktere ne. Ovlivnuje i jak maji byt panely usporadane. Repskektive ovlivnuje pouze JPanel <code> PromOknoNovyZakaznikAndSearch</code>.
+	 * Podle indexu urci co se ma provest za akci. Usporadani uvnitø panelu se zatim dela i jinde. to se musi zmenit. </p>
+	 * <p>V podstate se vždy zobrazí jen modifikované okno <code>PromOknoNovyZakaznikAndSearch</code>, krom dvou pøípadù a to když chceme vytvoøit novou zakazku nebo nový model.</p>
+	 * <p>To je logické, protože když necheme neco noveho tak chceme neco upravit a to musime nejdriv najit :D <code>PromOknoNovyZakaznikAnd<b>Search</b></code></p>
+	 * @param i index <code>JMenuItem</code> v lokalni promene <code>sidePopupMenuItems</code> 
+	 * @param j index <code>JMenuItem</code> v lokalni promene <code>sidePopupMenuItems</code>
+	 */
+	private void nastavOknoAplikace(int i, int j){
+		if(i == 0){ // zobrazujeme jine okno nez PromOknoNovyZakaznikAndSearch
+			hlavniOkno.setWindow(j); //zobrazime dany JPanel => 0 pro PromOknoNovyZakaznikAndSearch, 1 pro PromOknoNovyModel a 2 pro PromOknoNovaZakazka
+			switch (j) {
+			case 0:
+				searchOkno.nastavOkno(i, j);
+				break;
+			case 1:
+				novyModelOkno.setNovyModel();
+				break;
+			case 2:
+				novaZakazOkno.setNovaZakazka();
+				break;
+			default:
+				JOptionPane.showMessageDialog(hlavniOkno, "Nìco je špatnì v MainActionMenuItemListener, nastavOknoAplikace()");
+				break;
+			}
+		} else {
+			hlavniOkno.setWindow(0); // vsude krome pro novy model a novy zakazka vede menu item na PromOknoNovyZakaznikAndSearch nejak modifikovany
+			searchOkno.nastavOkno(i, j); // modifikace-nastaveni okna PromOknoNovyZakaznikAndSearch
+		}
+		
+	}
+	
+	/**
 	 * Obsluha Popup menu pro novy zakaznik, model a zakazka
 	 * @param j index v PopUpMenu (cislo radku na kterem je v popupmenu umisten)
 	 */
 	private void index0(int j){
 		switch(j){
 		case 0:
-			tmp = (PromOknoNovyZakaznikAndSearch) promOkna[0];
-			tmp.setPridejZakaznika();
+			searchOkno.setPridejZakaznika();
 			break;
 		case 1:
-			tmp2 = (PromOknoNovyModel) promOkna[1];
-			tmp2.setNovyModel();
+			novyModelOkno.setNovyModel();
 			break;
 		case 2:
-			tmp3 = (PromOknoNovaZakazka) promOkna[2];
-			tmp3.setNovaZakazka();
+			novaZakazOkno.setNovaZakazka();
 			break;
 		default: JOptionPane.showMessageDialog(hlavniOkno, "Nìco je špatnì v MainActionMenuItemListener, index0()");	
 			break;
 		}
-		
-		
 	}
+	
 	/**
 	 * Obsluha Popup menu pro Veškere prohlížení a Plánování
 	 * @param j index v PopUpMenu (cislo radku na kterem je v popupmenu umisten)
@@ -161,40 +184,31 @@ public class MainActionMenuItemListener implements ActionListener {
 	private void index1(int j){
 		switch(j){
 		case 0:
-			tmp = (PromOknoNovyZakaznikAndSearch) promOkna[0];
-			tmp.setPlanovani();
+			searchOkno.setPlanovani();
 			break;
 		case 1:
-			tmp = (PromOknoNovyZakaznikAndSearch) promOkna[0];
-			tmp.setVyhledejZakaznika();
+			searchOkno.setVyhledejZakaznika();
 			break;
 		case 2:
-			tmp = (PromOknoNovyZakaznikAndSearch) promOkna[0];
-			tmp.setVyhledejModel();
+			searchOkno.setVyhledejModel();
 			break;
 		case 3:
-			tmp = (PromOknoNovyZakaznikAndSearch) promOkna[0];
-			tmp.setVyhledejZakazku();
+			searchOkno.setVyhledejZakazku();
 			break;
 		case 4:
-			tmp = (PromOknoNovyZakaznikAndSearch) promOkna[0];
-			tmp.setVyhledejFyzKusy();
+			searchOkno.setVyhledejFyzKusy();
 			break;
 		case 5:
-			tmp = (PromOknoNovyZakaznikAndSearch) promOkna[0];
-			tmp.setVyhledejZmetky();
+			searchOkno.setVyhledejZmetky();
 			break;
 		case 6:
-			tmp = (PromOknoNovyZakaznikAndSearch) promOkna[0];
-			tmp.setVyhledejViniky();
+			searchOkno.setVyhledejViniky();
 			break;
 		case 7:
-			tmp = (PromOknoNovyZakaznikAndSearch) promOkna[0];
-			tmp.setVyhledejVady();
+			searchOkno.setVyhledejVady();
 			break;
 		case 8:
-			tmp = (PromOknoNovyZakaznikAndSearch) promOkna[0];
-			tmp.setVyhledejKapPropocet();
+			searchOkno.setVyhledejKapPropocet();
 			break;
 		default: JOptionPane.showMessageDialog(hlavniOkno, "Nìco je špatnì v MainActionMenuItemListener, index1()");	
 			break;
@@ -208,20 +222,16 @@ public class MainActionMenuItemListener implements ActionListener {
 	private void index2(int j){
 		switch(j){
 		case 0:
-			tmp = (PromOknoNovyZakaznikAndSearch) promOkna[0];
-			tmp.setZadejOdlitek();
+			searchOkno.setZadejOdlitek();
 			break;
 		case 1:
-			tmp = (PromOknoNovyZakaznikAndSearch) promOkna[0];
-			tmp.setZadejVycistenyKus();
+			searchOkno.setZadejVycistenyKus();
 			break;
 		case 2:
-			tmp = (PromOknoNovyZakaznikAndSearch) promOkna[0];
-			tmp.setUpravCisloTavby();
+			searchOkno.setUpravCisloTavby();
 			break;
 		case 3:
-			tmp = (PromOknoNovyZakaznikAndSearch) promOkna[0];
-			tmp.setVyhledejUpravModel();
+			searchOkno.setVyhledejUpravModel();
 			break;
 		default: JOptionPane.showMessageDialog(hlavniOkno, "Nìco je špatnì v MainActionMenuItemListener, index2()");	
 			break;
@@ -237,23 +247,19 @@ public class MainActionMenuItemListener implements ActionListener {
 		ParametryFiltr panelFiltr;
 		switch(j){
 		case 0:
-			tmp = (PromOknoNovyZakaznikAndSearch) promOkna[0];
-			tmp.setZadejOdlitek();
+			searchOkno.setZadejOdlitek();
 			break;
 		case 1:
-			tmp = (PromOknoNovyZakaznikAndSearch) promOkna[0];
-			panelFiltr = tmp.getPanelFiltr();
+			panelFiltr = searchOkno.getPanelFiltr();
 			panelFiltr.setPlanyLiti(true);
 			break;
 		case 2:
-			tmp = (PromOknoNovyZakaznikAndSearch) promOkna[0];
-			panelFiltr = tmp.getPanelFiltr();
+			panelFiltr = searchOkno.getPanelFiltr();
 			panelFiltr.setPlanyLiti(false);
 			break;
 		case 3:
-			tmp = (PromOknoNovyZakaznikAndSearch) promOkna[0];
-			tmp.setPlanExpedice();
-			panelFiltr = tmp.getPanelFiltr();
+			searchOkno.setPlanExpedice();
+			panelFiltr = searchOkno.getPanelFiltr();
 			panelFiltr.setPlanExpedice(j);
 			break;
 		default: JOptionPane.showMessageDialog(hlavniOkno, "Nìco je špatnì v MainActionMenuItemListener, index3()");	
@@ -267,8 +273,7 @@ public class MainActionMenuItemListener implements ActionListener {
 	 * @param j index v PopUpMenu (cislo radku na kterem je v popupmenu umisten)
 	 */
 	private void index4(int j){
-		tmp = (PromOknoNovyZakaznikAndSearch) promOkna[0];
-		ParametryFiltr panelFiltr = tmp.getPanelFiltr();
+		ParametryFiltr panelFiltr = searchOkno.getPanelFiltr();
 		panelFiltr.setVypisy(j);		
 	}
 
@@ -279,16 +284,13 @@ public class MainActionMenuItemListener implements ActionListener {
 	private void index5(int j){
 		switch(j){
 		case 0:
-			tmp = (PromOknoNovyZakaznikAndSearch) promOkna[0];
-			tmp.setVyhledejUpravZakaznika();
+			searchOkno.setVyhledejUpravZakaznika();
 			break;
 		case 1:
-			tmp = (PromOknoNovyZakaznikAndSearch) promOkna[0];
-			tmp.setVyhledejUpravModel();
+			searchOkno.setVyhledejUpravModel();
 			break;
 		case 2:
-			tmp = (PromOknoNovyZakaznikAndSearch) promOkna[0];
-			tmp.setVyhledejUpravZakazku();
+			searchOkno.setVyhledejUpravZakazku();
 			break;
 		default: JOptionPane.showMessageDialog(hlavniOkno, "Nìco je špatnì v MainActionMenuItemListener, index5()");	
 			break;
@@ -299,12 +301,10 @@ public class MainActionMenuItemListener implements ActionListener {
 	private void index6(int j){
 		switch(j){
 		case 0:
-			tmp = (PromOknoNovyZakaznikAndSearch) promOkna[0];
-			tmp.setPridejVinika();
+			searchOkno.setPridejVinika();
 			break;
 		case 1:
-			tmp = (PromOknoNovyZakaznikAndSearch) promOkna[0];
-			tmp.setPridejVadu();
+			searchOkno.setPridejVadu();
 			break;
 		default: JOptionPane.showMessageDialog(hlavniOkno, "Nìco je špatnì v MainActionMenuItemListener, index6()");	
 			break;
@@ -312,19 +312,15 @@ public class MainActionMenuItemListener implements ActionListener {
 	}
 	
 	private void index7(int j){
-		System.out.println("7");
 		switch(j){
 		case 0:
-			tmp = (PromOknoNovyZakaznikAndSearch) promOkna[0];
-			tmp.setVyhledejZakaznika();
+			searchOkno.setVyhledejZakaznika();
 			break;
 		case 1:
-			tmp = (PromOknoNovyZakaznikAndSearch) promOkna[0];
-			tmp.setVyhledejModel();
+			searchOkno.setVyhledejModel();
 			break;
 		case 2:
-			tmp = (PromOknoNovyZakaznikAndSearch) promOkna[0];
-			tmp.setVyhledejZakazku();
+			searchOkno.setVyhledejZakazku();
 			break;
 		default: JOptionPane.showMessageDialog(hlavniOkno, "Nìco je špatnì v MainActionMenuItemListener, index7()");	
 			break;
@@ -334,8 +330,7 @@ public class MainActionMenuItemListener implements ActionListener {
 	private void index8(int j){
 		switch(j){
 		case 0:
-			tmp = (PromOknoNovyZakaznikAndSearch) promOkna[0];
-			tmp.setZalohaDB();
+			searchOkno.setZalohaDB();
 			break;
 		default: JOptionPane.showMessageDialog(hlavniOkno, "Nìco je špatnì v MainActionMenuItemListener, index7()");	
 			break;

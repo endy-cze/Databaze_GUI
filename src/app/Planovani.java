@@ -43,8 +43,6 @@ import storage.SkladOdkazu;
 
 import javax.swing.ListSelectionModel;
 
-import myinterface.NastavOkno;
-
 import java.awt.Color;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -55,7 +53,7 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.JList;
 
-public class Planovani extends JPanel implements NastavOkno, ActionListener, ListSelectionListener, KeyListener {
+public class Planovani extends JPanel implements ActionListener, ListSelectionListener, KeyListener {
 	/**
 	 * Verze
 	 */
@@ -148,13 +146,6 @@ public class Planovani extends JPanel implements NastavOkno, ActionListener, Lis
 	private JLabel lblCzk;
 	private JList list;
 	private JLabel labelSeznamDilcichTermin;
-	
-	
-	@Override
-	public void nastavOkno(int i, int j) {
-		// TODO Auto-generated method stub
-		
-	}
 	
 	public ColorCellTable getTableFyzkusy() {
 		return tableFyzkusy;

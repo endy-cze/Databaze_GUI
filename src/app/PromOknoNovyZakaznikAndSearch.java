@@ -32,23 +32,11 @@ import sablony.tabulka.TableColumnAdjuster;
 import storage.SkladOdkazu;
 
 
-
-
-
-
-
-
-
-
-
-
-
 import javax.swing.border.LineBorder;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
 
-import myinterface.NastavOkno;
 
 import java.awt.FlowLayout;
 import java.awt.event.KeyEvent;
@@ -58,7 +46,7 @@ import java.awt.event.MouseWheelListener;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.LayoutStyle.ComponentPlacement;
 
-public class PromOknoNovyZakaznikAndSearch extends JPanel implements NastavOkno {
+public class PromOknoNovyZakaznikAndSearch extends JPanel {
 	
 	/**
 	 * Verze

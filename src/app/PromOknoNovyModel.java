@@ -17,7 +17,6 @@ import javax.swing.JComboBox;
 import javax.swing.JCheckBox;
 import javax.swing.JScrollPane;
 
-import myinterface.NastavOkno;
 import sablony.MyJButton;
 import sablony.tabulka.ColorCellTable;
 import storage.SkladOdkazu;
@@ -31,7 +30,7 @@ import java.awt.Color;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 
-public class PromOknoNovyModel extends JPanel implements NastavOkno{
+public class PromOknoNovyModel extends JPanel{
 	/**
 	 * Verze
 	 */
@@ -394,12 +393,6 @@ public class PromOknoNovyModel extends JPanel implements NastavOkno{
 		initListComponent();
 		zvetsiPismo();
 		setNovyModel();
-	}
-
-	@Override
-	public void nastavOkno(int i, int j) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	public JLabel getPopisIdModelu() {
