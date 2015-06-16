@@ -63,7 +63,7 @@ public class MyPopUp extends JPopupMenu {
 		this.setBackground(barvy[1]);	
 	    this.setOpaque(true);
 		
-		JMenuItem item = new JMenuItem(nameItems[0]);
+		JMenuItem item = new JMenuItem("1. "+nameItems[0]);
 		item.setFont(fonty[3]);
 		sidePopupMenuItems[radek][0] = item;
 		item.setForeground(barvy[8]);
@@ -84,7 +84,7 @@ public class MyPopUp extends JPopupMenu {
 			separator.setPreferredSize(new Dimension(0,1));
 			this.add(separator);
 			
-			item = new JMenuItem(nameItems[i]);
+			item = new JMenuItem((i+1)+". "+nameItems[i]);
 			item.setFont(fonty[3]);
 			sidePopupMenuItems[radek][i] = item;
 			item.setForeground(barvy[8]);			
