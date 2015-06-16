@@ -41,13 +41,18 @@ public class SkladOdkazu {
 	private SQLStor sql;
 	
 	/**
-	 * Action comandy jednotlivych oken (každy MenuItem v PopUpMenu ma vlastni). Tyto comandy jsou použity i jako actionComandy pro tisk, 
-	 * jenom se pøed nì pøidá ještì øetìzec "PDF". Comandy se nastavujjí v tøíde ParametryFiltr a srovnavaji se v tøíde HledejListener (ActionListener)
+	 * <p>Techto actionComandu by melo být stejne jako JPopupMenuItems.</p>
+	 * <p>Jsou to actionComandy jednotlivych oken (každy MenuItem v PopUpMenu ma vlastni). Tyto comandy jsou použity i jako actionComandy pro tisk, 
+	 * jenom se pøed nì pøidá ještì øetìzec "PDF". Comandy se nastavujjí v tøíde <code>ParametryFiltr</code> a srovnavaji se v tøíde <code>HledejListener</code> (ActionListener).
+	 *  A nebo ve tøíde <code>PromOknoNovyZakaznikAndSearch</code> v metode nastavOkno a srovnavaji v listeneru <code>VyberOrUpravListener</code></p>
+	 * <p>Zatim co koukam, tak se tyto comandy pouzivaji pro tlacítko vyberUprav v <code>PromOknoNovyZakaznikAndSearch</code> a pro JButtony vyhledej (Hledej) a prevodDoPDF v <code>ParametryFiltr</code>.</p>
+	 * <p>Zkontrolovat Listenery... zkotrolovano button v <code>PromOknoNovyZakaznikAndSearch</code> ma <code>VyberOrUpravListener</code> 
+	 * a buttony v <code>ParametryFiltr</code> maji <code>HledejListener</code>. Kolize nehrozi.</p>
 	 */
 	private final String [][] commands = {
 			{"PridejZakaznika", "PridejModel", "PridejZakazku"},
 			{"Planovani", "VyhledejZakaznika", "VyhledejModel", "VyhledejZakazku", "VyhledejZakazku", "VyhledejZmetek", "VyhledejViniky", "VyhledejVady", "VyhledejKapPropocet"},
-			{"NovyOdlitekZmetek", "NovyVycistenyKus", "UpravaCislaTavby"},
+			{"NovyOdlitekZmetek", "UpravaCislaTavby"},
 			{"Expedice", "LiciPlanZakladni", "LiciPlanPlanovaci", "PlanExpedice"},
 			{"VypisStavNeuzavrenychZakazek","DenniVypisOdlitychKusu", "VypisVycistenychKusuZaObdobi", "MzdySlevacu", "VypisOdlitkuVKgKc",
 				"VypisOdlitychKusuOdDo", "VypisPolozekSOdhadHmot", "VypisDleTerminuExpedice", "VypisExpedice od-do",

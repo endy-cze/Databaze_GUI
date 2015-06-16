@@ -99,8 +99,7 @@ public class MainActionMenuItemListener implements ActionListener {
 			case 3:
 				index3(j);
 				break;
-			case 4:
-				// vypisy
+			case 4:// vypisy				
 				index4(j);
 				break;
 			case 5:
@@ -116,13 +115,11 @@ public class MainActionMenuItemListener implements ActionListener {
 				index8(j);
 				break;
 			default:
-				System.out.println("Nothing hapend, MainActionListener 115");
 				throw new Exception("Jsou spatne naindexovany okna. Mas vic sidebutonu. MainActionListener 125 ");
 			}
 		} catch (Exception e) {
 			ExceptionWin.showExceptionMessage(e);
 		}
-		
 	}
 	
 	/**
@@ -224,13 +221,14 @@ public class MainActionMenuItemListener implements ActionListener {
 		case 0:
 			searchOkno.setZadejOdlitek();
 			break;
-		case 1:
+		/*case 1:
 			searchOkno.setZadejVycistenyKus();
 			break;
 		case 2:
 			searchOkno.setUpravCisloTavby();
 			break;
-		case 3:
+		case 3:*/
+		case 1:
 			searchOkno.setVyhledejUpravModel();
 			break;
 		default: JOptionPane.showMessageDialog(hlavniOkno, "Nìco je špatnì v MainActionMenuItemListener, index2()");	

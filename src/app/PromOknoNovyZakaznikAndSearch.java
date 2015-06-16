@@ -98,7 +98,7 @@ public class PromOknoNovyZakaznikAndSearch extends JPanel {
 	public void nastavOkno(int i, int j){
 		jpanelFitr.setVisible(true);
 		table.setVisible(true);
-		if(i == 2 && j == 3){
+		if(i == 2 && j == 1){ // vyjimka pro zmenu Odhadovane hmotnosti, je to vlastne uprava modelu.
 			i = 5;
 			j = 1;
 		}
@@ -118,6 +118,11 @@ public class PromOknoNovyZakaznikAndSearch extends JPanel {
 		if(i == 8){ // zaloha DB
 			setVisibleVyhledej();
 		}
+	}
+	
+	public void addListeners(){
+		this.vyberlistener = new VyberOrUpravListener(this.sklad);
+		this.vyberUprav.addActionListener(vyberlistener);
 	}
 	
 	private void setVisibleProhlizeny(){
@@ -280,11 +285,6 @@ public class PromOknoNovyZakaznikAndSearch extends JPanel {
 		vyberUprav.setText("Zálohovat databázi");
 		jpanelFitr.setVisible(false);
 		table.setVisible(false);
-	}
-	
-	public void addListeners(){
-		this.vyberlistener = new VyberOrUpravListener(this.sklad);
-		this.vyberUprav.addActionListener(vyberlistener);
 	}
 	
 	/**

@@ -236,19 +236,14 @@ public class VyberOrUpravListener implements ActionListener {
 			}
 			hlavniOkno.setWindow(4);
 			break;
-		case 1:
-			JOptionPane.showMessageDialog(hlavniOkno, "Nefunguje, ani nepotøebujete. Použijte Zadat nový odlitek/zmetek");
-			break;
-		case 2:
-			JOptionPane.showMessageDialog(hlavniOkno, "Nefunguje, ani nepotøebujete. Použijte Zadat nový odlitek/zmetek");
-			break;
-		case 3:
+		case 1: // odhadova hmotnost, sem bych se neml dostat
 			/**
 			 * sem se teoreticky nikdy nedostanu protože dìlam pøíkaz uprav model(action comand == upravmodel)
 			 *  (ve skuteènosti dìlam zadej odhadovou hmotnost) zachyti se to døív.
 			 */
+			JOptionPane.showMessageDialog(hlavniOkno, "Odhadova hmotnost, sem bych se nemel dostat, VyberOrUpravListener");
 			break;
-		default: System.out.println("neco je sptne VyberorUpravListener");	
+		default: JOptionPane.showMessageDialog(hlavniOkno, "neco je sptne VyberorUpravListener");	
 			break;
 		}
 		

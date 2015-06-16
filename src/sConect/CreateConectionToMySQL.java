@@ -145,7 +145,9 @@ public class CreateConectionToMySQL implements ActionListener {
     			}
     			
     		}
-    		okno.setVisible(true);
+        	if(okno != null){
+        		okno.setVisible(true);
+        	}
     		loginWindow.setVisible(false);
     		loginWindow.dispose();
         	
