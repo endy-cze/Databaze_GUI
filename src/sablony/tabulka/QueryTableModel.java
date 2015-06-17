@@ -34,6 +34,19 @@ public class QueryTableModel extends AbstractTableModel {
 	private String[] headers;
 	
 	private SimpleDateFormat sdf;
+	
+	public QueryTableModel(String [] names, int rowCount){
+		this.headers = names;
+		colCount = headers.length;
+		cache = new Vector<Object>();
+		for(int i = 0; i < rowCount; i++){
+			String [] record = new String[names.length];
+			for(int j = 0; j < record.length; j++){
+				record[j] = null;
+			}
+			cache.addElement(record);
+		}
+	}
 
 	public QueryTableModel(Statement st) throws Exception {
 		setMyModel(st);
@@ -301,7 +314,7 @@ public class QueryTableModel extends AbstractTableModel {
 	}
 
 	/**
-	 * Tento konstruktor slouží pro generování rozvrhu.
+	 * Tento konstruktor slouží pro generování rozvrhu ve tøídì Planovani.java
 	 * @param rs
 	 * @param jmenaSloupcu
 	 * @throws SQLException

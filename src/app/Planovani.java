@@ -19,6 +19,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.temporal.WeekFields;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -30,10 +31,12 @@ import javax.swing.JButton;
 import javax.swing.border.LineBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.table.TableModel;
 
 import sablony.DateStor;
 import sablony.MyJButton;
 import sablony.MyJDateChooser;
+import sablony.ZmenaHodnoty;
 import sablony.errorwin.ExceptionWin;
 import sablony.tabulka.ColorCellTable;
 import sablony.tabulka.QueryTableModel;
@@ -67,6 +70,11 @@ public class Planovani extends JPanel implements ActionListener, ListSelectionLi
 	private final int radekZacinajiciTabulkaFyzkusy = 14;
 	private static final int maxVyskaFyzKusyTabulky = 300;
 	private static final String acesDenied = "execute command denied to user";
+	public static final int CTVRTEK = 5;
+	private static final int hodinaDriv = 3;
+	private static final int hodinaPozdeji = 8;
+
+	public static final int indexSloupcePlanovaneLiti = 1;
 	
 	private JLabel [] textLabels;
 	private JLabel [] popisLabels;
@@ -98,28 +106,8 @@ public class Planovani extends JPanel implements ActionListener, ListSelectionLi
 	private Font [] fonty; 
 	private Font f = new Font("Tahoma", Font.PLAIN, 14);
 	private Font fb = new Font("Tahoma", Font.BOLD, 15);
-	private Color [] barvy = {
-	  	    new Color(63,63,63),       //0 cerna hlavicka
-	        new Color(88, 88, 87),     //1 mene cerna (pismo)
-	        new Color(98, 98, 98),     //2 mene cerna (pismo)
-	        new Color(106, 200, 235),  //3 azurova (odlhasit)
-	        new Color(112, 216, 255),  //4 azurova svetlejsi (button)
-	        new Color(187, 187, 187),  //5 seda (sipky u navigatoru)
-	        new Color(196, 196, 196),  //6 seda okraje oken
-	        new Color(197, 197, 197),  //7 seda barva (nadpis header, a prihlas, uziv)
-	        new Color(227, 227, 226),  //8 seda pozadi aplikace 
-			new Color(232, 232, 232),  //9 ohraniceni tabulky
-	        new Color(240, 240, 240),  //10 pozadi tlaèítek
-	        new Color(246, 246, 246),  //11 bile pismo v tabulce - novyzakaznik
-			new Color(249, 249, 249),  //12 Bíle pozadí vedlejsi okna
-	  	    new Color(59,59,59), 	   //13 cerna barva ve tlaèitku vyhledavat u tabulky
-	  	    new Color(72,72,72), 	   //14 cerna barva, hlavicka tabulky
-		    new Color(111,111,111),	   //15 ohranièeni tlaèitka
-		    new Color(220,220,220),    //16 selected row color
-		    new Color(232, 232, 232),  //17 pozadí tlaèítka Pøidat 
-	  	    new Color(243, 247, 249),  //18 pozadí tabulky radku (modrejsi)
-	  	    new Color(155,214,246)	   //19 pozadi tabulky pri zmene Azurova
-	};
+	private Color [] barvy;
+	
 	private JScrollPane scrollPane_1;
 	private JLabel textIsCzk;
 	private JLabel lblCena;
@@ -146,22 +134,6 @@ public class Planovani extends JPanel implements ActionListener, ListSelectionLi
 	private JLabel lblCzk;
 	private JList list;
 	private JLabel labelSeznamDilcichTermin;
-	
-	public ColorCellTable getTableFyzkusy() {
-		return tableFyzkusy;
-	}
-	
-	public void setZadatVycistenyKus(String [] parametryZakazky, ResultSet fyzKusyZakazky) throws Exception{
-		this.dokonciZadavani.setActionCommand("DokonciZadavaniVycisteni");
-		pocetNeplanKus.setText("Celkov\u00FD po\u010Det kusù bez datumu vyèištìní:");
-		dokonciZadavani.setText("Ukonèi zadávání vyèištìných kusù");
-		isPlanovaniLiti = false;
-		nadpis.setText("Tabulka vyèištìno:");
-		pridatDatum.setText("Zadej datum vyèištìní");
-		pridatDatum.setActionCommand("ZadejVycistenyKus");
-		setTabulky(parametryZakazky,  fyzKusyZakazky);
-		this.parametryZakazky = parametryZakazky;
-	}
 	
 	public void setPlanovani(String [] parametryZakazky, ResultSet fyzKusyZakazky, int idZakazky) throws Exception{
 		this.dokonciZadavani.setActionCommand("DokoncitPlanovani");
@@ -288,13 +260,14 @@ public class Planovani extends JPanel implements ActionListener, ListSelectionLi
 	 * Create the panel.
 	 */
 	public Planovani(MainFrame hlavniOkno) {
-		setBackground(barvy[12]);
-		setBorder(new LineBorder(barvy[6]));
 		this.hlavniOkno = hlavniOkno;
 		this.sklad = hlavniOkno.getSklad();
+		this.barvy = sklad.getBarvy();
 		this.popisLabels = new JLabel [23];
 		this.sdf = new SimpleDateFormat("dd.MM.yyyy");
 		
+		setBackground(barvy[12]);
+		setBorder(new LineBorder(barvy[6]));
 		dialog = new KapacitniPropocet(sklad);
 		
 		GridBagLayout gridBagLayout = new GridBagLayout();
@@ -946,48 +919,11 @@ public class Planovani extends JPanel implements ActionListener, ListSelectionLi
 				this.pridatDatumLiti(1);
 				tableFyzkusy.getColumAdjuster().adjustColumns();
 
-			} /*else if(com.equalsIgnoreCase("ZadejVycistenyKus")){
-				if (tableFyzkusy.getSelectedRow() == -1) {
-					JOptionPane.showMessageDialog(hlavniOkno, "Vyberte nìjaky odlitek");
-					return;
-				}
-				this.pridatDatumLiti(9);
-				tableFyzkusy.getColumAdjuster().adjustColumn(1);
-
-			} */ /*else if(com.equalsIgnoreCase("DokonciZadavaniVycisteni")){
-				boolean[][] upraveno = tableFyzkusy.getZmeneno();
-				SQLStor sql = sklad.getSql();
-				int x = 9, y = 6;
-				for (int m = 0; m < upraveno.length; m++) {
-					if (upraveno[m][x] || upraveno[m][y]) {
-						String datumLitiStr = (String) tableFyzkusy.getValueAt(m, x);
-						String dilciTerminStr = (String) tableFyzkusy.getValueAt(m, y);
-						Date datumLiti = null;
-						Date dilciTermin = null;
-						if(datumLitiStr != null){
-							if(!datumLitiStr.equalsIgnoreCase("")){
-								datumLiti = sdf.parse((String) tableFyzkusy.getValueAt(m, x));
-							}
-						}
-						if(dilciTerminStr != null){
-							if(!dilciTerminStr.equalsIgnoreCase("")){
-								dilciTermin = sdf.parse((String) tableFyzkusy.getValueAt(m, y));
-							}
-						}					
-						sql.zadejDatumVycistenyKusDilciTermin(
-								Integer.parseInt((String) tableFyzkusy.getValueAt(m, 0)),
-								datumLiti, 
-								dilciTermin);
-					}
-				}
-				JOptionPane.showMessageDialog(hlavniOkno, "Zadávání vyèištìných kusù úspìšnì dokonèeno");
-				
-				
-			} */ else if (com.equalsIgnoreCase("DokoncitPlanovani")) {
+			} else if (com.equalsIgnoreCase("DokoncitPlanovani")) {
 				boolean[][] upraveno = tableFyzkusy.getZmeneno();
 				SQLStor sql = sklad.getSql();
 				for (int m = 0; m < upraveno.length; m++) {
-					if (upraveno[m][1] || upraveno[m][6]) {
+					if (upraveno[m][1] || upraveno[m][6]) { // tady mozna smazat "|| upraveno[m][6]" je to useless. Menime jen slopec 1
 						String datumLitiStr = (String) tableFyzkusy.getValueAt(m, 1);
 						Date datumLiti = null;
 						if(datumLitiStr != null){
@@ -1017,6 +953,12 @@ public class Planovani extends JPanel implements ActionListener, ListSelectionLi
 		}
 	}
 	
+	/**
+	 * <p>Pridani datumu do tabulky fyzické kusy a následné vygenerování tabulky, pro pøehled lití.</p>
+	 * <p>Princip metody: 1. Vem pridávaný datum, Vem oznaèené øádky</p>
+	 * @param indexSloupce èíslo kam se v tabulce fyzické kusy pøidává datum lití.
+	 * @throws ParseException
+	 */
 	private void pridatDatumLiti(int indexSloupce) throws ParseException {
 		int i = tableFyzkusy.getSelectedRow();
 		int[] poleRadku = tableFyzkusy.getSelectedRows();
@@ -1038,17 +980,7 @@ public class Planovani extends JPanel implements ActionListener, ListSelectionLi
 				JOptionPane.showMessageDialog(hlavniOkno, "O víkendu se nelije");
 				return;
 			}
-			if (indexSloupce == 9) {
-				if(tableFyzkusy.getModel().getValueAt(i, 1) == null){
-					JOptionPane.showMessageDialog(hlavniOkno, "Nejdøíve zadejte datum lití v sekci plánování");
-					return;
-				}else if(((String)tableFyzkusy.getModel().getValueAt(i, 1)).equalsIgnoreCase("")){
-					JOptionPane.showMessageDialog(hlavniOkno, "Nejdøíve zadejte datum lití v sekci plánování");
-					return;
-				}
-				tableFyzkusy.getModel().setValueAt("Ano", i, 3);
-				tableFyzkusy.getModel().setValueAt("Ano", i, 4);
-			}
+			
 			String puvodniHodnota = (String) tableFyzkusy.getModel().getValueAt(i, indexSloupce);
 			String novaHodnota = sdf.format(datum);
 
@@ -1057,9 +989,9 @@ public class Planovani extends JPanel implements ActionListener, ListSelectionLi
 			}
 			if (!novaHodnota.equalsIgnoreCase(puvodniHodnota) && tableGenericka.getRowCount() > 0) {
 				prvniTyden.set(Calendar.DAY_OF_WEEK, Calendar.THURSDAY);
-				prvniTyden.set(Calendar.YEAR, Integer.parseInt((String) tableGenericka.getValueAt(0, 12)));
-				prvniTyden.set(Calendar.WEEK_OF_YEAR, Integer.parseInt((String) tableGenericka.getValueAt(0, 1)));
-				prvniTyden.set(Calendar.DAY_OF_WEEK, 2);
+				prvniTyden.set(Calendar.YEAR, Integer.parseInt((String) tableGenericka.getValueAt(0, 12))); // nastaveni rok planovani
+				prvniTyden.set(Calendar.WEEK_OF_YEAR, Integer.parseInt((String) tableGenericka.getValueAt(0, 1))); // nastaveni cisla tydne
+				prvniTyden.set(Calendar.DAY_OF_WEEK, 2); // pondeli
 				
 				LocalDateTime pridavanyDatum = datum.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
 				Instant instant = Instant.ofEpochMilli(prvniTyden.getTimeInMillis());
@@ -1126,7 +1058,7 @@ public class Planovani extends JPanel implements ActionListener, ListSelectionLi
 							}
 						}
 					}
-					tableGenericka.setZmeneno(novyZmen);
+					tableGenericka.setZmeneno(novyZmen); // nastavi v CellRender nove booleanovské pole
 
 					while (prvniTyden.after(pridavanyDen) && tableGenericka.getRowCount() < 53) {
 						prvniTyden.add(Calendar.WEEK_OF_YEAR, -1);
@@ -1158,8 +1090,7 @@ public class Planovani extends JPanel implements ActionListener, ListSelectionLi
 					}
 
 					boolean[][] staryZmen = tableGenericka.getZmeneno();
-					boolean[][] novyZmen = new boolean[staryZmen.length
-							+ pocetPridanychTydnu][staryZmen[0].length];
+					boolean[][] novyZmen = new boolean[staryZmen.length + pocetPridanychTydnu][staryZmen[0].length];
 					for (int in = 0; in < novyZmen.length; in++) {
 						for (int j = 0; j < novyZmen[in].length; j++) {
 							if (in < staryZmen.length) {
@@ -1256,7 +1187,312 @@ public class Planovani extends JPanel implements ActionListener, ListSelectionLi
 		}
 		
 	}
+	
+	private void pridatDatumLiti2() throws ParseException{
+		ColorCellTable tableFyzkusy = this.tableFyzkusy;
+		ColorCellTable tableGenericka= this.tableGenericka;
+		int [] selectedRows = this.tableFyzkusy.getSelectedRows();
+		Date pridavanyDatum = pridatDatumLiti.getDate();
+		
+		// 1. krok algoritmu  zda pridavanyDatum neni sobota ci nedele
+		if(isSundayOrSaturday(pridavanyDatum)){
+			JOptionPane.showMessageDialog(hlavniOkno, "O víkendu se nelije");
+			return;
+		}
+		
+		// 2. krok rozdeleni algoritmu na pridavanyDatum == null a pridavanyDatum != null
+		ZmenaHodnoty [] zmenyHodnot = null;
+		if (pridavanyDatum == null){
+			zmenyHodnot = this.pridavanyDatumIsNull(tableFyzkusy, tableGenericka, selectedRows);
+		} else {
+			zmenyHodnot = this.pridavanyDatumIsNotNull(tableFyzkusy, tableGenericka, selectedRows, pridavanyDatum);
+		}
+		
+		// 3. krok mam zmeny tabulky fyzKusy ted upravim/vygeneruju tabulku tableGenericka
+		// seøazeni pole zmeny hodnot, aby null byli na konci a datumy šli hezky po sobe. chronologicky (normalnì)
+		sortZmeneneHodnoty(zmenyHodnot);
+		
+		// cislo radku v genericke tabulce je jednoznacne identifikováno pomocí roku a èísla týdne
+		Calendar zjistiRokDatum = Calendar.getInstance();
+		zjistiRokDatum.setTime(pridavanyDatum);
+		zjistiRokDatum.setMinimalDaysInFirstWeek(4); // dle ISO 8601 normy prvni tyden musí mít vìtšinu dnù (min 4) v lednu
+		zjistiRokDatum.setFirstDayOfWeek(2); // v èechach je prvni den pondìlí
+		zjistiRokDatum.set(Calendar.HOUR_OF_DAY, hodinaDriv); // nastaveni casu na pulnoc aby to bylo vsude stejny
+		
+		// a) zjistime zda budeme pridavat radky pred již vygenerovany rozvrh (pokud je prazdny tak ne). Pokud ano kolik?
+		int pocTydnuPredRozvrh = this.radekTydnuPredExistujiciRozvrh(zmenyHodnot, tableGenericka, zjistiRokDatum);
+		// b) zjistime jestli budeme pridavat radky za již vygenerovany rozvrh (pokud prazdny tak ano). Pokud ano kolik?
+		int pocTydnuZaRozvrh = this.radekTydnuZaExistujiciRozvrh(zmenyHodnot, tableGenericka, zjistiRokDatum);
+		
+		// c) vytvorime nove booleanovske pole podle poctu novych radku pred a za. všude, kde bude nova hodnota dame False 
+		boolean [][] pole = vytvorBooleanPole(tableGenericka, pocTydnuPredRozvrh, pocTydnuZaRozvrh);
+		
+		//tableGenericka.addRow(predRadek, data, zmeneno);
+		// d) pomocí metody addRow(data, pole); budeme pridavat nove radky s vyplnenými rokem, èíslo tydne, mesic a datem (ano opakujeme a pridavame stale stejne pole)
+		
+		// d) pridame radky pred rozvrh
+		this.pridejRadkyPredRozvrh(zjistiRokDatum, tableGenericka, pocTydnuPredRozvrh, pole);
+		
+		// e) pridame radky za rozvrh
+		this.pridejRadkyZaRozvrh(zjistiRokDatum, tableGenericka, pocTydnuPredRozvrh, pole);
+		
+		// h) vyplnime date pomoci metody v Color table
+		Calendar pom;
+		for(int i = 0; i < zmenyHodnot.length; i++){
+			if(zmenyHodnot[i] == null){
+				break;
+			}
+			// nova hodnota
+			zjistiRokDatum.setTime(zmenyHodnot[i].getDate());
+			pom = (Calendar) zjistiRokDatum.clone();
+			pom.set(Calendar.DAY_OF_WEEK, CTVRTEK); // ctvrtek je vzdy ve spravnem roce
+			this.tableGenericka.addValueGenericTableAtYearWeek(pom.get(Calendar.YEAR), pom.get(Calendar.WEEK_OF_YEAR), zjistiRokDatum.get(Calendar.DAY_OF_WEEK), 1);
+			// stara hodnota
+			zjistiRokDatum.setTime(zmenyHodnot[i].getOldDate());
+			pom = (Calendar) zjistiRokDatum.clone();
+			pom.set(Calendar.DAY_OF_WEEK, CTVRTEK); // ctvrtek je vzdy ve spravnem roce
+			this.tableGenericka.addValueGenericTableAtYearWeek(pom.get(Calendar.YEAR), pom.get(Calendar.WEEK_OF_YEAR), zjistiRokDatum.get(Calendar.DAY_OF_WEEK), -1);
+		}
+	}
+	
+	/**
+	 * Metoda, která pøidá nový záznam do Tabulky FyzKusy a vrátí seznam zmìnìných hodnot, které použijeme pro generaci, popøípadì
+	 * úpravu, tabulky tableGenericka.
+	 * @param tableFyzkusy
+	 * @param tableGenericka
+	 * @param selectedRows seznam radek, kam se da nova hodnota datumu planovani.
+	 * @return Seznam zmenenych hodnot. Nektere hodnoty muzou být null.
+	 * @throws ParseException 
+	 */
+	private ZmenaHodnoty [] pridavanyDatumIsNull(ColorCellTable tableFyzkusy, ColorCellTable tableGenericka, int [] selectedRows) throws ParseException{
+		ZmenaHodnoty [] zmenyHodnot = new ZmenaHodnoty[selectedRows.length];
+		TableModel model = tableFyzkusy.getModel();
+		String novaHodnota = null;
+		
+		for(int i = 0; i < selectedRows.length; i++){
+			zmenyHodnot[i] = null; // inicializace
+			String puvHodnota = (String) model.getValueAt(selectedRows[i], indexSloupcePlanovaneLiti);
+			
+			if(puvHodnota == null){
+				continue; // hodnoty se rovnaj
+			} else {
+				if(puvHodnota.equalsIgnoreCase("")){
+					continue; // hodnoty se rovnaj
+				}
+			}
+			// hodnoty se nerovnaji -> novy zaznam
+			zmenyHodnot[i] = new ZmenaHodnoty(novaHodnota, puvHodnota, selectedRows[i], sdf);	
+			
+			// zápis nové hodnoty do tabulky fyzKusy
+			model.setValueAt(novaHodnota, selectedRows[i], indexSloupcePlanovaneLiti);
+		}
+		return zmenyHodnot;
+	}
+	
+	/**
+	 * Metoda, která pøidá nový záznam do Tabulky FyzKusy a vrátí seznam zmìnìných hodnot, které použijeme pro generaci, popøípadì
+	 * úpravu, tabulky tableGenericka.
+	 * @param tableFyzkusy
+	 * @param tableGenericka
+	 * @param selectedRows
+	 * @param pridavanyDatum
+	 * @return Seznam zmenenych hodnot. Nektere hodnoty muzou být null.
+	 * @throws ParseException 
+	 */
+	private ZmenaHodnoty [] pridavanyDatumIsNotNull(ColorCellTable tableFyzkusy, ColorCellTable tableGenericka, int [] selectedRows, Date pridavanyDatum) throws ParseException{
+		ZmenaHodnoty [] zmenyHodnot = new ZmenaHodnoty[selectedRows.length];
+		TableModel model = tableFyzkusy.getModel();
+		String novaHodnota = sdf.format(pridavanyDatum);
+		
+		for(int i = 0; i < selectedRows.length; i++){
+			zmenyHodnot[i] = null; // inicializace
+			String puvHodnota = (String) model.getValueAt(selectedRows[i], indexSloupcePlanovaneLiti);
+			
+			if(puvHodnota != null){
+				if(puvHodnota.equalsIgnoreCase(novaHodnota)){
+					continue; // hodnoty se rovnaj
+				}
+			}
+			// hodnoty se nerovnaji -> novy zaznam
+			zmenyHodnot[i] = new ZmenaHodnoty(novaHodnota, puvHodnota, selectedRows[i], sdf);	
+			
+			// zápis nové hodnoty do tabulky fyzKusy
+			model.setValueAt(novaHodnota, selectedRows[i], indexSloupcePlanovaneLiti);
+		}
+		return zmenyHodnot;
+	}
+	
+	/**
+	 * Zda daný datum vychází na sobotu èi nedìli.
+	 * @param pridavanyDatum jakýkoliv Date i null
+	 * @return true pokud je to sobota èi nedìle, pokud null tak false, jinak false
+	 */
+	private boolean isSundayOrSaturday(Date pridavanyDatum){
+		if (pridavanyDatum != null){
+			Calendar pridavanyDen = Calendar.getInstance();
+			pridavanyDen.setTime(pridavanyDatum);
+			if (pridavanyDen.get(Calendar.DAY_OF_WEEK) == 1	|| pridavanyDen.get(Calendar.DAY_OF_WEEK) == 7) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	/**
+	 * Metoda pro srovnani hodnot zmenenych. Aby null byli na konci
+	 * @param zmenyHodnot
+	 */
+	private void sortZmeneneHodnoty(ZmenaHodnoty [] zmenyHodnot){
+		// seradim pole zmenyHodnot staèí mi buble sort :D
+		ZmenaHodnoty pom;
+		for (int i = 0; i < zmenyHodnot.length; i++) {
+			for (int j = 0; j < zmenyHodnot.length; j++) {
+				if (zmenyHodnot[j] == null) {
+					if (zmenyHodnot[j+1] == null) {
+						continue;
+					} else { // prohodime null a date
+						pom = zmenyHodnot[j];
+						zmenyHodnot[j] = zmenyHodnot[j + 1];
+						zmenyHodnot[j + 1] = pom;
+					}
+				} else {
+					if (zmenyHodnot[j+1] == null) { // null je za datumem nic se nedeje
+						continue; 
+					} else {
+						if(zmenyHodnot[j].getDate().compareTo(zmenyHodnot[j].getDate()) > 0){
+							pom = zmenyHodnot[j];
+							zmenyHodnot[j] = zmenyHodnot[j+1];
+							zmenyHodnot[j+1] = pom;
+						}
+					}
 
+				}
+			}
+		}
+	}
+
+	private int radekTydnuPredExistujiciRozvrh(ZmenaHodnoty [] zmenyHodnot, ColorCellTable tableGenericka, Calendar zjistiRokDatum){
+		Calendar prvniNoveDatum = (Calendar) zjistiRokDatum.clone();
+		Calendar prvniDatumZTabulky = zjistiRokDatum;
+		
+		if(zmenyHodnot[0] == null){return 0;}// je to seøazene, takže pokud je prvni null, null jsou všechny
+		if(tableGenericka.getRowCount() <= 0){return 0;} // tabulka genericka je prazdna
+		
+		int pocetTydnu = 0;
+		
+		// nastaveni prvniho noveho(zmeneneho) data
+		prvniNoveDatum.setTime(zmenyHodnot[0].getDate()); // prvni nove upravene datum
+		this.set(prvniNoveDatum, prvniNoveDatum.get(Calendar.YEAR), prvniNoveDatum.get(Calendar.WEEK_OF_YEAR), CTVRTEK, hodinaPozdeji);
+		
+		// nastaveni prvniho datumu z generické tabulky
+		int rokPrvniRadka = Integer.parseInt((String)tableGenericka.getValueAt(0, 12)); // prvni rok v rozvrhu
+		int tydenPrvniRadka = Integer.parseInt((String)tableGenericka.getValueAt(0, 1)); // prvni tyden v rozvrhu
+		this.set(prvniDatumZTabulky, rokPrvniRadka, tydenPrvniRadka, CTVRTEK, hodinaDriv);
+
+		if(prvniNoveDatum.after(prvniDatumZTabulky)){ // pokud je nove datum dele nez prvni datum z genericke tabulky je to true 
+			return 0; // prvni nove datum je po prvním datu generické tabulky. Nebudeme generovat øady pøed.
+		}
+		
+		while(prvniNoveDatum.before(prvniDatumZTabulky)){
+			pocetTydnu++;
+			prvniNoveDatum.add(Calendar.WEEK_OF_YEAR, 1);
+		}
+		
+		return pocetTydnu;
+	}
+
+	private int radekTydnuZaExistujiciRozvrh(ZmenaHodnoty [] zmenyHodnot, ColorCellTable tableGenericka, Calendar zjistiRokDatum){
+		Calendar posledniNoveDatum = (Calendar) zjistiRokDatum.clone();
+		Calendar posledniDatumZTabulky = zjistiRokDatum;
+		int i = 0;
+		for(i = 0; i < zmenyHodnot.length; i++){
+			if(zmenyHodnot[i] == null){
+				i--;
+				break;
+			}
+		}
+		int pocetTydnu = 0;
+		if(zmenyHodnot[0] == null){return 0;}// je to seøazene, takže pokud je prvni null, null jsou všechny a nebude se nic menit-nerealny
+		
+		
+		// nastaveni posledniho noveho(zmeneneho) data
+		posledniNoveDatum.setTime(zmenyHodnot[i].getDate()); // posledni nove upravene datum
+		this.set(posledniNoveDatum, posledniNoveDatum.get(Calendar.YEAR), posledniNoveDatum.get(Calendar.WEEK_OF_YEAR), CTVRTEK, hodinaDriv);
+		
+		
+		// pokud je tabulka prazdna vratime pocet tydnu mezi prvnim zmeny hodnot a poslednim zmeny hodnot. (minimalne to musi bejt 1!!)
+		if(tableGenericka.getRowCount() < 0){
+			Calendar prvniNoveDatum = Calendar.getInstance();
+			prvniNoveDatum.setTime(zmenyHodnot[0].getDate()); // posledni nove upravene datum
+			this.set(prvniNoveDatum, prvniNoveDatum.get(Calendar.YEAR), prvniNoveDatum.get(Calendar.WEEK_OF_YEAR), CTVRTEK, hodinaDriv);
+			this.set(posledniNoveDatum, posledniNoveDatum.get(Calendar.YEAR), posledniNoveDatum.get(Calendar.WEEK_OF_YEAR), CTVRTEK, hodinaPozdeji);
+
+			while(prvniNoveDatum.before(posledniNoveDatum)){
+				pocetTydnu++;
+				prvniNoveDatum.add(Calendar.WEEK_OF_YEAR, 1);
+			}
+			return pocetTydnu;
+		}
+		
+		// nastaveni posledniho datumu z generické tabulky
+		int rokPosledniRadka = Integer.parseInt((String)tableGenericka.getValueAt(tableGenericka.getRowCount() - 1, 12)); // posledni rok v rozvrhu
+		int tydenPosledniRadka = Integer.parseInt((String)tableGenericka.getValueAt(tableGenericka.getRowCount() - 1, 1)); // posledni tyden v rozvrhu
+		this.set(posledniDatumZTabulky, rokPosledniRadka, tydenPosledniRadka, CTVRTEK, hodinaPozdeji);
+		
+		
+
+		if(posledniNoveDatum.before(posledniDatumZTabulky)){ // pokud je nove datum driv nez prvni datum z genericke tabulky je to true 
+			return 0; // prvni nove datum je driv nez prvním datu generické tabulky. Nebudeme generovat øady pøed.
+		}
+		
+		while(posledniNoveDatum.after(posledniDatumZTabulky)){
+			pocetTydnu++;
+			posledniNoveDatum.add(Calendar.WEEK_OF_YEAR, 1);
+		}
+		
+		return pocetTydnu;
+	}
+
+	private boolean [][] vytvorBooleanPole(ColorCellTable tableGenericka, int radekPred, int radekZa){
+		boolean [][] starePole = tableGenericka.getZmeneno();
+		if(radekPred == 0 && radekZa == 0){return starePole;}
+		TableModel tm = tableGenericka.getModel();
+		boolean [][] novePole = new boolean [starePole.length + radekPred + radekZa][tm.getColumnCount()];
+		
+		for(int i = 0; i < novePole.length; i++){
+			for(int j = 0; j < novePole[i].length; j++){
+				if(i < radekPred){
+					novePole[i][j] = false;
+				} else if(i < tm.getRowCount() + radekPred){
+					novePole[i][j] = starePole[i - radekPred][j];
+				} else {
+					novePole[i][j] = false;
+				}
+			}
+		}
+		return novePole;
+	}
+	
+	private void pridejRadkyPredRozvrh(Calendar cal, ColorCellTable tableGenericka, int pocTydnuPredRozvrh, boolean [][] pole){
+		// nastaveni prvniho datumu z generické tabulky
+		int rokPrvniRadka = Integer.parseInt((String)tableGenericka.getValueAt(0, 12)); // prvni rok v rozvrhu
+		int tydenPrvniRadka = Integer.parseInt((String)tableGenericka.getValueAt(0, 1)); // prvni tyden v rozvrhu
+		this.set(cal, rokPrvniRadka, tydenPrvniRadka, CTVRTEK, hodinaDriv);
+		for(int i = 0; i < pocTydnuPredRozvrh; i++){
+			String [] data = new String [tableGenericka.getColumnCount()];
+			
+		}
+	}
+	
+	private void pridejRadkyZaRozvrh(Calendar cal, ColorCellTable tableGenericka, int pocTydnuZaRozvrh, boolean [][] pole){
+		
+	}
+	
+	/**
+	 * Metoda pro aktualizaci tabulky fyzické kusy a vygenerované tabulky.
+	 * @param isPlanovaniLiti
+	 * @throws Exception
+	 */
 	private void generujRozvrh(boolean isPlanovaniLiti) throws Exception {
 		SQLStor sql = sklad.getSql();
 		int i = Integer.parseInt(textIdZakazky.getText());
@@ -1280,7 +1516,24 @@ public class Planovani extends JPanel implements ActionListener, ListSelectionLi
 		textLabelOznaceno.setText(Integer.toString(tableFyzkusy.getSelectedRowCount()));
 	}
 	
-	public String nazevMesice(int i) {
+	/**
+	 * Nastavi danemu calendari dany parametry a pak jej vrati
+	 * @param cal Calendar ktery budeme upravovat
+	 * @param year
+	 * @param weekOfYear
+	 * @param dayOfTheWeek
+	 * @param hour
+	 * @return
+	 */
+	private Calendar set(Calendar cal, int year, int weekOfYear, int dayOfTheWeek, int hour){
+		cal.set(Calendar.YEAR, year);
+		cal.set(Calendar.WEEK_OF_YEAR, weekOfYear);
+		cal.set(Calendar.DAY_OF_WEEK, dayOfTheWeek);
+		cal.set(Calendar.HOUR_OF_DAY, hour);
+		return cal;
+	}
+	
+	private String nazevMesice(int i) {
 		String prom;
 		switch (i) {
 		case Calendar.JANUARY:

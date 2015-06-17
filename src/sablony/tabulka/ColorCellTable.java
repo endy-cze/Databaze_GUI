@@ -37,6 +37,7 @@ public class ColorCellTable extends JTable{
 	private JScrollPane scrollPane;
 	private MyTableListener listener;
 	private static final int vyskaHeaderu = 80;
+	private static final int plusRowHeight = 7;
 	
 
 	private Color [] barvy = {
@@ -62,68 +63,50 @@ public class ColorCellTable extends JTable{
 	  	    new Color(155,214,246)	   //19 pozadi tabulky pri zmene Azurova
 	};
 	
-	public ColorCellTable(SkladOdkazu sklad){
-		super();
-		this.sklad = sklad;
-		//this.barvy = sklad.getBarvy();
-		
-		
-		//this.setShowGrid(false);
-		this.setShowHorizontalLines(false);
-		this.cellRenderer = new MyRenderer();
-		this.setDefaultRenderer(Object.class, cellRenderer);
-		this.getTableHeader().setDefaultRenderer(new DefaultHeaderRenderer());
-		this.getTableHeader().setBackground(Color.black);
-		this.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		this.setRowHeight(this.rowHeight+5);
-		
-		//zkouska
-		columAdjuster = new TableColumnAdjuster(this);
-		columAdjuster.adjustColumns();
-	}
-	
 	/**
-	 * 
+	 * Vytvoøí booleanoské pole, které pošle do MyTableListener, ktery taky vytvoøí a taky to pole pošle do MyRenderer,
+	 * který podle tohoto boolean pole vykresluje bunky tabulky.
+	 * Pøi zmìne TableModelu musíš zmìnit tedy oboje, jak MyRender tak MyTableListener
 	 * @param tm
 	 * @param pane
 	 * @param isPlanovani
 	 * @param sklad
 	 */
-	public ColorCellTable(TableModel tm, JScrollPane pane, boolean isPlanovani, SkladOdkazu sklad){
+	public ColorCellTable(QueryTableModel tm, JScrollPane pane, boolean isPlanovani, SkladOdkazu sklad){
 		super(tm);
 		this.sklad = sklad;
 		//this.barvy = sklad.getBarvy();
 		
 		
 		this.scrollPane = pane;
+		// nastaveni booleanovského pole pro render
 		boolean [][] zmeneno = new boolean [tm.getRowCount()][tm.getColumnCount()];
+		// nastaveni Listeneru
 		listener = new MyTableListener(zmeneno,tm);
 		tm.addTableModelListener(listener);
 		
-		//this.setShowGrid(true);
-		this.setShowHorizontalLines(false);
+		// nastaveni Renderu - cell rendere
 		this.cellRenderer = new MyRenderer(tm, zmeneno, isPlanovani);
 		this.setDefaultRenderer(Object.class, cellRenderer);
+		// nastaveni Vzhledu hlavicky
 		this.getTableHeader().setDefaultRenderer(new DefaultHeaderRenderer());
+		
+		this.setShowHorizontalLines(false);
 		this.setFont(sklad.getFonty()[4]); // velikost písma
 		this.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		this.setRowHeight(this.rowHeight+7);
+		this.setRowHeight(this.rowHeight + plusRowHeight);
 				
-		//zkouska
+		// column adjuster
 		columAdjuster = new TableColumnAdjuster(this);
 		columAdjuster.adjustColumns();
 		this.setModel(tm);
-		this.setDefaultEditor(String.class, null);
+		this.setDefaultEditor(String.class, null); 
 	}
 
-	public TableColumnAdjuster getColumAdjuster() {
-		return columAdjuster;
-	}
-	
 	
 	
 	/**
-	 * Pro prazdny model
+	 * 
 	 * @param predRadek øadek pøed, který se bude pøidávat
 	 * @param data
 	 */
@@ -137,25 +120,14 @@ public class ColorCellTable extends JTable{
 		//this.setModel(getModel());
 		
 		this.listener.setZmeneno(zmeneno, this.dataModel);
+		this.cellRenderer.zmeneno = zmeneno;
 		this.getColumAdjuster().adjustColumns();
 	}
-	
-	/*
-	 * Ještì se musí implementovat
-	 * @param predRadek
-	 * @param rady
-	 *
-	public void addRows(int predRadek, Object [][] rady){
-		
-	}
-	*/
-	
-	@Override
-    public boolean isCellEditable(int row, int column) {
-       //all cells false
-       return false;
-    }
-	
+
+	/**
+	 * Nastaví nový model pro tabulku a zároveò aktualizuje booleanovské pole,
+	 * které používá renderer pro vykreslování zmìnìných dat.
+	 */
 	public void setModel(TableModel tm){
 		super.setModel(tm);
 		if(scrollPane != null){			
@@ -177,6 +149,32 @@ public class ColorCellTable extends JTable{
 	}
 	
 	/**
+	 * Metoda ktera nastavuje hodnoty pro tabulku. radek se ale identifikuje podle roku a èísla tydne (neco jako y = [rok,è.tydne]; x = den * 2 - 1 + 3)
+	 * @param rok
+	 * @param tyden
+	 * @param den
+	 * @param value
+	 * @throws IndexOutOfBoundsException pokud radek podle roku a tydne nenajde, nebo den nenalezi cislum <2-6>
+	 */
+	public void addValueGenericTableAtYearWeek(int rok, int tyden, int den, int value) throws IndexOutOfBoundsException{
+		
+	}
+	
+	@Override
+    public boolean isCellEditable(int row, int column) {
+       //all cells false
+       return false;
+    }
+	
+	/**
+	 * Metoda ktera vraci zarovnavac tabulky. jen zavola adjust columns.
+	 * @return TableColumnAdjuster
+	 */
+	public TableColumnAdjuster getColumAdjuster() {
+		return columAdjuster;
+	}
+	
+	/**
 	 * Praticke využití teto metody je pouze u TabulkyFyzKusy, když ukonèujeme plánování
 	 * @return
 	 */
@@ -190,10 +188,6 @@ public class ColorCellTable extends JTable{
 	 */
 	public void setZmeneno(boolean [][] zmen){
 		this.cellRenderer.zmeneno = zmen;
-	}
-	
-	public void setIsPlanovani(boolean isPlan){
-		this.cellRenderer.isRozvrhPlanovani = isPlan;
 	}
 	
 
@@ -212,11 +206,6 @@ public class ColorCellTable extends JTable{
 				for(int j = 0; j < zmeneno[i].length; j++)
 					zmeneno[i][j] = false;
 			}
-		}
-		
-		
-		public MyRenderer() {
-			super();
 		}
 		
 		public void setMyModel(TableModel tm, boolean [][] zmeneno){
@@ -249,7 +238,7 @@ public class ColorCellTable extends JTable{
 		     }
 		   }
 
-			if (tm != null) {
+			if (tm != null) { // zvyrazneni zmenenych hodnot azurovou barvou
 				if (zmeneno[row][column]) {
 					foreground = Color.BLACK;
 					background = barvy[19];
@@ -266,16 +255,5 @@ public class ColorCellTable extends JTable{
 		   renderer.setBackground(background);
 		   return renderer;
 		}
-	}
-	
-	
-	
-	public MyTableListener getListener() {
-		return listener;
-	}
-	
-	public JScrollPane getScrollPane(){
-		return this.scrollPane;
-	}
-	
+	}	
 }

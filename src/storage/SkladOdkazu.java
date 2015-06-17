@@ -23,6 +23,7 @@ import javax.swing.table.TableModel;
 import sablony.MyJButton;
 import sablony.MyPopUp;
 import sablony.tabulka.ColorCellTable;
+import sablony.tabulka.QueryTableModel;
 import sablony.tabulka.TableColumnAdjuster;
 import sqlstorage.SQLStor;
 import app.ExpediceZmetek;
@@ -144,13 +145,13 @@ public class SkladOdkazu {
 	 * nazvySloupcuTabulek[4] = Rozvrh<br>
 	 * prazdna tabulka [5] 
 	 */
-	private TableModel [] prazdneTabulky = {
-			new DefaultTableModel(nazvySloupcuTabulek[0], 10),
-			new DefaultTableModel(nazvySloupcuTabulek[1], 10),
-			new DefaultTableModel(nazvySloupcuTabulek[2], 10),
-			new DefaultTableModel(nazvySloupcuTabulek[3], 5),
-			new DefaultTableModel(nazvySloupcuTabulek[4], 5),
-			new DefaultTableModel(new String []{"Prázdná tabulka", "Prázdná tabulka", ""}, 5)
+	private QueryTableModel [] prazdneTabulky = {
+			new QueryTableModel(nazvySloupcuTabulek[0], 10),
+			new QueryTableModel(nazvySloupcuTabulek[1], 10),
+			new QueryTableModel(nazvySloupcuTabulek[2], 10),
+			new QueryTableModel(nazvySloupcuTabulek[3], 5),
+			new QueryTableModel(nazvySloupcuTabulek[4], 5),
+			new QueryTableModel(new String []{"Prázdná tabulka", "Prázdná tabulka", ""}, 5)
 	};
 	/**
 	 * posledniPouzite[0] = Zakazníci<br>
@@ -297,7 +298,7 @@ public class SkladOdkazu {
 	 * TableModel[3] = Fyzické kusy<br>
 	 * TableModel[4] = Rozvrh<br>
 	 */
-	public TableModel[] getPrazdneTabulky() {
+	public QueryTableModel [] getPrazdneTabulky() {
 		return prazdneTabulky;
 	}
 
