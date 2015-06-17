@@ -14,6 +14,7 @@ public class Test {
 
 	public static void main(String[] args) throws ParseException {
 		SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
+		System.out.println(Calendar.FRIDAY);
 		
 
 	}

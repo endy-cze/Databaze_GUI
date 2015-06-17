@@ -19,7 +19,6 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.temporal.WeekFields;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -73,6 +72,7 @@ public class Planovani extends JPanel implements ActionListener, ListSelectionLi
 	public static final int CTVRTEK = 5;
 	private static final int hodinaDriv = 3;
 	private static final int hodinaPozdeji = 8;
+	private static final int maxPocetRadkuVGenerickeTabulce = 60;
 
 	public static final int indexSloupcePlanovaneLiti = 1;
 	
@@ -916,7 +916,8 @@ public class Planovani extends JPanel implements ActionListener, ListSelectionLi
 					JOptionPane.showMessageDialog(hlavniOkno,"Vyberte nìjaky odlitek");
 					return;
 				}
-				this.pridatDatumLiti(1);
+				//this.pridatDatumLiti(1);
+				this.pridatDatumLiti2();
 				tableFyzkusy.getColumAdjuster().adjustColumns();
 
 			} else if (com.equalsIgnoreCase("DokoncitPlanovani")) {
@@ -1203,9 +1204,9 @@ public class Planovani extends JPanel implements ActionListener, ListSelectionLi
 		// 2. krok rozdeleni algoritmu na pridavanyDatum == null a pridavanyDatum != null
 		ZmenaHodnoty [] zmenyHodnot = null;
 		if (pridavanyDatum == null){
-			zmenyHodnot = this.pridavanyDatumIsNull(tableFyzkusy, tableGenericka, selectedRows);
+			zmenyHodnot = this.pridejDatumWhichIsNullGetZmeneno(tableFyzkusy, tableGenericka, selectedRows);
 		} else {
-			zmenyHodnot = this.pridavanyDatumIsNotNull(tableFyzkusy, tableGenericka, selectedRows, pridavanyDatum);
+			zmenyHodnot = this.priddejDatumWhichIsNotNullGetZmeneno(tableFyzkusy, tableGenericka, selectedRows, pridavanyDatum);
 		}
 		
 		// 3. krok mam zmeny tabulky fyzKusy ted upravim/vygeneruju tabulku tableGenericka
@@ -1214,7 +1215,9 @@ public class Planovani extends JPanel implements ActionListener, ListSelectionLi
 		
 		// cislo radku v genericke tabulce je jednoznacne identifikováno pomocí roku a èísla týdne
 		Calendar zjistiRokDatum = Calendar.getInstance();
-		zjistiRokDatum.setTime(pridavanyDatum);
+		if(pridavanyDatum != null){
+			zjistiRokDatum.setTime(pridavanyDatum);
+		}
 		zjistiRokDatum.setMinimalDaysInFirstWeek(4); // dle ISO 8601 normy prvni tyden musí mít vìtšinu dnù (min 4) v lednu
 		zjistiRokDatum.setFirstDayOfWeek(2); // v èechach je prvni den pondìlí
 		zjistiRokDatum.set(Calendar.HOUR_OF_DAY, hodinaDriv); // nastaveni casu na pulnoc aby to bylo vsude stejny
@@ -1223,6 +1226,13 @@ public class Planovani extends JPanel implements ActionListener, ListSelectionLi
 		int pocTydnuPredRozvrh = this.radekTydnuPredExistujiciRozvrh(zmenyHodnot, tableGenericka, zjistiRokDatum);
 		// b) zjistime jestli budeme pridavat radky za již vygenerovany rozvrh (pokud prazdny tak ano). Pokud ano kolik?
 		int pocTydnuZaRozvrh = this.radekTydnuZaExistujiciRozvrh(zmenyHodnot, tableGenericka, zjistiRokDatum);
+		
+		// Ochrana proti pridani moc radku, respektive aby tabulka rozvrhu nemela moc radku!
+		if (maxPocetRadkuVGenerickeTabulce < tableGenericka.getRowCount() + pocTydnuZaRozvrh + pocTydnuPredRozvrh){
+			this.zrusZmeneno(tableFyzkusy, zmenyHodnot);
+			JOptionPane.showMessageDialog(hlavniOkno, "Pøekroèili jste možný poèet øádkù v rozvrhu. Prosím zvolte Plánované datum lití jinak.");
+			return;
+		}
 		
 		// c) vytvorime nove booleanovske pole podle poctu novych radku pred a za. všude, kde bude nova hodnota dame False 
 		boolean [][] pole = vytvorBooleanPole(tableGenericka, pocTydnuPredRozvrh, pocTydnuZaRozvrh);
@@ -1234,7 +1244,12 @@ public class Planovani extends JPanel implements ActionListener, ListSelectionLi
 		this.pridejRadkyPredRozvrh(zjistiRokDatum, tableGenericka, pocTydnuPredRozvrh, pole);
 		
 		// e) pridame radky za rozvrh
-		this.pridejRadkyZaRozvrh(zjistiRokDatum, tableGenericka, pocTydnuPredRozvrh, pole);
+		this.pridejRadkyZaRozvrh(zjistiRokDatum, tableGenericka, pocTydnuZaRozvrh, pole);
+		
+		// uprava okna aby se dalo scrolovat
+		Dimension s = this.hlavniOkno.getObalVedlejsihoOkna().getPreferredSize();
+		s.height += pocTydnuZaRozvrh*tableGenericka.getRowHeight() + pocTydnuPredRozvrh*tableGenericka.getRowHeight();
+		this.hlavniOkno.getObalVedlejsihoOkna().setPreferredSize(s);
 		
 		// h) vyplnime date pomoci metody v Color table
 		Calendar pom;
@@ -1243,15 +1258,19 @@ public class Planovani extends JPanel implements ActionListener, ListSelectionLi
 				break;
 			}
 			// nova hodnota
-			zjistiRokDatum.setTime(zmenyHodnot[i].getDate());
-			pom = (Calendar) zjistiRokDatum.clone();
-			pom.set(Calendar.DAY_OF_WEEK, CTVRTEK); // ctvrtek je vzdy ve spravnem roce
-			this.tableGenericka.addValueGenericTableAtYearWeek(pom.get(Calendar.YEAR), pom.get(Calendar.WEEK_OF_YEAR), zjistiRokDatum.get(Calendar.DAY_OF_WEEK), 1);
+			if(zmenyHodnot[i].getDate() != null){ // jestli tam byla pred tim nula tak ji neodecitej ;)
+				zjistiRokDatum.setTime(zmenyHodnot[i].getDate());
+				pom = (Calendar) zjistiRokDatum.clone();
+				pom.set(Calendar.DAY_OF_WEEK, CTVRTEK); // ctvrtek je vzdy ve spravnem roce
+				this.tableGenericka.addValueGenericTableAtYearWeek(pom.get(Calendar.YEAR), pom.get(Calendar.WEEK_OF_YEAR), zjistiRokDatum.get(Calendar.DAY_OF_WEEK), 1);
+			}
 			// stara hodnota
-			zjistiRokDatum.setTime(zmenyHodnot[i].getOldDate());
-			pom = (Calendar) zjistiRokDatum.clone();
-			pom.set(Calendar.DAY_OF_WEEK, CTVRTEK); // ctvrtek je vzdy ve spravnem roce
-			this.tableGenericka.addValueGenericTableAtYearWeek(pom.get(Calendar.YEAR), pom.get(Calendar.WEEK_OF_YEAR), zjistiRokDatum.get(Calendar.DAY_OF_WEEK), -1);
+			if(zmenyHodnot[i].getOldDate() != null){ // jestli tam byla pred tim nula tak ji neodecitej ;)
+				zjistiRokDatum.setTime(zmenyHodnot[i].getOldDate());
+				pom = (Calendar) zjistiRokDatum.clone();
+				pom.set(Calendar.DAY_OF_WEEK, CTVRTEK); // ctvrtek je vzdy ve spravnem roce
+				this.tableGenericka.addValueGenericTableAtYearWeek(pom.get(Calendar.YEAR), pom.get(Calendar.WEEK_OF_YEAR), zjistiRokDatum.get(Calendar.DAY_OF_WEEK), -1);
+			}
 		}
 	}
 	
@@ -1264,7 +1283,7 @@ public class Planovani extends JPanel implements ActionListener, ListSelectionLi
 	 * @return Seznam zmenenych hodnot. Nektere hodnoty muzou být null.
 	 * @throws ParseException 
 	 */
-	private ZmenaHodnoty [] pridavanyDatumIsNull(ColorCellTable tableFyzkusy, ColorCellTable tableGenericka, int [] selectedRows) throws ParseException{
+	private ZmenaHodnoty [] pridejDatumWhichIsNullGetZmeneno(ColorCellTable tableFyzkusy, ColorCellTable tableGenericka, int [] selectedRows) throws ParseException{
 		ZmenaHodnoty [] zmenyHodnot = new ZmenaHodnoty[selectedRows.length];
 		TableModel model = tableFyzkusy.getModel();
 		String novaHodnota = null;
@@ -1299,7 +1318,7 @@ public class Planovani extends JPanel implements ActionListener, ListSelectionLi
 	 * @return Seznam zmenenych hodnot. Nektere hodnoty muzou být null.
 	 * @throws ParseException 
 	 */
-	private ZmenaHodnoty [] pridavanyDatumIsNotNull(ColorCellTable tableFyzkusy, ColorCellTable tableGenericka, int [] selectedRows, Date pridavanyDatum) throws ParseException{
+	private ZmenaHodnoty [] priddejDatumWhichIsNotNullGetZmeneno(ColorCellTable tableFyzkusy, ColorCellTable tableGenericka, int [] selectedRows, Date pridavanyDatum) throws ParseException{
 		ZmenaHodnoty [] zmenyHodnot = new ZmenaHodnoty[selectedRows.length];
 		TableModel model = tableFyzkusy.getModel();
 		String novaHodnota = sdf.format(pridavanyDatum);
@@ -1346,7 +1365,7 @@ public class Planovani extends JPanel implements ActionListener, ListSelectionLi
 		// seradim pole zmenyHodnot staèí mi buble sort :D
 		ZmenaHodnoty pom;
 		for (int i = 0; i < zmenyHodnot.length; i++) {
-			for (int j = 0; j < zmenyHodnot.length; j++) {
+			for (int j = 0; j < zmenyHodnot.length - i - 1; j++) {
 				if (zmenyHodnot[j] == null) {
 					if (zmenyHodnot[j+1] == null) {
 						continue;
@@ -1375,8 +1394,10 @@ public class Planovani extends JPanel implements ActionListener, ListSelectionLi
 		Calendar prvniNoveDatum = (Calendar) zjistiRokDatum.clone();
 		Calendar prvniDatumZTabulky = zjistiRokDatum;
 		
-		if(zmenyHodnot[0] == null){return 0;}// je to seøazene, takže pokud je prvni null, null jsou všechny
 		if(tableGenericka.getRowCount() <= 0){return 0;} // tabulka genericka je prazdna
+		if(zmenyHodnot[0] == null){return 0;}// je to seøazene, takže pokud je prvni null, null jsou všechny
+		if(zmenyHodnot[0].getDate() == null){return 0;} // jestlize je null tak ho maji vsichni (protoze najednou pridavame jen jeden datum)
+
 		
 		int pocetTydnu = 0;
 		
@@ -1402,17 +1423,19 @@ public class Planovani extends JPanel implements ActionListener, ListSelectionLi
 	}
 
 	private int radekTydnuZaExistujiciRozvrh(ZmenaHodnoty [] zmenyHodnot, ColorCellTable tableGenericka, Calendar zjistiRokDatum){
-		Calendar posledniNoveDatum = (Calendar) zjistiRokDatum.clone();
+ 		Calendar posledniNoveDatum = (Calendar) zjistiRokDatum.clone();
 		Calendar posledniDatumZTabulky = zjistiRokDatum;
 		int i = 0;
 		for(i = 0; i < zmenyHodnot.length; i++){
 			if(zmenyHodnot[i] == null){
-				i--;
 				break;
 			}
 		}
+		i--; // jelikoz slouzi jako index a ten je od 0 do zmenyHodnot.length - 1 
 		int pocetTydnu = 0;
 		if(zmenyHodnot[0] == null){return 0;}// je to seøazene, takže pokud je prvni null, null jsou všechny a nebude se nic menit-nerealny
+		if(zmenyHodnot[0].getDate() == null){return 0;} // jestlize je null tak ho maji vsichni (protoze najednou pridavame jen jeden datum)
+
 		
 		
 		// nastaveni posledniho noveho(zmeneneho) data
@@ -1447,7 +1470,7 @@ public class Planovani extends JPanel implements ActionListener, ListSelectionLi
 		
 		while(posledniNoveDatum.after(posledniDatumZTabulky)){
 			pocetTydnu++;
-			posledniNoveDatum.add(Calendar.WEEK_OF_YEAR, 1);
+			posledniNoveDatum.add(Calendar.WEEK_OF_YEAR, -1);
 		}
 		
 		return pocetTydnu;
@@ -1473,19 +1496,53 @@ public class Planovani extends JPanel implements ActionListener, ListSelectionLi
 		return novePole;
 	}
 	
-	private void pridejRadkyPredRozvrh(Calendar cal, ColorCellTable tableGenericka, int pocTydnuPredRozvrh, boolean [][] pole){
+	private void pridejRadkyPredRozvrh(Calendar pom, ColorCellTable tableGenericka, int pocTydnuPredRozvrh, boolean [][] zmeneno){
 		// nastaveni prvniho datumu z generické tabulky
 		int rokPrvniRadka = Integer.parseInt((String)tableGenericka.getValueAt(0, 12)); // prvni rok v rozvrhu
 		int tydenPrvniRadka = Integer.parseInt((String)tableGenericka.getValueAt(0, 1)); // prvni tyden v rozvrhu
-		this.set(cal, rokPrvniRadka, tydenPrvniRadka, CTVRTEK, hodinaDriv);
+		this.set(pom, rokPrvniRadka, tydenPrvniRadka, CTVRTEK, hodinaDriv);
 		for(int i = 0; i < pocTydnuPredRozvrh; i++){
+			pom.set(Calendar.DAY_OF_WEEK, CTVRTEK);
+			pom.add(Calendar.WEEK_OF_YEAR, -1);
 			String [] data = new String [tableGenericka.getColumnCount()];
-			
+			data[0] = nazevMesice(pom.get(Calendar.MONTH));
+			data[1] = Integer.toString(pom.get(Calendar.WEEK_OF_YEAR));			
+			data[12] = Integer.toString(pom.get(Calendar.YEAR));
+			pom.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+			for (int j = 2; j < data.length - 2; j += 2) { // pridani datumu (zvyraznenych cerne)
+				data[j] = Integer.toString(pom.get(Calendar.DAY_OF_MONTH));
+				pom.add(Calendar.DAY_OF_WEEK, 1);
+			}
+			tableGenericka.addRow(0, data, zmeneno);
 		}
 	}
 	
-	private void pridejRadkyZaRozvrh(Calendar cal, ColorCellTable tableGenericka, int pocTydnuZaRozvrh, boolean [][] pole){
-		
+	private void pridejRadkyZaRozvrh(Calendar pom, ColorCellTable tableGenericka, int pocTydnuZaRozvrh, boolean [][] zmeneno){
+		// nastaveni prvniho datumu z generické tabulky
+		int rokPosledniRadka = Integer.parseInt((String)tableGenericka.getValueAt(tableGenericka.getRowCount() - 1, 12)); // posledni rok v rozvrhu
+		int tydenPosledniRadka = Integer.parseInt((String)tableGenericka.getValueAt(tableGenericka.getRowCount() - 1, 1)); // posledni tyden v rozvrhu
+		this.set(pom, rokPosledniRadka, tydenPosledniRadka, CTVRTEK, hodinaPozdeji);
+		for(int i = 0; i < pocTydnuZaRozvrh; i++){
+			pom.set(Calendar.DAY_OF_WEEK, CTVRTEK);
+			pom.add(Calendar.WEEK_OF_YEAR, 1);
+			String [] data = new String [tableGenericka.getColumnCount()];
+			data[0] = nazevMesice(pom.get(Calendar.MONTH));
+			data[1] = Integer.toString(pom.get(Calendar.WEEK_OF_YEAR));			
+			data[12] = Integer.toString(pom.get(Calendar.YEAR));
+			pom.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+			for (int j = 2; j < data.length - 2; j += 2) { // pridani datumu (zvyraznenych cerne)
+				data[j] = Integer.toString(pom.get(Calendar.DAY_OF_MONTH));
+				pom.add(Calendar.DAY_OF_WEEK, 1);
+			}
+			tableGenericka.addRow(tableGenericka.getRowCount(), data, zmeneno);
+		}
+	}
+	
+	private void zrusZmeneno(ColorCellTable tableFyzkusy, ZmenaHodnoty [] zmenyHodnot){
+		for(int i = 0; i < zmenyHodnot.length; i++){
+			TableModel model = tableFyzkusy.getModel();
+			model.setValueAt(zmenyHodnot[i].getPuvHodn(), zmenyHodnot[i].getRadek(), indexSloupcePlanovaneLiti);
+		}
 	}
 	
 	/**

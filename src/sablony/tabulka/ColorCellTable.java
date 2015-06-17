@@ -10,6 +10,7 @@ import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyListener;
+import java.util.Calendar;
 
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
@@ -38,6 +39,10 @@ public class ColorCellTable extends JTable{
 	private MyTableListener listener;
 	private static final int vyskaHeaderu = 80;
 	private static final int plusRowHeight = 7;
+	
+	private static final int indexColumnRokPlanovani = 12;
+	private static final int indexColumnCisloTydne = 1;
+
 	
 
 	private Color [] barvy = {
@@ -149,15 +154,35 @@ public class ColorCellTable extends JTable{
 	}
 	
 	/**
-	 * Metoda ktera nastavuje hodnoty pro tabulku. radek se ale identifikuje podle roku a èísla tydne (neco jako y = [rok,è.tydne]; x = den * 2 - 1 + 3)
+	 * Metoda ktera nastavuje hodnoty pro tabulku. radek se ale identifikuje podle roku a èísla tydne (neco jako y = [rok,è.tydne]; x = den * 2 - 1)
 	 * @param rok
 	 * @param tyden
-	 * @param den
+	 * @param den 2-5 pondeli,utery ... patek
 	 * @param value
-	 * @throws IndexOutOfBoundsException pokud radek podle roku a tydne nenajde, nebo den nenalezi cislum <2-6>
+	 * @throws IndexOutOfBoundsException pokud radek podle roku a tydne nenajde, nebo den nenalezi cislum <2-5>
 	 */
 	public void addValueGenericTableAtYearWeek(int rok, int tyden, int den, int value) throws IndexOutOfBoundsException{
-		
+		int pomRok, pomTyden;
+		for(int i = 0; i < this.getRowCount(); i++){
+			pomTyden = Integer.parseInt((String) this.getValueAt(i, indexColumnCisloTydne)); // cislo tydne
+			pomRok = Integer.parseInt((String) this.getValueAt(i, indexColumnRokPlanovani));  // rok
+			if(pomTyden == tyden && pomRok == rok){
+				String oldStringValue = (String) this.getValueAt(i, 2 * den - 1);
+				int oldValue;
+				if(oldStringValue != null){
+					if(oldStringValue.equalsIgnoreCase("")){
+						oldValue = 0;												
+					} else {
+					oldValue = Integer.parseInt(oldStringValue);			
+					} 
+				} else {oldValue = 0;}
+				
+				value = value + oldValue;
+				if(value < 0){throw new IndexOutOfBoundsException("Hodnota je mensi nez nula. Nemozne");}
+				this.setValueAt(Integer.toString(value), i, 2 * den - 1);
+				break;
+			}
+		}
 	}
 	
 	@Override

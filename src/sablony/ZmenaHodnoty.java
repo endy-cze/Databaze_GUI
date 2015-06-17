@@ -29,11 +29,17 @@ public class ZmenaHodnoty {
 		this.novaHodn = novaHodn;
 		this.puvHodn = puvHodn;
 		this.radek = radek;
-		this.novaHodnDate = sdf.parse(novaHodn);
+		try{
+			this.novaHodnDate = sdf.parse(novaHodn);
+		} catch (Exception e){
+			this.novaHodnDate = null;
+			this.novaHodn = null;
+		}
 		try{
 			this.staraHodnDate = sdf.parse(puvHodn);
-		} catch (ParseException e){
+		} catch (Exception e){
 			this.staraHodnDate = null;
+			this.puvHodn = null;
 		}
 		
 	}
