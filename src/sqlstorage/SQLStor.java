@@ -1360,33 +1360,6 @@ public class SQLStor {
 		c.execute();
 	}
 	
-	/*public void zadejDatumVycistenyKusDilciTermin(int idKusu, Date datumVycisteni, Date dilciTermin) throws SQLException{
-		if(idKusu < 0){
-			JOptionPane.showMessageDialog(hlavniOkno, "Id fyz. kusu je špatnì zapsaný");
-			return;
-		}
-		int i = 3, j = 4;
-		if(cst[i][j] == null){
-			cst[i][j] = conn.prepareCall(sqlPrikazy[i][j]);
-			naposledyPouzito[i][j] = new Date();
-		}
-		c = cst[i][j];
-		c.setInt(1, idKusu);
-		if(datumVycisteni == null) {
-			c.setNull(2, java.sql.Types.DATE);		
-		}else {
-			java.sql.Date sqlDate = new java.sql.Date(datumVycisteni.getTime());
-			c.setDate(2, sqlDate);  
-		}
-		if(dilciTermin == null) {
-			c.setNull(3, java.sql.Types.DATE);		
-		}else {
-			java.sql.Date sqlDate = new java.sql.Date(dilciTermin.getTime());
-			c.setDate(3, sqlDate);   
-		}
-		c.execute();
-	}*/
-	
 	/**
 	 * 
 	 * @param idFyzKusu
