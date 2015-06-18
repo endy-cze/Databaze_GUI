@@ -179,7 +179,9 @@ public class ColorCellTable extends JTable{
 				
 				value = value + oldValue;
 				if(value < 0){throw new IndexOutOfBoundsException("Hodnota je mensi nez nula. Nemozne");}
-				this.setValueAt(Integer.toString(value), i, 2 * den - 1);
+				else if(value == 0){this.setValueAt(null, i, 2 * den - 1);} 
+				else{this.setValueAt(Integer.toString(value), i, 2 * den - 1);}
+				
 				break;
 			}
 		}
