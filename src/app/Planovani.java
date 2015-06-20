@@ -54,6 +54,9 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
 import javax.swing.JList;
+import javax.swing.JTabbedPane;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
 
 public class Planovani extends JPanel implements ActionListener, ListSelectionListener, KeyListener {
 	/**
@@ -134,6 +137,9 @@ public class Planovani extends JPanel implements ActionListener, ListSelectionLi
 	private JLabel lblCzk;
 	private JList list;
 	private JLabel labelSeznamDilcichTermin;
+	private JTabbedPane tabbedPane;
+	private JScrollPane scrollPane_2;
+	private JTable stavZakazkyTable;
 	
 	public void setPlanovani(String [] parametryZakazky, ResultSet fyzKusyZakazky, int idZakazky) throws Exception{
 		this.dokonciZadavani.setActionCommand("DokoncitPlanovani");
@@ -148,7 +154,13 @@ public class Planovani extends JPanel implements ActionListener, ListSelectionLi
 		
 		ResultSet rs = sklad.getSql().vyberDilciTerminy(idZakazky);
 		DefaultListModel<DateStor> mod = createListModel(rs);
+		
 		list.setModel(mod);
+		
+		// odlito vycisteno ...
+		rs = sklad.getSql().vypisStavuNeuzavrenychZakazekShort(idZakazky, null, null, null, 0, null, null);
+		QueryTableModel tm = new QueryTableModel(rs);
+		stavZakazkyTable.setModel(tm);
 	}
 	
 	/**
@@ -271,7 +283,7 @@ public class Planovani extends JPanel implements ActionListener, ListSelectionLi
 		dialog = new KapacitniPropocet(sklad);
 		
 		GridBagLayout gridBagLayout = new GridBagLayout();
-		gridBagLayout.columnWidths = new int[]{20, 109, 86, 20, 75, 0, 48, 0, 20, 90, 30, 40, 30, 20, 10, 88, 40, 55, 20, 123, 0, 20, 0};
+		gridBagLayout.columnWidths = new int[]{20, 109, 86, 20, 75, 0, 48, 0, 20, 90, 30, 40, 30, 20, 10, 88, 40, 55, 20, 280, 0, 20, 0};
 		gridBagLayout.rowHeights = new int[]{15, 0, 0, 12, 0, 0, 0, 0, 0, 0, 25, 30, 30, 0, 100, 30, 25, 0, 20, 0};
 		gridBagLayout.columnWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, Double.MIN_VALUE};
 		gridBagLayout.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, Double.MIN_VALUE};
@@ -456,16 +468,25 @@ public class Planovani extends JPanel implements ActionListener, ListSelectionLi
 		gbc_textJmenoModelu.gridy = 5;
 		add(textJmenoModelu, gbc_textJmenoModelu);
 		
+		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
+		GridBagConstraints gbc_tabbedPane = new GridBagConstraints();
+		gbc_tabbedPane.gridheight = 6;
+		gbc_tabbedPane.insets = new Insets(0, 0, 5, 5);
+		gbc_tabbedPane.fill = GridBagConstraints.BOTH;
+		gbc_tabbedPane.gridx = 19;
+		gbc_tabbedPane.gridy = 5;
+		add(tabbedPane, gbc_tabbedPane);
+		
 		list = new JList<DateStor>();
+		tabbedPane.addTab("Seznam dílèích termínù", null, list, null);
 		list.setBorder(new LineBorder(new Color(0, 0, 0), 1, true));
 		list.setFont(f);
-		GridBagConstraints gbc_list = new GridBagConstraints();
-		gbc_list.gridheight = 5;
-		gbc_list.insets = new Insets(0, 0, 5, 5);
-		gbc_list.fill = GridBagConstraints.BOTH;
-		gbc_list.gridx = 19;
-		gbc_list.gridy = 5;
-		add(list, gbc_list);
+		
+		scrollPane_2 = new JScrollPane();
+		tabbedPane.addTab("Stav zakázky", null, scrollPane_2, null);
+		
+		stavZakazkyTable = new ColorCellTable(sklad.getPrazdneTabulky()[0], scrollPane_2, false, sklad);
+		scrollPane_2.setViewportView(stavZakazkyTable);
 		
 		JLabel lblPaganrka = new JLabel("Pagan\u00FDrka:");
 		popisLabels[9] = lblPaganrka;
