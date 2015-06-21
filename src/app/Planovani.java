@@ -130,6 +130,7 @@ public class Planovani extends JPanel implements ActionListener, ListSelectionLi
 	private JButton btnPropoet;
 	
 	private String [] parametryZakazky;
+	private int idZakazky;
 	private JLabel lblTermnExpedice;
 	private JLabel textLabelTerminExpedice;
 	private JLabel lblPesnCena;
@@ -140,8 +141,15 @@ public class Planovani extends JPanel implements ActionListener, ListSelectionLi
 	private JTabbedPane tabbedPane;
 	private JScrollPane scrollPane_2;
 	private JTable stavZakazkyTable;
+	private JButton smazatFyzKusy;
+	
+	public void setPlanovaniAndSmaz(String [] parametryZakazky, ResultSet fyzKusyZakazky, int idZakazky) throws Exception{
+		setPlanovani(parametryZakazky, fyzKusyZakazky, idZakazky);
+		smazatFyzKusy.setVisible(true);
+	}
 	
 	public void setPlanovani(String [] parametryZakazky, ResultSet fyzKusyZakazky, int idZakazky) throws Exception{
+		smazatFyzKusy.setVisible(false);
 		this.dokonciZadavani.setActionCommand("DokoncitPlanovani");
 		dokonciZadavani.setText("Ukon\u010Dit pl\u00E1nov\u00E1n\u00ED");
 		pocetNeplanKus.setText("Celkov\u00FD po\u010Det nenapl\u00E1novan\u00FDch kus\u016F t\u00E9to zak\u00E1zky:");
@@ -150,6 +158,7 @@ public class Planovani extends JPanel implements ActionListener, ListSelectionLi
 		nadpis.setText("Pl\u00E1nov\u00E1n\u00ED lit\u00ED:");
 		setTabulky(parametryZakazky,  fyzKusyZakazky);
 		this.parametryZakazky = parametryZakazky;
+		this.idZakazky = idZakazky;
 		
 		
 		ResultSet rs = sklad.getSql().vyberDilciTerminy(idZakazky);
@@ -283,9 +292,9 @@ public class Planovani extends JPanel implements ActionListener, ListSelectionLi
 		dialog = new KapacitniPropocet(sklad);
 		
 		GridBagLayout gridBagLayout = new GridBagLayout();
-		gridBagLayout.columnWidths = new int[]{20, 109, 86, 20, 75, 0, 48, 0, 20, 90, 30, 40, 30, 20, 10, 88, 40, 55, 20, 280, 0, 20, 0};
+		gridBagLayout.columnWidths = new int[]{20, 109, 86, 20, 75, 0, 48, 0, 20, 90, 30, 40, 30, 20, 10, 88, 40, 55, 20, 90, 120, 0, 20, 0};
 		gridBagLayout.rowHeights = new int[]{15, 0, 0, 12, 0, 0, 0, 0, 0, 0, 25, 30, 30, 0, 100, 30, 25, 0, 20, 0};
-		gridBagLayout.columnWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, Double.MIN_VALUE};
+		gridBagLayout.columnWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, Double.MIN_VALUE};
 		gridBagLayout.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, Double.MIN_VALUE};
 		setLayout(gridBagLayout);
 		
@@ -392,7 +401,7 @@ public class Planovani extends JPanel implements ActionListener, ListSelectionLi
 		labelSeznamDilcichTermin.setFont(fb);
 		GridBagConstraints gbc_labelSeznamDilcichTermin = new GridBagConstraints();
 		gbc_labelSeznamDilcichTermin.insets = new Insets(0, 0, 5, 5);
-		gbc_labelSeznamDilcichTermin.gridx = 19;
+		gbc_labelSeznamDilcichTermin.gridx = 20;
 		gbc_labelSeznamDilcichTermin.gridy = 4;
 		add(labelSeznamDilcichTermin, gbc_labelSeznamDilcichTermin);
 		
@@ -470,6 +479,7 @@ public class Planovani extends JPanel implements ActionListener, ListSelectionLi
 		
 		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		GridBagConstraints gbc_tabbedPane = new GridBagConstraints();
+		gbc_tabbedPane.gridwidth = 2;
 		gbc_tabbedPane.gridheight = 6;
 		gbc_tabbedPane.insets = new Insets(0, 0, 5, 5);
 		gbc_tabbedPane.fill = GridBagConstraints.BOTH;
@@ -797,6 +807,18 @@ public class Planovani extends JPanel implements ActionListener, ListSelectionLi
 		gbc_pridatDatum.gridy = 12;
 		add(pridatDatum, gbc_pridatDatum);
 		
+		smazatFyzKusy = new MyJButton("Smazat vybrané kusy", 16, 1, sklad);
+		smazatFyzKusy.setToolTipText("Smaze vybrane fyzick\u00E9 kusy a automaticky v datab\u00E1zi vygeneruje nov\u00E9 podle pod\u010Du objednanych kus\u016F");
+		smazatFyzKusy.setActionCommand("SmazatFyzickeKusy");
+		smazatFyzKusy.addActionListener(this);
+		GridBagConstraints gbc_smazatFyzKusy = new GridBagConstraints();
+		gbc_smazatFyzKusy.fill = GridBagConstraints.BOTH;
+		gbc_smazatFyzKusy.gridwidth = 3;
+		gbc_smazatFyzKusy.insets = new Insets(0, 0, 5, 5);
+		gbc_smazatFyzKusy.gridx = 17;
+		gbc_smazatFyzKusy.gridy = 12;
+		add(smazatFyzKusy, gbc_smazatFyzKusy);
+		
 		JLabel lblOznaenoKus = new JLabel("Ozna\u010Deno kus\u016F:");
 		GridBagConstraints gbc_lblOznaenoKus = new GridBagConstraints();
 		gbc_lblOznaenoKus.anchor = GridBagConstraints.WEST;
@@ -814,7 +836,7 @@ public class Planovani extends JPanel implements ActionListener, ListSelectionLi
 		
 		GridBagConstraints gbc_scrollPane_1 = new GridBagConstraints();
 		gbc_scrollPane_1.insets = new Insets(0, 0, 5, 5);
-		gbc_scrollPane_1.gridwidth = 20;
+		gbc_scrollPane_1.gridwidth = 21;
 		gbc_scrollPane_1.fill = GridBagConstraints.BOTH;
 		gbc_scrollPane_1.gridx = 1;
 		gbc_scrollPane_1.gridy = 14;
@@ -886,7 +908,7 @@ public class Planovani extends JPanel implements ActionListener, ListSelectionLi
 		add(pocetNeplanovanychKusu, gbc_pocetNeplanovanychKusu);
 		GridBagConstraints gbc_scrollPaneGeneric = new GridBagConstraints();
 		gbc_scrollPaneGeneric.insets = new Insets(0, 0, 5, 5);
-		gbc_scrollPaneGeneric.gridwidth = 20;
+		gbc_scrollPaneGeneric.gridwidth = 21;
 		gbc_scrollPaneGeneric.fill = GridBagConstraints.BOTH;
 		gbc_scrollPaneGeneric.gridx = 1;
 		gbc_scrollPaneGeneric.gridy = 17;
@@ -958,6 +980,8 @@ public class Planovani extends JPanel implements ActionListener, ListSelectionLi
 					}
 				}
 				JOptionPane.showMessageDialog(hlavniOkno, "Plánování úspìšnì dokonèeno");
+			} else if(com.equalsIgnoreCase("SmazatFyzickeKusy")){
+				this.smazFyzickeKusy();
 			}
 		} catch (Exception e1) {
 			if(e1.getLocalizedMessage() != null){
@@ -1348,6 +1372,30 @@ public class Planovani extends JPanel implements ActionListener, ListSelectionLi
 		pocetNeplanovanychKusu.setText(Integer.toString(ts.pocetNenaplanovanychKusu));
 		tableGenericka.setModel(tableModel);
 		tableGenericka.getColumAdjuster().adjustColumns();
+	}
+	
+	/**
+	 * Metoda ktera smaze vybrané fyzické kusy z tabulky
+	 * @throws Exception 
+	 */
+	private void smazFyzickeKusy() throws Exception{
+		//smazani
+		SQLStor sql = sklad.getSql();
+		int [] selectedRows = this.tableFyzkusy.getSelectedRows();
+		int idKusu, pom;
+		for(int i = 0; i < selectedRows.length; i++){
+			idKusu = Integer.parseInt((String)tableFyzkusy.getValueAt(selectedRows[i], 0));
+			pom = sql.smazFyzickyKus(idKusu); // vraci status jeste muzu nejak osetøit
+			if(pom != SQLStor.USPECH){
+				throw new Exception("Spatne ID nebo jiny duvod");
+			}
+		}
+		JOptionPane.showMessageDialog(hlavniOkno, "Vybrané fyzické kusy byli smazány.");
+		// generuj kusy
+		sql.gennerujNoveKusy(idZakazky); // tady vyskoci upozorneni
+		// update
+		ResultSet fyzKusy = sql.vyberFyzKusy(this.idZakazky).rs;
+		setPlanovaniAndSmaz(this.parametryZakazky, fyzKusy, this.idZakazky);
 	}
 
 	@Override

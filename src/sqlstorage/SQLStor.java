@@ -47,6 +47,13 @@ public class SQLStor {
 	private SimpleDateFormat sdf;
 	
 	/**
+	 * Statusy pro smazani fyzickeho kusu
+	 */
+	public static final int USPECH = 1;
+	public static final int SPATNEID = 2;
+	public static final int SQLNULL = 0;
+	
+	/**
 	 * Sql prikazy
 	 */
 	private final String [][] sqlPrikazy = {
@@ -64,6 +71,7 @@ public class SQLStor {
 				"{CALL pomdb.vypisStavNeuzavrenychZakazek_short(?,?,?,?,?,?,?)}"},
 			{"{CALL pomdb.liciPlanZakl(?,?,?)}", "{CALL pomdb.liciPlanPlanovaci(?,?,?)}", "{CALL pomdb.vyberDilciTerminy(?)}", "{CALL pomdb.vyberDilciTerminySeJmeny(?)}", 
 				"{CALL pomdb.plan_expedice()}"},
+			{"{CALL pomdb.smaz_fyz_kus(?,?)}"},
 			{"{CALL pomdb.zalohaDatabaze()}"}
 	};
 	/**
@@ -115,7 +123,7 @@ public class SQLStor {
 		}
 		c = cst[i][j];
 		c.setInt(1, idZakazky);
-		JOptionPane.showMessageDialog(hlavniOkno, "Hotovo");
+		JOptionPane.showMessageDialog(hlavniOkno, "Nové kusy generovány");
 		c.execute();
 	}
 	
@@ -1786,7 +1794,7 @@ public class SQLStor {
 	}
 	
 	public Statement zalohaDB() throws SQLException{
-		int i = 7, j = 0;
+		int i = 8, j = 0;
 		if(cst[i][j] == null){
 			cst[i][j] = conn.prepareCall(sqlPrikazy[i][j]);
 			naposledyPouzito[i][j] = new Date();
@@ -1795,6 +1803,35 @@ public class SQLStor {
 		
 		c.execute();
 		return c;
+	}
+	
+	/**
+	 * <p>Metoda pro smazani jednoho fyzického kusu v databázi</p>
+	 * Statusy pro vraceni:
+	 * <ol>
+	 * 	<li>Uspesny prubeh</li>
+	 * <ol>
+	 * @param idKusu id fyzického kusu
+	 * @return daný status smazani
+	 * @throws SQLException 
+	 */
+	public int smazFyzickyKus(int idKusu) throws SQLException{
+		int i = 7, j = 0;
+		if(cst[i][j] == null){
+			cst[i][j] = conn.prepareCall(sqlPrikazy[i][j]);
+			naposledyPouzito[i][j] = new Date();
+		}
+		c = cst[i][j];
+		c.setInt(1, idKusu);
+		c.execute();
+		int rst = c.getInt(2);
+		if(rst== USPECH){
+			return USPECH;
+		} else if (rst == SQLNULL){
+			return SQLNULL;
+		} else {
+			return SPATNEID;
+		}
 	}
 	
 	

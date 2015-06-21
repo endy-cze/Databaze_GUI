@@ -108,7 +108,7 @@ public class MainActionMenuItemListener implements ActionListener {
 			case 6:
 				index6(j);
 				break;
-			case 7:
+			case 7: // smazani
 				index7(j);
 				break;
 			case 8:
@@ -304,17 +304,21 @@ public class MainActionMenuItemListener implements ActionListener {
 		}
 	}
 	
+	/**
+	 * Smazani fyzickych kusu
+	 * @param j
+	 */
 	private void index7(int j){
 		switch(j){
 		case 0:
-			searchOkno.setVyhledejZakaznika();
+			searchOkno.setSmazFyzKusy();
 			break;
-		case 1:
+		/*case 1:
 			searchOkno.setVyhledejModel();
 			break;
 		case 2:
 			searchOkno.setVyhledejZakazku();
-			break;
+			break;*/
 		default: JOptionPane.showMessageDialog(hlavniOkno, "Nìco je špatnì v MainActionMenuItemListener, index7()");	
 			break;
 		}

@@ -328,10 +328,32 @@ public class VyberOrUpravListener implements ActionListener {
 	
 	/** 
 	 * Obsluha smazani
-	 * @param j teoreticky by mìlo bejt rozpetí od 0 do 11
+	 * @param j 
+	 * @throws Exception 
 	 */
-	private void index7(int j) {
-		// TODO Auto-generated method stub
+	private void index7(int j) throws Exception {
+		switch(j){
+		case 0:
+			// stejny jako index1(0);
+			String [] parametryZakazky = null;
+			int selectedRow = table.getSelectedRow();
+			parametryZakazky = new String [table.getColumnCount()-1]; // mam tam nastaveny jeden sloupec navic (nastaveny v Querry table modelu, kvuli CollumAdjusteru)
+			for(int m = 0; m < parametryZakazky.length; m++){
+				parametryZakazky[m] = (String) this.table.getValueAt(selectedRow, m);
+			}
+			String columnName = table.getColumnName(0);
+			if(columnName.equalsIgnoreCase("ID zakázky") || columnName.equalsIgnoreCase("ID_zakazky")){
+				ResultSet fyzKusy = sql.vyberFyzKusy(idVybranehoObjektu).rs;
+				planovani.setPlanovaniAndSmaz(parametryZakazky, fyzKusy, idVybranehoObjektu);
+			} else {
+				JOptionPane.showMessageDialog(hlavniOkno, "Špatná tabulka");
+				return;
+			}
+			hlavniOkno.setWindow(3);
+			break;
+		default: JOptionPane.showMessageDialog(hlavniOkno, "neco je spatne VyberorUpravListener index7()");	
+			break;
+		}
 		
 	}
 	
@@ -342,7 +364,6 @@ public class VyberOrUpravListener implements ActionListener {
 	 * @throws InterruptedException 
 	 */
 	private void index8(int j) throws InterruptedException, ExecutionException {
-		// TODO Auto-generated method stub
 		ProgresBarFrame bar = sklad.getBar();
 		bar.setZalohaDB();
 		bar.setVisible(true);

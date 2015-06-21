@@ -113,7 +113,8 @@ public class PromOknoNovyZakaznikAndSearch extends JPanel {
 			}
 		}
 		if(i == 7){ // 7 = smazani zakazky neni implemetovano
-			setVisibleProhlizeny();
+			//setVisibleProhlizeny();
+			setVisibleVyhledej();
 		}
 		if(i == 8){ // zaloha DB
 			setVisibleVyhledej();
@@ -285,6 +286,13 @@ public class PromOknoNovyZakaznikAndSearch extends JPanel {
 		vyberUprav.setText("Zálohovat databázi");
 		jpanelFitr.setVisible(false);
 		table.setVisible(false);
+	}
+	
+	public void setSmazFyzKusy(){
+		this.setVyhledejZakazku();
+		vyberUprav.setText("Vybrat zakázku");
+		jpanelFitr.setVisible(true);
+		table.setVisible(true);		
 	}
 	
 	/**

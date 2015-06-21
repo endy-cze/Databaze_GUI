@@ -39,22 +39,6 @@ public class MyJButton extends JButton {
 		}
 	}
 	
-	public MyJButton(String nazev, int pozadi, int popredi){
-		super(nazev);
-		this.setFont(new Font("Tahoma", Font.PLAIN, 12));
-		this.setForeground(barvy[popredi]);
-		this.setBackground(barvy[pozadi]);
-		this.setContentAreaFilled(false);
-		this.setPreferredSize(new Dimension(160, 27));
-		this.setOpaque(true);
-		this.setBorder(new EtchedBorder(EtchedBorder.LOWERED, barvy[6], null));
-		//this.setBorder(new LineBorder(barvy[6]));
-		if(pozadi != 10 || popredi != 1) {
-			this.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-		}
-		
-	}
-	
 	public boolean isFocusPainted(){
 		return false;
 	}

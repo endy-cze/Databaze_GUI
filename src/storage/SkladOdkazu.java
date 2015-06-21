@@ -60,7 +60,7 @@ public class SkladOdkazu {
 				"VypisZpozdeneVyroby", "InventuraRozpracVyroby", "VypisSkladuKeDnesnimuDni", "VypisZmetkuZaObdobi", "VypisVinikuVKgKc"},
 			{"UpravaZakaznika", "UpravaModelu", "UpravaZakazky"},
 			{"Pøidat viníky", "Pøidat druhy vad"},
-			{"SmazatZakaznika", "SmazatModel", "SmazatZakazku"},
+			{"SmazatFyzKusy"},
 			{"ZalohaDB"}
 	};
 

@@ -4,7 +4,6 @@ import iListeners.MainActionMenuItemListener;
 import iListeners.MainSideJButtonListener;
 import iListeners.Odhlasit;
 
-import java.awt.ComponentOrientation;
 import java.awt.Cursor;
 import java.awt.Font;
 import java.awt.Rectangle;
@@ -194,7 +193,8 @@ public class MainFrame extends JFrame {
 		sidePopupMenulist[i] = new MyPopUp(jmena6, sidePopupMenuItems, i, sklad);
 		
 		i = 7;
-		String [] jmena7 = {"Smazat z\u00E1kazn\u00EDka", "Smazat model", "Smazat zak\u00E1zku"};
+		//String [] jmena7 = {"Smazat z\u00E1kazn\u00EDka", "Smazat model", "Smazat zak\u00E1zku"};
+		String [] jmena7 = {"Smazat fyzické kusy"};
 		sidePopupMenulist[i] = new MyPopUp(jmena7, sidePopupMenuItems, i, sklad);
 		
 		i = 8;
@@ -211,13 +211,13 @@ public class MainFrame extends JFrame {
 		sideListButton[4] = new MyJButton("V\u00FDpisy", 10, 1, sklad);
 		sideListButton[5] = new MyJButton("\u00DAprava zak\u00E1zky",10,1, sklad);
 		sideListButton[6] = new MyJButton("Pøidat vady nebo viníky", 10, 1, sklad);
-		sideListButton[7] = new MyJButton("Smazat zak\u00E1zku", 10, 1, sklad);
+		sideListButton[7] = new MyJButton("Smazat fyz. kusy", 10, 1, sklad);
 		sideListButton[8] = new MyJButton("Záloha databáze", 10, 1, sklad);
 		
 		/**
 		 * Zatim necham tlaèitko smazat neviditelné, protože není implementováno
 		 */
-		sideListButton[7].setVisible(false);
+		//sideListButton[7].setVisible(false);
 		
 		sklad.setSideListButton(sideListButton);
 	}
