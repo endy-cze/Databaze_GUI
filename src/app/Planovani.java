@@ -595,6 +595,7 @@ public class Planovani extends JPanel implements ActionListener, ListSelectionLi
 		add(textIsCzk, gbc_textIsCzk);
 		
 		lblKurz = new JLabel("Kurz CZK/EU:");
+		lblKurz.setFont(f);
 		GridBagConstraints gbc_lblKurz = new GridBagConstraints();
 		gbc_lblKurz.gridwidth = 2;
 		gbc_lblKurz.anchor = GridBagConstraints.WEST;
