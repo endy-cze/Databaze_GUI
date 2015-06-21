@@ -13,6 +13,7 @@ import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.Toolkit;
 
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -345,6 +346,10 @@ public class MainFrame extends JFrame {
 		
 		sklad.setOdhlasit(odhlasit);
 		
+		JLabel obrazek = new JLabel();
+		obrazek.setIcon(new ImageIcon(MainFrame.class.getResource("/app/worker.gif")));
+
+		
 		GroupLayout gl_jPanelHeader = new GroupLayout(jPanelHeader);
 		gl_jPanelHeader.setHorizontalGroup(
 			gl_jPanelHeader.createParallelGroup(Alignment.LEADING)
@@ -359,19 +364,23 @@ public class MainFrame extends JFrame {
 					.addComponent(hlavickaLabels[3])
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(odhlasit)
-					.addGap(69))
+					.addGap(20)
+					.addComponent(obrazek)
+					.addGap(60))
 		);
 		gl_jPanelHeader.setVerticalGroup(
 			gl_jPanelHeader.createParallelGroup(Alignment.TRAILING)
 				.addGroup(gl_jPanelHeader.createSequentialGroup()
 					.addGroup(gl_jPanelHeader.createParallelGroup(Alignment.LEADING)
 						.addGroup(gl_jPanelHeader.createSequentialGroup()
-							.addGap(18)
+							.addGap(15)
 							.addGroup(gl_jPanelHeader.createParallelGroup(Alignment.BASELINE)
 								.addComponent(hlavickaLabels[3])
 								.addComponent(hlavickaLabels[2])
 								.addComponent(hlavickaLabels[1])
-								.addComponent(odhlasit)))
+								.addComponent(odhlasit)
+								.addComponent(obrazek)
+								))
 						.addGroup(gl_jPanelHeader.createSequentialGroup()
 							.addGap(10)
 							.addComponent(hlavickaLabels[0], GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
