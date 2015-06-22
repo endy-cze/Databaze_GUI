@@ -137,7 +137,6 @@ public class Planovani extends JPanel implements ActionListener, ListSelectionLi
 	private JLabel textLblPresnaCena;
 	private JLabel lblCzk;
 	private JList list;
-	private JLabel labelSeznamDilcichTermin;
 	private JTabbedPane tabbedPane;
 	private JScrollPane scrollPane_2;
 	private JTable stavZakazkyTable;
@@ -292,7 +291,7 @@ public class Planovani extends JPanel implements ActionListener, ListSelectionLi
 		dialog = new KapacitniPropocet(sklad);
 		
 		GridBagLayout gridBagLayout = new GridBagLayout();
-		gridBagLayout.columnWidths = new int[]{20, 109, 86, 20, 75, 0, 48, 0, 20, 90, 30, 40, 30, 20, 10, 88, 40, 55, 20, 90, 120, 0, 20, 0};
+		gridBagLayout.columnWidths = new int[]{20, 109, 86, 20, 75, 0, 48, 0, 20, 90, 30, 40, 30, 20, 10, 88, 40, 55, 20, 90, 160, 0, 20, 0};
 		gridBagLayout.rowHeights = new int[]{15, 0, 0, 12, 0, 0, 0, 0, 0, 0, 25, 30, 30, 0, 100, 30, 25, 0, 20, 0};
 		gridBagLayout.columnWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, Double.MIN_VALUE};
 		gridBagLayout.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, Double.MIN_VALUE};
@@ -397,14 +396,6 @@ public class Planovani extends JPanel implements ActionListener, ListSelectionLi
 		gbc_textIdModelu.gridy = 4;
 		add(textIdModelu, gbc_textIdModelu);
 		
-		labelSeznamDilcichTermin = new JLabel("Seznam d\u00EDl\u010D\u00EDch term\u00EDn\u016F");
-		labelSeznamDilcichTermin.setFont(fb);
-		GridBagConstraints gbc_labelSeznamDilcichTermin = new GridBagConstraints();
-		gbc_labelSeznamDilcichTermin.insets = new Insets(0, 0, 5, 5);
-		gbc_labelSeznamDilcichTermin.gridx = 20;
-		gbc_labelSeznamDilcichTermin.gridy = 4;
-		add(labelSeznamDilcichTermin, gbc_labelSeznamDilcichTermin);
-		
 		JLabel lblsloObjednvky = new JLabel("\u010C\u00EDslo objedn\u00E1vky:");
 		popisLabels[5] = lblsloObjednvky;
 		GridBagConstraints gbc_lblsloObjednvky = new GridBagConstraints();
@@ -480,11 +471,11 @@ public class Planovani extends JPanel implements ActionListener, ListSelectionLi
 		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		GridBagConstraints gbc_tabbedPane = new GridBagConstraints();
 		gbc_tabbedPane.gridwidth = 2;
-		gbc_tabbedPane.gridheight = 6;
+		gbc_tabbedPane.gridheight = 7;
 		gbc_tabbedPane.insets = new Insets(0, 0, 5, 5);
 		gbc_tabbedPane.fill = GridBagConstraints.BOTH;
 		gbc_tabbedPane.gridx = 19;
-		gbc_tabbedPane.gridy = 5;
+		gbc_tabbedPane.gridy = 4;
 		add(tabbedPane, gbc_tabbedPane);
 		
 		list = new JList<DateStor>();
