@@ -140,7 +140,7 @@ public class LoginWindow extends JFrame implements KeyListener {
 				
 					ProgresBarFrame barFrame = new ProgresBarFrame();
 					barFrame.setVisible(true);
-					//
+					
 					CreateAppAndConnection over = new CreateAppAndConnection(okno, barFrame, url);
 					over.executeCreateApp(jmeno, heslo);
 				}
@@ -222,7 +222,6 @@ public class LoginWindow extends JFrame implements KeyListener {
 			    a.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "Prihlas se"));
 			}
 		}
-		
 	}
 
 	@Override
