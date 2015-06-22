@@ -280,6 +280,9 @@ public class HledejListener implements ActionListener, MouseListener {
 			case 13:
 				this.vypisVinikyVKgKc(isVypis, i);
 				break;
+			case 14:
+				this.vypisZmetkyMzdy(isVypis, i);
+				break;
 			case TableToExcel.liciPlanZakl:
 				zaklLiciPlan(isVypis, TableToExcel.liciPlanZakl);
 				break;
@@ -625,6 +628,23 @@ public class HledejListener implements ActionListener, MouseListener {
 			TableModel mod = table.getModel();
 			String datumy = sdf.format(lastUsedDate1)+" do "+ sdf.format(lastUsedDate2);
 			TableToExcel.exportToExcelNaSirku(hlavniOkno, mod, datumy, (cisloVypisu+1)+". "+"Vypis_zmetky", cisloVypisu);
+		}
+	}
+	
+	private void vypisZmetkyMzdy(boolean isVypis, int cisloVypisu) throws Exception{
+		if(isVypis){
+			Date od = get1Date(), do_ = get2Date();
+			ResultSet rs = sql.vypisZmetky(od, do_);
+			if(rs != null){
+				QueryTableModel tm = new QueryTableModel(rs);
+				table.setModel(tm);
+				columAdjuster.adjustColumns();
+				rs.close();
+			}
+		}  else {
+			QueryTableModel mod = (QueryTableModel) table.getModel();
+			String datumy = sdf.format(lastUsedDate1)+" do "+ sdf.format(lastUsedDate2);
+			TableToExcel.vypisZmetkuZmdyToExcel(mod, hlavniOkno, datumy, (cisloVypisu+1)+". "+"Vypis_zmetky_mzdy");
 		}
 	}
 	
