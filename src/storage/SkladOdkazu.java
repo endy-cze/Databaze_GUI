@@ -184,6 +184,7 @@ public class SkladOdkazu {
 	 * new Color(232, 232, 232),  //17 pozadí tlaèítka Pøidat <br>
 	 * new Color(243, 247, 249),  //18 pozadí tabulky radku (modrejsi)<br>
 	 * new Color(155,214,246)	  //19 pozadi tabulky pri zmene Azurova<br>
+	 * new Color(153,153,153) 	   //20 pozadi ve hledej filtru
 	 */
 	private Color [] barvy;
 	

@@ -28,87 +28,37 @@ public class PanelFiltrListenerTextField implements DocumentListener {
 		this.vypisy = vypisy;
 		this.sklad = sklad;
 		this.barvy = sklad.getBarvy();
-		changedBorder = new LineBorder(barvy[5], 2);
+		changedBorder = new LineBorder(barvy[20], 2);
 		defaultBorder = new LineBorder(barvy[2], 2);
 	}
 	
 	@Override
 	public void changedUpdate(DocumentEvent arg0) {
-		for(int i = 0; i < pole.length; i++){
-			if(!pole[i].hasFocus())continue;
-			if(pole[i] instanceof JTextField){
-				if(((JTextField)pole[i]).getText().equalsIgnoreCase("")){
-					((JTextField)pole[i]).setBackground(barvy[2]);
-					((JTextField)pole[i]).setForeground(Color.WHITE);
-					((JTextField)pole[i]).setBorder(defaultBorder);
-				} else {
-					((JTextField)pole[i]).setBackground(barvy[5]);
-					((JTextField)pole[i]).setForeground(Color.BLACK);
-					((JTextField)pole[i]).setBorder(changedBorder);
-				}
-			}
-		}
-		for(int i = 0; i < vypisy.length; i++){
-			if(!vypisy[i].hasFocus())continue;
-			if(vypisy[i] instanceof JTextField){
-				if(((JTextField)vypisy[i]).getText().equalsIgnoreCase("")){
-					((JTextField)vypisy[i]).setBackground(barvy[2]);
-					((JTextField)vypisy[i]).setForeground(Color.WHITE);
-					((JTextField)vypisy[i]).setBorder(defaultBorder);
-				} else {
-					((JTextField)vypisy[i]).setBackground(barvy[5]);
-					((JTextField)vypisy[i]).setForeground(Color.BLACK);
-					((JTextField)vypisy[i]).setBorder(changedBorder);
-				}
-			}
-		}
+		checkAtributes();
 	}
 
 	@Override
 	public void insertUpdate(DocumentEvent arg0) {
-		for(int i = 0; i < pole.length; i++){
-			if(!pole[i].hasFocus())continue;
-			if(pole[i] instanceof JTextField){
-				if(((JTextField)pole[i]).getText().equalsIgnoreCase("")){
-					((JTextField)pole[i]).setBackground(barvy[2]);
-					((JTextField)pole[i]).setForeground(Color.WHITE);
-					((JTextField)pole[i]).setBorder(defaultBorder);
-				} else {
-					((JTextField)pole[i]).setBackground(barvy[5]);
-					((JTextField)pole[i]).setForeground(Color.BLACK);
-					((JTextField)pole[i]).setBorder(changedBorder);
-				}
-			}
-		}
-		for(int i = 0; i < vypisy.length; i++){
-			if(!vypisy[i].hasFocus())continue;
-			if(vypisy[i] instanceof JTextField){
-				if(((JTextField)vypisy[i]).getText().equalsIgnoreCase("")){
-					((JTextField)vypisy[i]).setBackground(barvy[2]);
-					((JTextField)vypisy[i]).setForeground(Color.WHITE);
-					((JTextField)vypisy[i]).setBorder(defaultBorder);
-				} else {
-					((JTextField)vypisy[i]).setBackground(barvy[5]);
-					((JTextField)vypisy[i]).setForeground(Color.BLACK);
-					((JTextField)vypisy[i]).setBorder(changedBorder);
-				}
-			}
-		}
+		checkAtributes();
 	}
 
 	@Override
 	public void removeUpdate(DocumentEvent arg0) {
+		checkAtributes();
+	}
+	
+	private void checkAtributes(){
 		for(int i = 0; i < pole.length; i++){
 			if(!pole[i].hasFocus())continue;
 			if(pole[i] instanceof JTextField){
 				if(((JTextField)pole[i]).getText().equalsIgnoreCase("")){
+					((JTextField)pole[i]).setBackground(barvy[20]);
+					((JTextField)pole[i]).setForeground(Color.BLACK);
+					((JTextField)pole[i]).setBorder(changedBorder);
+				} else {
 					((JTextField)pole[i]).setBackground(barvy[2]);
 					((JTextField)pole[i]).setForeground(Color.WHITE);
 					((JTextField)pole[i]).setBorder(defaultBorder);
-				} else {
-					((JTextField)pole[i]).setBackground(barvy[5]);
-					((JTextField)pole[i]).setForeground(Color.BLACK);
-					((JTextField)pole[i]).setBorder(changedBorder);
 				}
 			}
 		}
@@ -116,17 +66,16 @@ public class PanelFiltrListenerTextField implements DocumentListener {
 			if(!vypisy[i].hasFocus())continue;
 			if(vypisy[i] instanceof JTextField){
 				if(((JTextField)vypisy[i]).getText().equalsIgnoreCase("")){
-					((JTextField)vypisy[i]).setBackground(barvy[2]);
-					((JTextField)vypisy[i]).setForeground(Color.WHITE);
-					((JTextField)vypisy[i]).setBorder(defaultBorder);
+					((JTextField)pole[i]).setBackground(barvy[20]);
+					((JTextField)pole[i]).setForeground(Color.BLACK);
+					((JTextField)pole[i]).setBorder(changedBorder);
 				} else {
-					((JTextField)vypisy[i]).setBackground(barvy[5]);
-					((JTextField)vypisy[i]).setForeground(Color.BLACK);
-					((JTextField)vypisy[i]).setBorder(changedBorder);
+					((JTextField)pole[i]).setBackground(barvy[2]);
+					((JTextField)pole[i]).setForeground(Color.WHITE);
+					((JTextField)pole[i]).setBorder(defaultBorder);
 				}
 			}
 		}
-		
 	}
 
 }

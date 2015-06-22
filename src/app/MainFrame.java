@@ -123,7 +123,8 @@ public class MainFrame extends JFrame {
 		    new Color(220,220,220),    //16 selected row color
 		    new Color(232, 232, 232),  //17 pozadí tlaèítka Pøidat 
 	  	    new Color(243, 247, 249),  //18 pozadí tabulky radku (modrejsi)
-	  	    new Color(155,214,246)	   //19 pozadi tabulky pri zmene Azurova
+	  	    new Color(155,214,246),	   //19 pozadi tabulky pri zmene Azurova
+	  	    new Color(153,153,153) 	   //20 pozadi ve hledej filtru 
 	};
 			
 

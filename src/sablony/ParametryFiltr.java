@@ -507,7 +507,7 @@ public class ParametryFiltr extends JPanel {
 		textField.setForeground(Color.WHITE);
 		textField.setFont(fonty[4]);
 		textField.setBorder(new EmptyBorder(2, 0, 2, 0));
-		textField.setBackground(barvy[2]);
+		textField.setBackground(barvy[20]);
 		GridBagConstraints gbc_textField = new GridBagConstraints();
 		gbc_textField.gridwidth = 3;
 		gbc_textField.insets = new Insets(0, 0, 5, 5);
@@ -534,7 +534,7 @@ public class ParametryFiltr extends JPanel {
 		textField_4.setFont(fonty[4]);
 		textField_4.setColumns(10);
 		textField_4.setBorder(null);
-		textField_4.setBackground(barvy[2]);
+		textField_4.setBackground(barvy[20]);
 		GridBagConstraints gbc_textField_4 = new GridBagConstraints();
 		gbc_textField_4.gridwidth = 2;
 		gbc_textField_4.insets = new Insets(0, 0, 5, 5);
@@ -560,7 +560,7 @@ public class ParametryFiltr extends JPanel {
 		textField_7.setFont(fonty[4]);
 		textField_7.setColumns(10);
 		textField_7.setBorder(null);
-		textField_7.setBackground(barvy[2]);
+		textField_7.setBackground(barvy[20]);
 		GridBagConstraints gbc_textField_7 = new GridBagConstraints();
 		gbc_textField_7.gridwidth = 3;
 		gbc_textField_7.insets = new Insets(0, 0, 5, 5);
@@ -586,7 +586,7 @@ public class ParametryFiltr extends JPanel {
 		textField_1.setFont(fonty[4]);
 		textField_1.setColumns(10);
 		textField_1.setBorder(null);
-		textField_1.setBackground(barvy[2]);
+		textField_1.setBackground(barvy[20]);
 		GridBagConstraints gbc_textField_1 = new GridBagConstraints();
 		gbc_textField_1.gridwidth = 2;
 		gbc_textField_1.insets = new Insets(0, 0, 5, 5);
@@ -654,7 +654,7 @@ public class ParametryFiltr extends JPanel {
 		idZakazky.setForeground(Color.WHITE);
 		idZakazky.setFont(fonty[4]);
 		idZakazky.setColumns(10);
-		idZakazky.setBackground(barvy[2]);
+		idZakazky.setBackground(barvy[20]);
 		GridBagConstraints gbc_idZakazky = new GridBagConstraints();
 		gbc_idZakazky.gridwidth = 2;
 		gbc_idZakazky.insets = new Insets(0, 0, 5, 5);
@@ -680,7 +680,7 @@ public class ParametryFiltr extends JPanel {
 		textField_6.setFont(fonty[4]);
 		textField_6.setColumns(10);
 		textField_6.setBorder(null);
-		textField_6.setBackground(barvy[2]);
+		textField_6.setBackground(barvy[20]);
 		GridBagConstraints gbc_textField_6 = new GridBagConstraints();
 		gbc_textField_6.gridwidth = 2;
 		gbc_textField_6.insets = new Insets(0, 0, 5, 5);
