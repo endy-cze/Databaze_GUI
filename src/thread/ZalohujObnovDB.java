@@ -95,7 +95,7 @@ public class ZalohujObnovDB extends SwingWorker<Integer, Void>{
 			bar.setVisible(false);
 			
 			if(i == ZalohujObnovDB.ZALOHAOK){
-				JOptionPane.showMessageDialog(hlavniOkno, "Zaloha vytvoøena");
+				JOptionPane.showMessageDialog(hlavniOkno, "Záloha vytvoøena. Nezapomeòte obèas složku 'zaloha_databaze' promazat!!! (myslím starší zálohy)");
 			} else if(i == ZalohujObnovDB.SPATNYACTIONTYPE){
 				JOptionPane.showMessageDialog(hlavniOkno, "Špatny action type");
 			} else if(i == ZalohujObnovDB.ZADNYRESULTSET){
