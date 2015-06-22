@@ -3,17 +3,22 @@ package tiskExcel;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.table.TableModel;
 
+import org.apache.poi.hssf.usermodel.HSSFCellStyle;
+import org.apache.poi.hssf.usermodel.HSSFFont;
 import org.apache.poi.hssf.usermodel.HSSFHeader;
-import org.apache.poi.hssf.usermodel.HSSFPrintSetup;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.usermodel.HeaderFooter;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Footer;
 import org.apache.poi.ss.usermodel.Header;
 import org.apache.poi.ss.usermodel.PrintSetup;
@@ -21,6 +26,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.util.CellRangeAddress;
 
+import app.MainFrame;
 import sablony.tabulka.QueryTableModel;
 
 /**
@@ -35,11 +41,13 @@ import sablony.tabulka.QueryTableModel;
  *
  */
 public class TableToExcel {
-	public final static int liciPlanZakl = 21;
-	public final static int liciPlanPlanovaci = 22;
-	public final static int planExpedice = 23;
+	public static final int liciPlanZakl = 21;
+	public static final int liciPlanPlanovaci = 22;
+	public static final int planExpedice = 23;
+	public static final int VYPIS_ZMETKU_MZDY = 30;
+	
 	private JFrame hlavniOkno;
-	private String [] columnNamesNotInt = {"Èíslo modelu", "Cislo_modelu","Jméno zákazníka","Èíslo objednávky",
+	private static String [] columnNamesNotInt = {"Èíslo modelu", "Cislo_modelu","Jméno zákazníka","Èíslo objednávky",
 			"Jméno modelu", "Materiál", "Vlastní materiál"};
 	
 	/**
@@ -96,7 +104,7 @@ public class TableToExcel {
 	 */
 	private void export(QueryTableModel model, String nadpisExt, String name, int cisloExportu, boolean isNaVysku) throws Exception{
 		HSSFWorkbook wb = new HSSFWorkbook();
-		String [] atr = this.getAtributes(cisloExportu);
+		String [] atr = getAtributes(cisloExportu);
 		HSSFSheet sheet = wb.createSheet(atr[0]);
 		
 		//set header (nadpis v tisku)
@@ -211,7 +219,7 @@ public class TableToExcel {
 	 * @param cisloExportu Èíslo exportu, o kterém chceme znát atributy
 	 * @return String [] o 3 prvcích nikdy <code>null</code>
 	 */
-	private String [] getAtributes(int cisloExportu){
+	private static String [] getAtributes(int cisloExportu){
 		String [] atr = {"prazdnyatr1","prazdnyatr2","prazdnyatr3"};
 		/**
 		 * Kvuli tomu aby jmena souboru mìli èisla od 1 .. n a ne od 0 tak zvìtším i o 1
@@ -269,6 +277,9 @@ public class TableToExcel {
 		case TableToExcel.planExpedice:
 			atr[0] = "Plán expedice";atr[1] = "Plán expedice ke dni: ";atr[2] = "./lici_plany";
 			break;
+		case TableToExcel.VYPIS_ZMETKU_MZDY:
+			atr[0] = "Výpis zmetkù za období";atr[1] = "Výpis zmetkù od ";atr[2] = "./vypisy";
+			break;
 		}
 		return atr;		
 	}
@@ -278,7 +289,7 @@ public class TableToExcel {
 	 * @param model Table with values a column names
 	 * @return boolean field with n-1 columns of the table with true or false values
 	 */
-	private boolean [] detectDataFormat(QueryTableModel model){
+	private static boolean [] detectDataFormat(QueryTableModel model){
 		boolean [] isNumber = null;
 		if(model.getRowCount() > 0){
 			isNumber = new boolean [model.getColumnCount()-1];
@@ -317,5 +328,219 @@ public class TableToExcel {
 			}
 		}
 		return isNumber;
+	}
+	
+	/**
+	 * Metoda pro vytvoreni specialniho vypisu zmetku pro sefa. Vymyslet sablonu. ;)
+	 * @throws IOException 
+	 * @throws ParseException 
+	 */
+	public static void vypisZmetkuZmdyToExcel(QueryTableModel tm, MainFrame hlavniOkno, String nadpisExt, String name) throws IOException, ParseException{
+		HSSFWorkbook wb = new HSSFWorkbook();
+		String [] atr = getAtributes(VYPIS_ZMETKU_MZDY);
+		HSSFSheet sheet = wb.createSheet(atr[0]);
+		
+		//set header (nadpis v tisku)
+		Header header = sheet.getHeader();
+		header.setCenter(HSSFHeader.font("Stencil-Normal", "bold")+ HSSFHeader.fontSize((short) 16)+ atr[1] + nadpisExt);// + nadpisExt);
+		
+		sheet.getPrintSetup().setPaperSize(PrintSetup.A4_PAPERSIZE);
+		// nasvateni na vysku
+		sheet.getPrintSetup().setLandscape(false);
+		
+		
+		//number of pages
+		Footer footer = sheet.getFooter();
+		footer.setRight("Strana " + HeaderFooter.page() + " z " + HeaderFooter.numPages());
+		//set visibile grid lines on printed pages
+		//sheet.setPrintGridlines(true);
+	    
+		sheet.setMargin(Sheet.BottomMargin, 0.5);
+		sheet.setMargin(Sheet.TopMargin, 0.6);
+		sheet.setMargin(Sheet.LeftMargin, 0.3);
+		sheet.setMargin(Sheet.RightMargin, 0.3);
+		
+		sheet.setMargin(Sheet.HeaderMargin, 0.1);
+		sheet.setMargin(Sheet.FooterMargin, 0.3);
+		
+		/**
+		 * Pokud zmením velikost pisma (14) tak musím
+		 * zmìnit i èíslo ZMETKUNASTRANKU a POCETRADEKNASTRANKU podle toho.
+		 */
+		HSSFFont font = wb.createFont();
+		font.setFontHeightInPoints((short) 14);
+		HSSFCellStyle style = wb.createCellStyle();
+		style.setBorderTop(CellStyle.BORDER_DOUBLE);
+		style.setFont(font);
+		
+		//insert data
+		insertDataToVypisZmetkyMzdy(tm, sheet, font, style);
+		
+		// Write it into the output to a file
+		
+		//create folder
+		File f = new File(atr[2]);
+		try {
+			if (f.mkdir()) {
+				//System.out.println("Directory Created");
+			} else {
+				//System.out.println("Directory is not created");
+			}
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(hlavniOkno, "Složka nebyla vytvoøena");
+		}
+		
+		try {
+			FileOutputStream fileOut = new FileOutputStream(atr[2]+"/"+name+".xls");
+			wb.write(fileOut);
+			wb.close();
+			fileOut.close();
+			JOptionPane.showMessageDialog(hlavniOkno, "Excel soubor "+atr[2].substring(2, atr[2].length())+"/"+name+".xls vytvoøen.");
+		} catch (FileNotFoundException e) {
+			JOptionPane.showMessageDialog(hlavniOkno, "Máte otevøený soubor, do kterého se zapisuje. Zavøete jej prosím");
+			wb.close();
+		}
+		
+	}
+	
+	private static void insertDataToVypisZmetkyMzdy(QueryTableModel model, HSSFSheet sheet, HSSFFont font, HSSFCellStyle style) throws ParseException{
+		SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
+		int indexOfBeginRow = 0;
+		for(int i = 0; i < model.getRowCount(); i++){
+			if(i % ZMETKUNASTRANKU == 0 && i != 0){
+				int s = indexOfBeginRow % POCETRADEKNASTRANKU;
+				indexOfBeginRow += POCETRADEKNASTRANKU - s;
+			}
+			indexOfBeginRow = insertZmetekDoExcelu(model.getRow(i), sheet, indexOfBeginRow, sdf, font, style);
+		}
+	}
+	
+	/**
+	 * Indexy sloupcu v tabulce
+	 */
+	public static final int JMENOZAKAZNIKA = 0;
+	public static final int JMENOMODELU = 1;
+	public static final int CISLOMODELU = 2;
+	public static final int DATUMZMETKU = 3;
+	public static final int JMENOVINIKA = 4;
+	public static final int VADA = 5;
+	public static final int KS = 6;
+	public static final int NORMA = 7;
+	public static final int NORMACELKEM = 8;
+	public static final int HMOTNOSTNAKUS = 9;
+	public static final int HMOTNOSTCELKEM = 10;
+	public static final int VLASTNIMATERIAL = 11;
+	public static final int CENAZAKUS = 12;
+	public static final int CENACELKEM = 13;
+	
+	public static final int STRINGDATA = 0;
+	public static final int NUMERICDATA = 1;
+	public static final int DATEDATA = 2;
+	
+	public static final int ZMETKUNASTRANKU = 4;
+	public static final int POCETRADEKNASTRANKU = 43;
+	
+	/**
+	 * Vloží do Excelu podle pøedem dané šablony jednu "bunku" ktera, reprezentuje Pro danou zakazku a daný datum poèet zmetku, Jmeno zakaznika ...
+	 * @throws ParseException 
+	 */
+	public static int insertZmetekDoExcelu(String [] data, HSSFSheet sheet, int indexOfBeginRow, SimpleDateFormat sdf,
+			HSSFFont f, HSSFCellStyle style) throws ParseException{
+		// nastaveni tloustky bunky
+		//cell.getCellStyle().setBorderBottom(border);
+		
+		Cell cell = null;
+		Row row = null;
+		row = sheet.createRow(indexOfBeginRow);		
+		addRowValuesVypisZmetekMzdy(row, "Zákazník", data[JMENOZAKAZNIKA], STRINGDATA, null, null, STRINGDATA, sdf, f);
+		indexOfBeginRow++;
+		row = sheet.createRow(indexOfBeginRow);
+		addRowValuesVypisZmetekMzdy(row, "Název", data[JMENOMODELU], STRINGDATA, "È. modelu", data[CISLOMODELU], STRINGDATA, sdf, f);
+		indexOfBeginRow++;
+		row = sheet.createRow(indexOfBeginRow);
+		addRowValuesVypisZmetekMzdy(row, "Viník", data[JMENOVINIKA], STRINGDATA, "Druh vady", data[VADA], STRINGDATA, sdf, f);
+		indexOfBeginRow++;
+		row = sheet.createRow(indexOfBeginRow);
+		addRowValuesVypisZmetekMzdy(row, "Datum", data[DATUMZMETKU], DATEDATA, "Kusù", data[KS], NUMERICDATA, sdf, f);
+		indexOfBeginRow++;
+		row = sheet.createRow(indexOfBeginRow);
+		addRowValuesVypisZmetekMzdy(row, "Mzda za kus", data[NORMA], NUMERICDATA, "Mzda celkem", data[NORMACELKEM], NUMERICDATA, sdf, f);
+		indexOfBeginRow++;
+		row = sheet.createRow(indexOfBeginRow);
+		addRowValuesVypisZmetekMzdy(row, "Hmotnost ks", data[HMOTNOSTNAKUS], NUMERICDATA, "Hmotnost celkem", data[HMOTNOSTCELKEM], NUMERICDATA, sdf, f);
+		indexOfBeginRow++;
+		row = sheet.createRow(indexOfBeginRow);
+		addRowValuesVypisZmetekMzdy(row, "P. cena", data[CENAZAKUS], NUMERICDATA, "Cena celkem", data[CENACELKEM], NUMERICDATA, sdf, f);
+		indexOfBeginRow++;
+		row = sheet.createRow(indexOfBeginRow);
+		addRowValuesVypisZmetekMzdy(row, "Materiál", data[VLASTNIMATERIAL], STRINGDATA, null, null, STRINGDATA, sdf, f);
+		indexOfBeginRow++;
+		row = sheet.createRow(indexOfBeginRow);
+		
+		cell = row.createCell(0, Cell.CELL_TYPE_STRING);
+		cell.setCellValue("Platit mzdy");
+		cell.setCellStyle(style);
+		cell = row.createCell(1, Cell.CELL_TYPE_STRING);
+		cell.setCellValue("ANO - NE");
+		cell.setCellStyle(style);
+		cell = row.createCell(2, Cell.CELL_TYPE_BLANK);
+		cell.setCellStyle(style);
+		cell = row.createCell(3, Cell.CELL_TYPE_BLANK);
+		cell.setCellStyle(style);
+		cell = row.createCell(4, Cell.CELL_TYPE_BLANK);
+		cell.setCellStyle(style);
+		indexOfBeginRow++;
+		
+		//volna radka
+		indexOfBeginRow++;
+		
+		//Format data
+		for(int i = 0; i < 5 ; i++){ // mam 4 sloupce
+			sheet.autoSizeColumn(i);
+		}
+		// vytvoøit mezeru
+		sheet.setColumnWidth(2, 2000);
+		
+		return indexOfBeginRow;
+	}
+	
+	private static void addRowValuesVypisZmetekMzdy(Row row,
+			String nazevHodnoty1, String hodnota1, int isNumber1,
+			String nazevHodnoty2, String hodnota2, int isNumber2,
+			SimpleDateFormat sdf, HSSFFont f) throws ParseException {
+		
+		Cell cell;
+		cell = row.createCell(0, Cell.CELL_TYPE_STRING);
+		cell.setCellValue(nazevHodnoty1);
+		cell.getCellStyle().setFont(f);
+		if (isNumber1 == NUMERICDATA){
+			cell = row.createCell(1, Cell.CELL_TYPE_NUMERIC);
+			cell.setCellValue(Double.parseDouble(hodnota1));
+		} else  if (isNumber1 == DATEDATA){ // datum
+			cell = row.createCell(1);
+			cell.setCellValue(sdf.parse(hodnota1));
+		} else {
+			cell = row.createCell(1, Cell.CELL_TYPE_STRING);
+			cell.setCellValue(hodnota1);
+		}
+		cell.getCellStyle().setFont(f);
+		// mezera
+		cell = row.createCell(2, Cell.CELL_TYPE_BLANK);
+		cell.getCellStyle().setFont(f);
+		
+		cell = row.createCell(3, Cell.CELL_TYPE_STRING);
+		cell.setCellValue(nazevHodnoty2);
+		cell.getCellStyle().setFont(f);
+		if (isNumber2  == NUMERICDATA){
+			cell = row.createCell(4, Cell.CELL_TYPE_NUMERIC);
+			cell.setCellValue(Double.parseDouble(hodnota2));
+		} else  if (isNumber2 == DATEDATA){ // datum
+			cell = row.createCell(4);
+			cell.setCellValue(sdf.parse(hodnota2));
+		} else {
+			cell = row.createCell(4, Cell.CELL_TYPE_STRING);
+			cell.setCellValue(hodnota2);
+		}
+		cell.getCellStyle().setFont(f);
 	}
 }
