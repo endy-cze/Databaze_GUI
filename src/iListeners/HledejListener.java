@@ -7,9 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.io.IOException;
 import java.sql.CallableStatement;
-import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -25,7 +23,6 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.table.TableModel;
 
-import com.itextpdf.text.DocumentException;
 import com.toedter.calendar.JDateChooser;
 import com.toedter.calendar.JYearChooser;
 
@@ -157,12 +154,10 @@ public class HledejListener implements ActionListener, MouseListener {
 				this.kapPropocet();
 			}
 			else if(arg0.getActionCommand().equalsIgnoreCase("PlanExpedice")){
-				System.out.println("lol plan expedice");
 				this.planExpedice(false);
 			}
 			else if(arg0.getActionCommand().equalsIgnoreCase("PDFPlanExpedice")){
 				this.planExpedice(true);
-				System.out.println("lol PDF plan expedice");
 			} else { //vypisy a tisk
 				//System.out.println("Impementuje se "+arg0.getActionCommand());
 				vypisyAndTisk(arg0.getActionCommand());

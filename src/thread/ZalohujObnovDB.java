@@ -6,14 +6,12 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.Statement;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.concurrent.ExecutionException;
 
 import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
 
-import sablony.errorwin.ExceptionWin;
 import sqlstorage.SQLStor;
 import storage.SkladOdkazu;
 import app.MainFrame;
