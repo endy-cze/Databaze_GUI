@@ -10,7 +10,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.Calendar;
 import java.util.Locale;
 import java.util.Vector;
@@ -27,7 +26,7 @@ public class QueryTableModel extends AbstractTableModel {
 	 * Verze
 	 */
 	private static final long serialVersionUID = 1L;
-	private Vector<Object> cache; // will hold String[] objects . . .
+	private Vector<String []> cache; // will hold String[] objects . . .
 	private Class<?> [] tridySloupcu = null;
 	
 	private int colCount = 0;
@@ -38,7 +37,7 @@ public class QueryTableModel extends AbstractTableModel {
 	public QueryTableModel(String [] names, int rowCount){
 		this.headers = names;
 		colCount = headers.length;
-		cache = new Vector<Object>();
+		cache = new Vector<String []>();
 		for(int i = 0; i < rowCount; i++){
 			String [] record = new String[names.length];
 			for(int j = 0; j < record.length; j++){
@@ -51,7 +50,7 @@ public class QueryTableModel extends AbstractTableModel {
 	public QueryTableModel(Statement st) throws Exception {
 		setMyModel(st);
 	}
-	public QueryTableModel(ResultSet rs) {
+	public QueryTableModel(ResultSet rs) throws SQLException {
 		setMyModel(rs);
 	}
 
@@ -64,7 +63,7 @@ public class QueryTableModel extends AbstractTableModel {
 	 * @param predRadek
 	 * @param data
 	 */
-	public void addRow(int predRadek, Object [] data){
+	public void addRow(int predRadek, String [] data){
 		cache.add(predRadek, data);
 	}
 	
@@ -86,6 +85,10 @@ public class QueryTableModel extends AbstractTableModel {
 		return cache.size();
 	}
 	
+	public String [] getRow(int i){
+		return (String[]) cache.get(i);
+	}
+	
 	public String getValueAt(int row, int col) {
 		return ((String[]) cache.elementAt(row))[col];
 		//return ((Object[]) cache.elementAt(row))[col];
@@ -97,91 +100,83 @@ public class QueryTableModel extends AbstractTableModel {
 
 	// All the real work happens here; in a real application,
 	// we'd probably perform the query in a separate thread.
-	public void setMyModel(ResultSet rs) {
+	public void setMyModel(ResultSet rs) throws SQLException {
 		sdf = new SimpleDateFormat("dd.MM.yyy");
-		cache = new Vector();
-		try {
-			ResultSetMetaData meta = rs.getMetaData();
-			colCount = meta.getColumnCount() + 1;
+		cache = new Vector<String[]>();
 
-			// Now we must rebuild the headers array with the new column names
-			headers = new String[colCount];
-			tridySloupcu = new Class<?>[colCount];
-			for (int h = 1; h <= colCount; h++) {
-				if (colCount - 1 >= h) {
-					//headers[h - 1] = meta.getColumnName(h);
-					headers[h - 1] = meta.getColumnLabel(h);
-					//tridySloupcu[h - 1] = this.getTridu(meta, h);
-					/*Class<?> trida = this.getTridu(meta, h);
-					System.out.println(this.getTridu(meta, h));*/
-				} else {
-					headers[h - 1] = " ";
-					tridySloupcu[h - 1] = String.class;
-				}
+		ResultSetMetaData meta = rs.getMetaData();
+		colCount = meta.getColumnCount() + 1;
+
+		// Now we must rebuild the headers array with the new column names
+		headers = new String[colCount];
+		tridySloupcu = new Class<?>[colCount];
+		for (int h = 1; h <= colCount; h++) {
+			if (colCount - 1 >= h) {
+				// headers[h - 1] = meta.getColumnName(h);
+				headers[h - 1] = meta.getColumnLabel(h);
+				// tridySloupcu[h - 1] = this.getTridu(meta, h);
+				/*
+				 * Class<?> trida = this.getTridu(meta, h);
+				 * System.out.println(this.getTridu(meta, h));
+				 */
+			} else {
+				headers[h - 1] = " ";
+				tridySloupcu[h - 1] = String.class;
 			}
+		}
 
-			// and file the cache with the records from our query. This would
-			// not be
-			// practical if we were expecting a few million records in response
-			// to our
-			// query, but we aren't, so we can do this.
-			DecimalFormatSymbols  sym = new DecimalFormatSymbols(Locale.ENGLISH);
-			DecimalFormat formatNumber = new DecimalFormat("###.###",sym);
-			
-			String pom;
-			java.sql.Date datum;
-			while (rs.next()) {
-				//Object [] record = new Object[colCount];
-				String [] record = new String[colCount];
-				for (int i = 0; i < colCount; i++) {
-					if (colCount - 2 >= i) {
-						// System.out.println(i+" "+meta.getColumnTypeName(i+1)+" "+meta.getColumnType(i+1)+
-						// " "+java.sql.Types.TINYINT);
-						if (meta.getColumnTypeName(i + 1).equalsIgnoreCase("TINYINT")) { // tinyInt reprezentuje boolean
-							pom = rs.getString(i + 1);
-							if (pom.equalsIgnoreCase("0")){
-								record[i] = "Ne";
-								//record[i] = false;
-							}
-							else if (pom.equalsIgnoreCase("1")){
-								record[i] = "Ano";
-								//record[i] = true;
-							}
-							else{
-								record[i] = "neni boolean " + pom;
-								//record[i] = false;
-							}
-						} else if (meta.getColumnTypeName(i + 1).equalsIgnoreCase("DATE")) { // tinyInt reprezentuje boolean
-							datum = rs.getDate(i+1);
-							pom = null;
-							if(datum != null){
-								pom = sdf.format(datum);
-							}
-							record[i] = pom;
-							//record[i] = datum;
-						} else if (meta.getColumnTypeName(i + 1).startsWith("DECIMAL")) {
-							double x = rs.getDouble(i + 1);
-							record[i] = formatNumber.format(x);
-							//record[i] = x;
-						} /* else if (meta.getColumnTypeName(i + 1).startsWith("INT")) { // navic if() když menim Collum type class
-							double x = rs.getDouble(i + 1);
-							//record[i] = formatNumber.format(x);
-							record[i] = x;
-						} */
-						else {
-							// pro zbytek
-							pom = rs.getString(i + 1);
-							record[i] = pom;
+		// and file the cache with the records from our query. This would
+		// not be
+		// practical if we were expecting a few million records in response
+		// to our
+		// query, but we aren't, so we can do this.
+		DecimalFormatSymbols sym = new DecimalFormatSymbols(Locale.ENGLISH);
+		DecimalFormat formatNumber = new DecimalFormat("###.###", sym);
+
+		String pom;
+		java.sql.Date datum;
+		while (rs.next()) {
+			String[] record = new String[colCount];
+			for (int i = 0; i < colCount; i++) {
+				if (colCount - 2 >= i) {
+					// System.out.println(i+" "+meta.getColumnTypeName(i+1)+" "+meta.getColumnType(i+1)+" "+java.sql.Types.TINYINT);
+					if (meta.getColumnTypeName(i + 1).equalsIgnoreCase("TINYINT")) { // tinyInt reprezentuje boolean
+						pom = rs.getString(i + 1);
+						if (pom.equalsIgnoreCase("0")) {
+							record[i] = "Ne";	// record[i] = false;
+						} else if (pom.equalsIgnoreCase("1")) {
+							record[i] = "Ano";	// record[i] = true;
+						} else {
+							record[i] = "neni boolean " + pom;
+							// record[i] = false;
 						}
-					} else
-						record[i] = " ";
-				}
-				cache.addElement(record);
+					} else if (meta.getColumnTypeName(i + 1).equalsIgnoreCase("DATE")) { // tinyInt reprezentuje boolean
+						datum = rs.getDate(i + 1);
+						pom = null;
+						if (datum != null) {
+							pom = sdf.format(datum);
+						}
+						record[i] = pom; 
+						// record[i] = datum;
+					} else if (meta.getColumnTypeName(i + 1).startsWith("DECIMAL")) {
+						double x = rs.getDouble(i + 1);
+						record[i] = formatNumber.format(x);
+						// record[i] = x;
+					} /*
+					 * else if (meta.getColumnTypeName(i + 1).startsWith("INT"))
+					 * { // navic if() když menim Collum type class double x =
+					 * rs.getDouble(i + 1); //record[i] =
+					 * formatNumber.format(x); record[i] = x; }
+					 */
+					else {
+						// pro zbytek
+						pom = rs.getString(i + 1);
+						record[i] = pom;
+					}
+				} else
+					record[i] = " ";
 			}
-
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			cache.addElement(record);
 		}
 		fireTableChanged(null); // notify everyone that we have a new table.
 	}
@@ -193,7 +188,7 @@ public class QueryTableModel extends AbstractTableModel {
 	 */
 	public void setMyModel(Statement stmt) throws Exception {
 		sdf = new SimpleDateFormat("dd.MM.yyy");
-		cache = new Vector();
+		cache = new Vector<String[]>();
 		ResultSet rs = stmt.getResultSet();
 		if(rs == null){
 			throw new Exception("Statement nemá žadné ResultSety");
@@ -321,7 +316,7 @@ public class QueryTableModel extends AbstractTableModel {
 	 * @throws ParseException
 	 */
 	public QueryTableModel(ResultSet rs, String[] jmenaSloupcu)	throws SQLException, ParseException {
-		cache = new Vector<Object>();
+		cache = new Vector<String []>();
 
 		// ResultSetMetaData meta = rs.getMetaData();
 		colCount = jmenaSloupcu.length;
@@ -418,7 +413,7 @@ public class QueryTableModel extends AbstractTableModel {
 		return rozdilTydnu;
 	}
 	
-	private Vector generujRozvrh(int colCount, Calendar firstDate, int rozdilTydnu, ResultSet rs, Vector cache) throws SQLException{
+	private Vector<String[]> generujRozvrh(int colCount, Calendar firstDate, int rozdilTydnu, ResultSet rs, Vector<String[]> cache) throws SQLException{
 		firstDate.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
 		if (rs.first()) {
 			int rsTyden = rs.getInt(2), rsDen = rs.getInt(3), aktualniTyden;
@@ -460,7 +455,7 @@ public class QueryTableModel extends AbstractTableModel {
 		return cache;
 	}
 	
-	private Class<?> getTridu(ResultSetMetaData meta, int col) throws SQLException{
+	/*private Class<?> getTridu(ResultSetMetaData meta, int col) throws SQLException{
 		String name = meta.getColumnTypeName(col).toUpperCase();
 		if(name.contains("TINYINT")){
 			return Boolean.class;
@@ -473,7 +468,7 @@ public class QueryTableModel extends AbstractTableModel {
 		} else {
 			return String.class;
 		}
-	}
+	}*/
 }
 
 

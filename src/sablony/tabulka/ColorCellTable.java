@@ -115,7 +115,7 @@ public class ColorCellTable extends JTable{
 	 * @param predRadek øadek pøed, který se bude pøidávat
 	 * @param data
 	 */
-	public void addRow(int predRadek, Object [] data, boolean [][] zmeneno){
+	public void addRow(int predRadek, String [] data, boolean [][] zmeneno){
 		((QueryTableModel)this.getModel()).addRow(predRadek, data);
 		if(scrollPane != null){
 			Dimension dim = scrollPane.getPreferredSize();
