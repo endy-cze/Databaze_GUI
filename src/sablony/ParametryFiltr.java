@@ -493,7 +493,7 @@ public class ParametryFiltr extends JPanel {
 		
 		JLabel lblNewLabel = new JLabel("Jm\u00E9no z\u00E1kazn\u00EDka:");
 		pole[0] = lblNewLabel;
-		lblNewLabel.setFont(fonty[0]);
+		lblNewLabel.setFont(fonty[4]);
 		lblNewLabel.setForeground(barvy[11]);
 		GridBagConstraints gbc_lblNewLabel = new GridBagConstraints();
 		gbc_lblNewLabel.anchor = GridBagConstraints.WEST;
@@ -505,7 +505,7 @@ public class ParametryFiltr extends JPanel {
 		textField = new JTextField();
 		pole[1] = textField;
 		textField.setForeground(Color.WHITE);
-		textField.setFont(fonty[0]);
+		textField.setFont(fonty[4]);
 		textField.setBorder(new EmptyBorder(2, 0, 2, 0));
 		textField.setBackground(barvy[2]);
 		GridBagConstraints gbc_textField = new GridBagConstraints();
@@ -520,7 +520,7 @@ public class ParametryFiltr extends JPanel {
 		JLabel lblsloModelu = new JLabel("\u010C\u00EDslo modelu");
 		pole[2] = lblsloModelu;
 		lblsloModelu.setForeground(barvy[11]);
-		lblsloModelu.setFont(fonty[0]);
+		lblsloModelu.setFont(fonty[4]);
 		GridBagConstraints gbc_lblsloModelu = new GridBagConstraints();
 		gbc_lblsloModelu.anchor = GridBagConstraints.WEST;
 		gbc_lblsloModelu.insets = new Insets(0, 0, 5, 5);
@@ -531,7 +531,7 @@ public class ParametryFiltr extends JPanel {
 		textField_4 = new JTextField();
 		pole[3] = textField_4;
 		textField_4.setForeground(Color.WHITE);
-		textField_4.setFont(fonty[0]);
+		textField_4.setFont(fonty[4]);
 		textField_4.setColumns(10);
 		textField_4.setBorder(null);
 		textField_4.setBackground(barvy[2]);
@@ -546,7 +546,7 @@ public class ParametryFiltr extends JPanel {
 		JLabel lblNzevModelu = new JLabel("N\u00E1zev modelu");
 		pole[4] = lblNzevModelu;
 		lblNzevModelu.setForeground(barvy[11]);
-		lblNzevModelu.setFont(fonty[0]);
+		lblNzevModelu.setFont(fonty[4]);
 		GridBagConstraints gbc_lblNzevModelu = new GridBagConstraints();
 		gbc_lblNzevModelu.insets = new Insets(0, 0, 5, 5);
 		gbc_lblNzevModelu.anchor = GridBagConstraints.WEST;
@@ -557,7 +557,7 @@ public class ParametryFiltr extends JPanel {
 		textField_7 = new JTextField();
 		pole[5] = textField_7;
 		textField_7.setForeground(Color.WHITE);
-		textField_7.setFont(fonty[0]);
+		textField_7.setFont(fonty[4]);
 		textField_7.setColumns(10);
 		textField_7.setBorder(null);
 		textField_7.setBackground(barvy[2]);
@@ -572,7 +572,7 @@ public class ParametryFiltr extends JPanel {
 		JLabel lblIdModelu = new JLabel("Id modelu:");
 		pole[6] = lblIdModelu;
 		lblIdModelu.setForeground(barvy[11]);
-		lblIdModelu.setFont(fonty[0]);
+		lblIdModelu.setFont(fonty[4]);
 		GridBagConstraints gbc_lblIdModelu = new GridBagConstraints();
 		gbc_lblIdModelu.anchor = GridBagConstraints.WEST;
 		gbc_lblIdModelu.insets = new Insets(0, 0, 5, 5);
@@ -583,7 +583,7 @@ public class ParametryFiltr extends JPanel {
 		textField_1 = new JTextField();
 		pole[7] = textField_1;
 		textField_1.setForeground(Color.WHITE);
-		textField_1.setFont(fonty[0]);
+		textField_1.setFont(fonty[4]);
 		textField_1.setColumns(10);
 		textField_1.setBorder(null);
 		textField_1.setBackground(barvy[2]);
@@ -598,7 +598,7 @@ public class ParametryFiltr extends JPanel {
 		JLabel lblDatumPijetZakzky = new JLabel("Zak\u00E1zka p\u0159ijata po");
 		pole[8] = lblDatumPijetZakzky;
 		lblDatumPijetZakzky.setForeground(barvy[11]);
-		lblDatumPijetZakzky.setFont(fonty[0]);
+		lblDatumPijetZakzky.setFont(fonty[4]);
 		GridBagConstraints gbc_lblDatumPijetZakzky = new GridBagConstraints();
 		gbc_lblDatumPijetZakzky.anchor = GridBagConstraints.WEST;
 		gbc_lblDatumPijetZakzky.insets = new Insets(0, 0, 5, 5);
@@ -619,7 +619,7 @@ public class ParametryFiltr extends JPanel {
 		JLabel lblFormovna = new JLabel("Formovna");
 		pole[10] = lblFormovna;
 		lblFormovna.setForeground(barvy[11]);
-		lblFormovna.setFont(fonty[0]);
+		lblFormovna.setFont(fonty[4]);
 		GridBagConstraints gbc_lblFormovna = new GridBagConstraints();
 		gbc_lblFormovna.anchor = GridBagConstraints.WEST;
 		gbc_lblFormovna.insets = new Insets(0, 0, 5, 5);
@@ -640,7 +640,7 @@ public class ParametryFiltr extends JPanel {
 		idZakazkyLabel = new JLabel("Id zak\u00E1zky:");
 		pole[12] = idZakazkyLabel;
 		idZakazkyLabel.setForeground(barvy[11]);
-		idZakazkyLabel.setFont(fonty[0]);
+		idZakazkyLabel.setFont(fonty[4]);
 		GridBagConstraints gbc_lblIdZakzky = new GridBagConstraints();
 		gbc_lblIdZakzky.anchor = GridBagConstraints.WEST;
 		gbc_lblIdZakzky.insets = new Insets(0, 0, 5, 5);
@@ -652,7 +652,7 @@ public class ParametryFiltr extends JPanel {
 		idZakazky.setBorder(new EmptyBorder(2, 0, 2, 0));
 		pole[13] = idZakazky;
 		idZakazky.setForeground(Color.WHITE);
-		idZakazky.setFont(fonty[0]);
+		idZakazky.setFont(fonty[4]);
 		idZakazky.setColumns(10);
 		idZakazky.setBackground(barvy[2]);
 		GridBagConstraints gbc_idZakazky = new GridBagConstraints();
@@ -666,7 +666,7 @@ public class ParametryFiltr extends JPanel {
 		JLabel lblsloObjednvky = new JLabel("\u010C\u00EDslo objedn\u00E1vky");
 		pole[14] = lblsloObjednvky;
 		lblsloObjednvky.setForeground(barvy[11]);
-		lblsloObjednvky.setFont(fonty[0]);
+		lblsloObjednvky.setFont(fonty[4]);
 		GridBagConstraints gbc_lblsloObjednvky = new GridBagConstraints();
 		gbc_lblsloObjednvky.anchor = GridBagConstraints.WEST;
 		gbc_lblsloObjednvky.insets = new Insets(0, 0, 5, 5);
@@ -677,7 +677,7 @@ public class ParametryFiltr extends JPanel {
 		textField_6 = new JTextField();
 		pole[15] = textField_6;
 		textField_6.setForeground(Color.WHITE);
-		textField_6.setFont(fonty[0]);
+		textField_6.setFont(fonty[4]);
 		textField_6.setColumns(10);
 		textField_6.setBorder(null);
 		textField_6.setBackground(barvy[2]);
@@ -706,7 +706,7 @@ public class ParametryFiltr extends JPanel {
 		JLabel lblDatumOd = new JLabel("Datum od:");
 		vypisy[0] = lblDatumOd;
 		lblDatumOd.setForeground(barvy[11]);
-		lblDatumOd.setFont(fonty[0]);
+		lblDatumOd.setFont(fonty[4]);
 		GridBagConstraints gbc_lblDatumOd = new GridBagConstraints();
 		gbc_lblDatumOd.insets = new Insets(0, 0, 5, 5);
 		gbc_lblDatumOd.anchor = GridBagConstraints.WEST;
@@ -727,7 +727,7 @@ public class ParametryFiltr extends JPanel {
 		JLabel lblDatumDo = new JLabel("Datum do:");
 		vypisy[2] = lblDatumDo;
 		lblDatumDo.setForeground(barvy[11]);
-		lblDatumDo.setFont(fonty[0]);
+		lblDatumDo.setFont(fonty[4]);
 		GridBagConstraints gbc_lblDatumDo = new GridBagConstraints();
 		gbc_lblDatumDo.anchor = GridBagConstraints.WEST;
 		gbc_lblDatumDo.insets = new Insets(0, 0, 5, 5);
@@ -748,7 +748,7 @@ public class ParametryFiltr extends JPanel {
 		napovedaDate = new JLabel("N\u00E1pov\u011Bda");
 		vypisy[7] = napovedaDate;
 		napovedaDate.setForeground(barvy[11]);
-		napovedaDate.setFont(fonty[0]);
+		napovedaDate.setFont(fonty[4]);
 		GridBagConstraints gbc_napovedaDate = new GridBagConstraints();
 		gbc_napovedaDate.gridwidth = 5;
 		gbc_napovedaDate.anchor = GridBagConstraints.WEST;
@@ -759,7 +759,7 @@ public class ParametryFiltr extends JPanel {
 		
 		JLabel lblsloTdne = new JLabel("\u010C\u00EDslo t\u00FDdne");
 		vypisy[4] = lblsloTdne;
-		lblsloTdne.setFont(fonty[0]);
+		lblsloTdne.setFont(fonty[4]);
 		lblsloTdne.setForeground(barvy[11]);
 		GridBagConstraints gbc_lblsloTdne = new GridBagConstraints();
 		gbc_lblsloTdne.anchor = GridBagConstraints.WEST;

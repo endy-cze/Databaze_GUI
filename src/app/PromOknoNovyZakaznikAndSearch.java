@@ -410,7 +410,7 @@ public class PromOknoNovyZakaznikAndSearch extends JPanel {
 		panel.add(btnNewButton_1, gbc_btnNewButton_1);
 		
 		JLabel lblNewLabel_1 = new JLabel("Filtr vyhled\u00E1v\u00E1n\u00ED ");
-		lblNewLabel_1.setFont(fonty[0]);
+		lblNewLabel_1.setFont(fonty[3]);
 		lblNewLabel_1.setForeground(barvy[11]);
 		GridBagConstraints gbc_lblNewLabel_1 = new GridBagConstraints();
 		gbc_lblNewLabel_1.insets = new Insets(0, 0, 0, 5);

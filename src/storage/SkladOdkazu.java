@@ -188,11 +188,11 @@ public class SkladOdkazu {
 	private Color [] barvy;
 	
 	/**
-	 * Fonty
-	 * new Font("Tahoma", Font.PLAIN, 12),
+	 * new Font("Tahoma", Font.PLAIN, 13), font v hlavicka Labels (odhlasit apod))
 	 * new Font("Tahoma", Font.PLAIN, 20),
 	 * new Font("Tahoma", Font.BOLD, 14),
-	 * new Font("Tahoma", Font.PLAIN, 13)
+	 * new Font("Tahoma", Font.PLAIN, 14), font v postraním menu v tlaèítkách
+	 * new Font("Tahoma", Font.PLAIN, 15), font v ColorCellTable, velikost písma v tabulce
 	 */
 	private Font [] fonty;
 	
