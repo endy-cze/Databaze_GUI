@@ -270,13 +270,10 @@ public class HledejListener implements ActionListener, MouseListener {
 				this.vypisSkladuKeDnesnimuDni(isVypis, i);
 				break;
 			case 12:
-				this.vypisZmetky(isVypis, i);
+				this.vypisZmetkyMzdy(isVypis, i);
 				break;
 			case 13:
 				this.vypisVinikyVKgKc(isVypis, i);
-				break;
-			case 14:
-				this.vypisZmetkyMzdy(isVypis, i);
 				break;
 			case TableToExcel.liciPlanZakl:
 				zaklLiciPlan(isVypis, TableToExcel.liciPlanZakl);
@@ -557,7 +554,7 @@ public class HledejListener implements ActionListener, MouseListener {
 		}  else {
 			TableModel mod = table.getModel();
 			String datumy = sdf.format(lastUsedDate1)+" do "+ sdf.format(lastUsedDate2);
-			TableToExcel.exportToExcelNaVysku(hlavniOkno, mod, datumy, (cisloVypisu+1)+". "+"Vycistene_kusy_za_obdobi", cisloVypisu);
+			TableToExcel.exportToExcelNaSirku(hlavniOkno, mod, datumy, (cisloVypisu+1)+". "+"Vycistene_kusy_za_obdobi", cisloVypisu);
 		}
 	}
 	private void inventuraRozpracVyroby(boolean isVypis, int cisloVypisu) throws Exception{
@@ -589,7 +586,7 @@ public class HledejListener implements ActionListener, MouseListener {
 		} else {
 			TableModel mod = table.getModel();
 			String datumy = sdf.format(lastUsedDate1)+" do "+ sdf.format(lastUsedDate2);
-			TableToExcel.exportToExcelNaVysku(hlavniOkno, mod, datumy, (cisloVypisu+1)+". "+"Expedovane_kusy_za_obdobi", cisloVypisu);
+			TableToExcel.exportToExcelNaSirku(hlavniOkno, mod, datumy, (cisloVypisu+1)+". "+"Expedovane_kusy_za_obdobi", cisloVypisu);
 		}
 	}
 	
@@ -605,24 +602,7 @@ public class HledejListener implements ActionListener, MouseListener {
 			}
 		}  else {
 			TableModel mod = table.getModel();
-			TableToExcel.exportToExcelNaVysku(hlavniOkno, mod, sdf.format(datumPoslVolaniMetody),(cisloVypisu+1)+". "+ "Vypis_skladu", cisloVypisu);
-		}
-	}
-	
-	private void vypisZmetky(boolean isVypis, int cisloVypisu) throws Exception{
-		if(isVypis){
-			Date od = get1Date(), do_ = get2Date();
-			ResultSet rs = sql.vypisZmetky(od, do_);
-			if(rs != null){
-				QueryTableModel tm = new QueryTableModel(rs);
-				table.setModel(tm);
-				columAdjuster.adjustColumns();
-				rs.close();
-			}
-		}  else {
-			TableModel mod = table.getModel();
-			String datumy = sdf.format(lastUsedDate1)+" do "+ sdf.format(lastUsedDate2);
-			TableToExcel.exportToExcelNaSirku(hlavniOkno, mod, datumy, (cisloVypisu+1)+". "+"Vypis_zmetky", cisloVypisu);
+			TableToExcel.exportToExcelNaSirku(hlavniOkno, mod, sdf.format(datumPoslVolaniMetody),(cisloVypisu+1)+". "+ "Vypis_skladu", cisloVypisu);
 		}
 	}
 	
@@ -656,7 +636,7 @@ public class HledejListener implements ActionListener, MouseListener {
 		}  else {
 			TableModel model = table.getModel();
 			String datumy = sdf.format(lastUsedDate1)+" do "+ sdf.format(lastUsedDate2);
-			TableToExcel.exportToExcelNaSirku(hlavniOkno, model, datumy, (cisloVypisu+1)+". "+"Vypis_zmetky", cisloVypisu);
+			TableToExcel.exportToExcelNaSirku(hlavniOkno, model, datumy, (cisloVypisu+1)+". "+"Vypis_viniku_v_kg-kc", cisloVypisu);
 		}
 	}
 	
