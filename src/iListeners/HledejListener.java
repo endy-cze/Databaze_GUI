@@ -340,7 +340,7 @@ public class HledejListener implements ActionListener, MouseListener {
 		} else {
 			TableModel mod = table.getModel();
 			String extend = lastUsedWeekNumberAYear[0] +" v roce "+  lastUsedWeekNumberAYear[1] + ", " + this.lastUsedFormovna;
-			TableToExcel.exportToExcelNaVysku(hlavniOkno, mod, extend, "Zakl_lici_plan", cisloExportu);
+			TableToExcel.exportToExcelNaSirku(hlavniOkno, mod, extend, "Zakl_lici_plan", cisloExportu);
 		}
 	}
 	

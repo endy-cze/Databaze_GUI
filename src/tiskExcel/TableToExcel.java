@@ -190,7 +190,9 @@ public class TableToExcel {
 		cell = row.createCell(0);
 		cell.setCellValue(model.getColumnName(0));
 			// naveni fontu
+		if (cisloExportu != liciPlanPlanovaci){ // Jedina vyjimka je liciPlanPlanovaci tomu zustane pismo velkosti 10, jem moc velky
 			cell.getCellStyle().setFont(font);
+		}
 		for(int i = 1; i < model.getColumnCount() -1 ; i++){ //mam totiž jeden sloupec navic aby se mi srovnali tabulky viz QuerytableModel
 			cell = row.createCell(i);
 			cell.setCellValue(model.getColumnName(i));
