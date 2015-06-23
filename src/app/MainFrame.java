@@ -150,9 +150,9 @@ public class MainFrame extends JFrame {
 		}
 	}
 	
-	public void initPopUpMenus(){
-		sidePopupMenulist = new MyPopUp [sideListButton.length];
-		sidePopupMenuItems = new JMenuItem [sideListButton.length][];
+	public void initPopUpMenus(MyPopUp [] sidePopupMenulist, JMenuItem [][] sidePopupMenuItems, SkladOdkazu sklad){
+		//sidePopupMenulist = new MyPopUp [sideListButton.length];
+		//sidePopupMenuItems = new JMenuItem [sideListButton.length][];
 		
 		sklad.setSidePopupMenulist(sidePopupMenulist);
 		sklad.setSidePopupMenuItems(sidePopupMenuItems);
@@ -204,8 +204,8 @@ public class MainFrame extends JFrame {
 		sidePopupMenulist[i] = new MyPopUp(jmena8, sidePopupMenuItems, i, sklad);
 	}
 	
-	public void initJButtons(){
-		sideListButton = new MyJButton [9];
+	public MyJButton [] initJButtons(SkladOdkazu sklad){
+		MyJButton [] sideListButton = new MyJButton [9];
 		sideListButton[0] = new MyJButton("Nov\u00E1 zak\u00E1zka",10,1, sklad);
 		sideListButton[1] = new MyJButton("Pl\u00E1nov\u00E1n\u00ED a prohl\u00ED\u017Een\u00ED",10,1, sklad);	
 		sideListButton[2] = new MyJButton("Zad\u00E1v\u00E1n\u00ED a \u00FAprava odlitk\u016F", 10, 1, sklad);
@@ -216,12 +216,8 @@ public class MainFrame extends JFrame {
 		sideListButton[7] = new MyJButton("Smazat fyz. kusy", 10, 1, sklad);
 		sideListButton[8] = new MyJButton("Záloha databáze", 10, 1, sklad);
 		
-		/**
-		 * Zatim necham tlaèitko smazat neviditelné, protože není implementováno
-		 */
-		//sideListButton[7].setVisible(false);
-		
 		sklad.setSideListButton(sideListButton);
+		return sideListButton;
 	}
 	
 	private void initWindows(JProgressBar progresBar){
@@ -420,13 +416,16 @@ public class MainFrame extends JFrame {
 		
 		
 		// tlacitka v menu
-		initJButtons();
+		this.sideListButton = initJButtons(sklad);
 		for(int i = 0; i < sideListButton.length; i++ ){
 			sideMenu.add(sideListButton[i]);
 		}
 		
 		progresBar.setValue(30);
-		initPopUpMenus();
+		// popup menus 
+		sidePopupMenulist = new MyPopUp [sideListButton.length];
+		sidePopupMenuItems = new JMenuItem [sideListButton.length][];
+		initPopUpMenus(sidePopupMenulist, sidePopupMenuItems, sklad);
 		
 		progresBar.setValue(40);
 		
@@ -441,10 +440,10 @@ public class MainFrame extends JFrame {
 		//Nejdrive vytvorim Scrollpane kdyby se mi to tma neveslo
 		
 		scrollPane = new JScrollPane();
+		telo.add(scrollPane);
 		scrollPane.setBackground(barvy[8]);
 		sklad.setScrollPane(scrollPane);
 		scrollPane.setBorder(new EmptyBorder(20, 0, 20, 20));
-		telo.add(scrollPane);
 		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		scrollPane.getVerticalScrollBar().setUnitIncrement(14);
 		//scrollPane.setViewportView(obalVedlejsihoOkna);
@@ -468,10 +467,6 @@ public class MainFrame extends JFrame {
 		createAndAddListeners();
 		
 		progresBar.setValue(100);
-	}
-	
-	public JPanel getTelo(){
-		return this.telo;
 	}
 
 	public JScrollPane getScrollPane() {
