@@ -129,8 +129,15 @@ public class TableToExcel {
 		
 		sheet.setMargin(Sheet.HeaderMargin, 0.1);
 		sheet.setMargin(Sheet.FooterMargin, 0.3);
+		
+		// font pro bunky		
+		HSSFFont font = wb.createFont();
+		font.setFontHeightInPoints((short) 12);
+		//HSSFCellStyle style = wb.createCellStyle();
+		//style.setBorderTop(CellStyle.BORDER_DOUBLE);
+		//style.setFont(font);
 		//insert data
-		this.insertData(model, sheet, cisloExportu);
+		this.insertData(model, sheet, cisloExportu, font);
 		//set First row as header at all printed pages
 		sheet.setRepeatingRows(CellRangeAddress.valueOf("1:1"));	
 		
@@ -171,13 +178,20 @@ public class TableToExcel {
 	 * @param model ze kterého budeme èíst data
 	 * @param sheet prazdny sheet do kterého budeme data vkládat
 	 * @param cisloExportu èíslo exportu
+	 * @param font font ktery použijeme v bunkach
 	 * @throws Exception
 	 */
-	private void insertData(QueryTableModel model, HSSFSheet sheet, int cisloExportu) throws Exception{
+	private void insertData(QueryTableModel model, HSSFSheet sheet, int cisloExportu, HSSFFont font) throws Exception{
 		Row row = sheet.createRow(0);
 		Cell cell = null;
+		
 		//insert Column name
-		for(int i = 0; i < model.getColumnCount() -1 ; i++){//mam totiž jeden sloupec navic aby se mi srovnali tabulky viz QuerytableModel
+			
+		cell = row.createCell(0);
+		cell.setCellValue(model.getColumnName(0));
+			// naveni fontu
+			cell.getCellStyle().setFont(font);
+		for(int i = 1; i < model.getColumnCount() -1 ; i++){ //mam totiž jeden sloupec navic aby se mi srovnali tabulky viz QuerytableModel
 			cell = row.createCell(i);
 			cell.setCellValue(model.getColumnName(i));
 		}
@@ -188,7 +202,7 @@ public class TableToExcel {
 			row = sheet.createRow(i);
 			for(int j = 0; j < model.getColumnCount() -1 ; j++){ //mam totiž jeden sloupec navic aby se mi srovnali tabulky viz QuerytableModel
 				cell = row.createCell(j);
-				//cell.getCellStyle().setWrapText(true);
+				
 				try {
 					if (isNumber[j]) {
 						if (model.getValueAt(i - 1, j).length() > 0) {
@@ -266,7 +280,7 @@ public class TableToExcel {
 			atr[0] = "Výpis zmetkù za období";atr[1] = "Výpis zmetkù od ";atr[2] = "./vypisy";
 			break;
 		case 13:
-			atr[0] = "Výpis viníkù za období";atr[1] = "Výpis viníkù od ";atr[2] = "./vypisy";
+			atr[0] = "Výpis viníkù v kg-kè období";atr[1] = "Výpis viníkù v kg/kè od ";atr[2] = "./vypisy";
 			break;
 		case TableToExcel.liciPlanZakl:
 			atr[0] = "Základni licí plán";atr[1] = "Základni licí plán pro týden: ";atr[2] = "./lici_plany";
@@ -368,7 +382,7 @@ public class TableToExcel {
 		 * zmìnit i èíslo ZMETKUNASTRANKU a POCETRADEKNASTRANKU podle toho.
 		 */
 		HSSFFont font = wb.createFont();
-		font.setFontHeightInPoints((short) 14);
+		font.setFontHeightInPoints((short) 13);
 		HSSFCellStyle style = wb.createCellStyle();
 		style.setBorderTop(CellStyle.BORDER_DOUBLE);
 		style.setFont(font);
@@ -438,7 +452,7 @@ public class TableToExcel {
 	public static final int DATEDATA = 2;
 	
 	public static final int ZMETKUNASTRANKU = 4;
-	public static final int POCETRADEKNASTRANKU = 43;
+	public static final int POCETRADEKNASTRANKU = 47;
 	
 	/**
 	 * Vloží do Excelu podle pøedem dané šablony jednu "bunku" ktera, reprezentuje Pro danou zakazku a daný datum poèet zmetku, Jmeno zakaznika ...
