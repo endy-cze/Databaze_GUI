@@ -1045,7 +1045,7 @@ public class Planovani extends JPanel implements ActionListener, ListSelectionLi
 		this.pridejRadkyPredRozvrh(zjistiRokDatum, tableGenericka, pocTydnuPredRozvrh, pole);
 		
 		// e) pridame radky za rozvrh
-		this.pridejRadkyZaRozvrh(zjistiRokDatum, tableGenericka, pocTydnuZaRozvrh, pole);
+		this.pridejRadkyZaRozvrh(pridavanyDatum, tableGenericka, pocTydnuZaRozvrh, pole);
 		
 		// uprava okna aby se dalo scrolovat
 		Dimension s = this.hlavniOkno.getObalVedlejsihoOkna().getPreferredSize();
@@ -1245,7 +1245,7 @@ public class Planovani extends JPanel implements ActionListener, ListSelectionLi
 		
 		
 		// pokud je tabulka prazdna vratime pocet tydnu mezi prvnim zmeny hodnot a poslednim zmeny hodnot. (minimalne to musi bejt 1!!)
-		if(tableGenericka.getRowCount() < 0){
+		if(tableGenericka.getRowCount() <= 0){
 			Calendar prvniNoveDatum = Calendar.getInstance();
 			prvniNoveDatum.setTime(zmenyHodnot[0].getDate()); // posledni nove upravene datum
 			this.set(prvniNoveDatum, prvniNoveDatum.get(Calendar.YEAR), prvniNoveDatum.get(Calendar.WEEK_OF_YEAR), CTVRTEK, hodinaDriv);
@@ -1299,41 +1299,61 @@ public class Planovani extends JPanel implements ActionListener, ListSelectionLi
 	
 	private void pridejRadkyPredRozvrh(Calendar pom, ColorCellTable tableGenericka, int pocTydnuPredRozvrh, boolean [][] zmeneno){
 		// nastaveni prvniho datumu z generické tabulky
-		int rokPrvniRadka = Integer.parseInt((String)tableGenericka.getValueAt(0, 12)); // prvni rok v rozvrhu
-		int tydenPrvniRadka = Integer.parseInt((String)tableGenericka.getValueAt(0, 1)); // prvni tyden v rozvrhu
-		this.set(pom, rokPrvniRadka, tydenPrvniRadka, CTVRTEK, hodinaDriv);
-		for(int i = 0; i < pocTydnuPredRozvrh; i++){
-			pom.set(Calendar.DAY_OF_WEEK, CTVRTEK);
-			pom.add(Calendar.WEEK_OF_YEAR, -1);
-			String [] data = new String [tableGenericka.getColumnCount()];
-			data[0] = nazevMesice(pom.get(Calendar.MONTH));
-			data[1] = Integer.toString(pom.get(Calendar.WEEK_OF_YEAR));			
-			data[12] = Integer.toString(pom.get(Calendar.YEAR));
-			pom.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
-			for (int j = 2; j < data.length - 2; j += 2) { // pridani datumu (zvyraznenych cerne)
-				data[j] = Integer.toString(pom.get(Calendar.DAY_OF_MONTH));
-				pom.add(Calendar.DAY_OF_WEEK, 1);
+		if(tableGenericka.getRowCount() > 0){ // tabulka neni prazdna, pokud je tak se v teto metode nic nestane
+			int rokPrvniRadka = Integer.parseInt((String)tableGenericka.getValueAt(0, 12)); // prvni rok v rozvrhu
+			int tydenPrvniRadka = Integer.parseInt((String)tableGenericka.getValueAt(0, 1)); // prvni tyden v rozvrhu
+			this.set(pom, rokPrvniRadka, tydenPrvniRadka, CTVRTEK, hodinaDriv);
+			for(int i = 0; i < pocTydnuPredRozvrh; i++){
+				pom.set(Calendar.DAY_OF_WEEK, CTVRTEK);
+				pom.add(Calendar.WEEK_OF_YEAR, -1);
+				String [] data = new String [tableGenericka.getColumnCount()];
+				data[0] = nazevMesice(pom.get(Calendar.MONTH));
+				data[1] = Integer.toString(pom.get(Calendar.WEEK_OF_YEAR));			
+				data[12] = Integer.toString(pom.get(Calendar.YEAR));
+				pom.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+				for (int j = 2; j < data.length - 2; j += 2) { // pridani datumu (zvyraznenych cerne)
+					data[j] = Integer.toString(pom.get(Calendar.DAY_OF_MONTH));
+					pom.add(Calendar.DAY_OF_WEEK, 1);
+				}
+				tableGenericka.addRow(0, data, zmeneno);
 			}
-			tableGenericka.addRow(0, data, zmeneno);
-		}
+		} 
 	}
-	
-	private void pridejRadkyZaRozvrh(Calendar pom, ColorCellTable tableGenericka, int pocTydnuZaRozvrh, boolean [][] zmeneno){
+	/**
+	 * 
+	 * @param pridavanyDatum je to ctvrtek
+	 * @param tableGenericka
+	 * @param pocTydnuZaRozvrh
+	 * @param zmeneno
+	 */
+	private void pridejRadkyZaRozvrh(Date pridavanyDatumDate, ColorCellTable tableGenericka, int pocTydnuZaRozvrh, boolean [][] zmeneno){
 		// nastaveni prvniho datumu z generické tabulky
-		int rokPosledniRadka = Integer.parseInt((String)tableGenericka.getValueAt(tableGenericka.getRowCount() - 1, 12)); // posledni rok v rozvrhu
-		int tydenPosledniRadka = Integer.parseInt((String)tableGenericka.getValueAt(tableGenericka.getRowCount() - 1, 1)); // posledni tyden v rozvrhu
-		this.set(pom, rokPosledniRadka, tydenPosledniRadka, CTVRTEK, hodinaPozdeji);
+		Calendar pridavanyDatum = Calendar.getInstance();
+		if(pridavanyDatumDate != null){ // pokud je pridavanyDatumDate null a tabulka ma 0 radek tak pocTydnuZaRozvrh je taky 0
+			pridavanyDatum.setTime(pridavanyDatumDate);
+		} 
+		int rokPosledniRadka, tydenPosledniRadka;
+		if(tableGenericka.getRowCount() > 0){ // tabulka neni prazdna
+			rokPosledniRadka = Integer.parseInt((String)tableGenericka.getValueAt(tableGenericka.getRowCount() - 1, 12)); // posledni rok v rozvrhu
+			tydenPosledniRadka = Integer.parseInt((String)tableGenericka.getValueAt(tableGenericka.getRowCount() - 1, 1)); // posledni tyden v rozvrhu
+		} else {
+			pridavanyDatum.set(Calendar.DAY_OF_WEEK, Calendar.THURSDAY);
+			pridavanyDatum.add(Calendar.WEEK_OF_YEAR, -1); // protože tenhle tyden by tam jako by byl, tak od nej se pridavaji tydny
+			rokPosledniRadka = pridavanyDatum.get(Calendar.YEAR);
+			tydenPosledniRadka = pridavanyDatum.get(Calendar.WEEK_OF_YEAR);
+		}
+		this.set(pridavanyDatum, rokPosledniRadka, tydenPosledniRadka, CTVRTEK, hodinaPozdeji);
 		for(int i = 0; i < pocTydnuZaRozvrh; i++){
-			pom.set(Calendar.DAY_OF_WEEK, CTVRTEK);
-			pom.add(Calendar.WEEK_OF_YEAR, 1);
+			pridavanyDatum.set(Calendar.DAY_OF_WEEK, CTVRTEK);
+			pridavanyDatum.add(Calendar.WEEK_OF_YEAR, 1);
 			String [] data = new String [tableGenericka.getColumnCount()];
-			data[0] = nazevMesice(pom.get(Calendar.MONTH));
-			data[1] = Integer.toString(pom.get(Calendar.WEEK_OF_YEAR));			
-			data[12] = Integer.toString(pom.get(Calendar.YEAR));
-			pom.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+			data[0] = nazevMesice(pridavanyDatum.get(Calendar.MONTH));
+			data[1] = Integer.toString(pridavanyDatum.get(Calendar.WEEK_OF_YEAR));			
+			data[12] = Integer.toString(pridavanyDatum.get(Calendar.YEAR));
+			pridavanyDatum.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
 			for (int j = 2; j < data.length - 2; j += 2) { // pridani datumu (zvyraznenych cerne)
-				data[j] = Integer.toString(pom.get(Calendar.DAY_OF_MONTH));
-				pom.add(Calendar.DAY_OF_WEEK, 1);
+				data[j] = Integer.toString(pridavanyDatum.get(Calendar.DAY_OF_MONTH));
+				pridavanyDatum.add(Calendar.DAY_OF_WEEK, 1);
 			}
 			tableGenericka.addRow(tableGenericka.getRowCount(), data, zmeneno);
 		}

@@ -25,6 +25,7 @@ public class PridejZakaznikaList implements ActionListener {
 
 	private SkladOdkazu sklad;
 	private SQLStor sql;
+	private static final String acesDenied = "execute command denied to user";
 	
 	public PridejZakaznikaList (SkladOdkazu sklad){
 		this.sklad = sklad;
@@ -41,8 +42,10 @@ public class PridejZakaznikaList implements ActionListener {
 			} catch (SQLException e) {
 				if(e.getLocalizedMessage() != null){
 					if(e.getLocalizedMessage().startsWith("Duplicate entry")){
+						JOptionPane.showMessageDialog(sklad.getHlavniOkno(), "Tento zákazník již v databázi existuje");
+					} else if(e.getLocalizedMessage().startsWith(acesDenied)){
 						JOptionPane.showMessageDialog(sklad.getHlavniOkno(), "Na tuto operaci nemáte pravomoce");
-					}else {
+					} else {
 						ExceptionWin.showExceptionMessage(e);
 					}
 				} else {
@@ -78,7 +81,11 @@ public class PridejZakaznikaList implements ActionListener {
 				try {
 					sql.novyModel(jmeno, cisloModelu, material,	materialVlastni, hmotnost, isOdhadHmot, formovna,norma);
 				} catch (SQLException e) {
-					e.printStackTrace();
+					if(e.getLocalizedMessage().startsWith(acesDenied)){
+						JOptionPane.showMessageDialog(sklad.getHlavniOkno(), "Na tuto operaci nemáte pravomoce");
+					}else {
+						ExceptionWin.showExceptionMessage(e);
+					}
 				}
 			} catch (NumberFormatException e) {
 				if(e.getMessage().equalsIgnoreCase("empty String")){
@@ -120,7 +127,11 @@ public class PridejZakaznikaList implements ActionListener {
 					sql.updateModel(idzakazky, jmeno, cisloModelu, material,	materialVlastni, hmotnost, isOdhadHmot, formovna,norma);
 					JOptionPane.showMessageDialog(sklad.getHlavniOkno(),"Model byl úspìšnì upraven");
 				} catch (SQLException e) {
-					ExceptionWin.showExceptionMessage(e);
+					if(e.getLocalizedMessage().startsWith(acesDenied)){
+						JOptionPane.showMessageDialog(sklad.getHlavniOkno(), "Na tuto operaci nemáte pravomoce");
+					}else {
+						ExceptionWin.showExceptionMessage(e);
+					}
 				}
 			} catch (NumberFormatException e) {
 				if(e.getMessage().equalsIgnoreCase("empty String")){
@@ -141,7 +152,9 @@ public class PridejZakaznikaList implements ActionListener {
 				String pom = "Duplicate entry";
 				if (e.getMessage().startsWith(pom)) {
 					JOptionPane.showMessageDialog(sklad.getHlavniOkno(), "Tento zákazník již v databázi existuje");
-				} else {
+				} else if(e.getLocalizedMessage().startsWith(acesDenied)){
+					JOptionPane.showMessageDialog(sklad.getHlavniOkno(), "Na tuto operaci nemáte pravomoce");
+				}else {
 					ExceptionWin.showExceptionMessage(e);
 				}
 			}
@@ -154,6 +167,8 @@ public class PridejZakaznikaList implements ActionListener {
 				String pom = "Duplicate entry";
 				if (e.getMessage().startsWith(pom)) {
 					JOptionPane.showMessageDialog(sklad.getHlavniOkno(), "Tento viník již v databázi existuje");
+				} else if(e.getLocalizedMessage().startsWith(acesDenied)){
+					JOptionPane.showMessageDialog(sklad.getHlavniOkno(), "Na tuto operaci nemáte pravomoce");
 				} else {
 					ExceptionWin.showExceptionMessage(e);
 				}
@@ -166,6 +181,8 @@ public class PridejZakaznikaList implements ActionListener {
 				String pom = "Duplicate entry";
 				if (e.getMessage().startsWith(pom)) {
 					JOptionPane.showMessageDialog(sklad.getHlavniOkno(), "Tato vada již v databázi existuje");
+				} else if(e.getLocalizedMessage().startsWith(acesDenied)){
+					JOptionPane.showMessageDialog(sklad.getHlavniOkno(), "Na tuto operaci nemáte pravomoce");
 				} else {
 					ExceptionWin.showExceptionMessage(e);
 				}

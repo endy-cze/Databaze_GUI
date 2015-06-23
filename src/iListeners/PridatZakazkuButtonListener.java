@@ -64,6 +64,7 @@ public class PridatZakazkuButtonListener implements ActionListener {
 		listComponents[22][0] = textPaganyrka; //datumExpedice<br>
 	 */
 	private JComponent[][] listComponents;
+	private static final String acesDenied = "execute command denied to user";
 	
 	private final String [] actionCommands = {"NajdiZakaznika", "NajdiModel","PridejZakazku", "UpravZakazku"};
 	
@@ -98,9 +99,13 @@ public class PridatZakazkuButtonListener implements ActionListener {
 				JOptionPane.showMessageDialog(hlavniOkno, "Kurz, cena nebo poèet kusù jsou napsány špatnì");
 				return;
 			}
-		} catch (Exception e1) {
-			ExceptionWin.showExceptionMessage(e1);
-			e1.printStackTrace();
+		} catch (Exception e) {
+			if(e.getLocalizedMessage().startsWith(acesDenied)){
+				JOptionPane.showMessageDialog(sklad.getHlavniOkno(), "Na tuto operaci nemáte pravomoce");
+			} else {
+				ExceptionWin.showExceptionMessage(e);
+				e.printStackTrace();
+			}
 		}
 	}
 	
