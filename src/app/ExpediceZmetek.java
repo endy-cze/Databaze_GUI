@@ -23,12 +23,9 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextPane;
 import javax.swing.JScrollPane;
 import javax.swing.JButton;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 import sablony.DateStor;
 import sablony.MyJButton;
-import sablony.MyJDateChooser;
 import sablony.errorwin.ExceptionWin;
 import sablony.tabulka.ColorCellTable;
 import sablony.tabulka.QueryTableModel;
@@ -50,9 +47,10 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.JCheckBox;
 import javax.swing.JList;
 import javax.swing.border.LineBorder;
+import javax.swing.JTabbedPane;
+import javax.swing.JTable;
 
 public class ExpediceZmetek extends JPanel implements ActionListener //, ChangeListener
 {
@@ -158,6 +156,14 @@ public class ExpediceZmetek extends JPanel implements ActionListener //, ChangeL
 		ResultSet fyzKusyZakazky = m.rs;
 		int pocetNeplanZmet = m.pocetNenaplanovanychKusu;
 		
+		ResultSet rs = sklad.getSql().vyberDilciTerminy(idZakazky);
+		DefaultListModel<DateStor> mod = createListModel(rs);
+		list.setModel(mod);
+		
+		ResultSet stavZakazky = sql.vypisStavuNeuzavrenychZakazekShort(idZakazky, null, null, null, 0, null, null);
+		QueryTableModel tm = new QueryTableModel(stavZakazky);
+		stavZakazkyTable.setModel(tm);
+		
 		this.doplnUdaje.removeMouseListener(sklad.getMyJButonnListener());
 		pocetNeplanZmetku.setText(Integer.toString(pocetNeplanZmet));
 		for(int i = 0; i < nastavRezimPole[0].length; i++){
@@ -204,10 +210,6 @@ public class ExpediceZmetek extends JPanel implements ActionListener //, ChangeL
 			btnUzavtZakzku.setActionCommand("ObnovZakazku");
 			btnUzavtZakzku.setText("Obnov zak\u00E1zku (P\u0159esnos z archivu)");
 		}
-		
-		ResultSet rs = sklad.getSql().vyberDilciTerminy(idZakazky);
-		DefaultListModel<DateStor> mod = createListModel(rs);
-		list.setModel(mod);
 		
 		
 		String [][] vadyVinici = sklad.getVadyVinici();
@@ -290,28 +292,6 @@ public class ExpediceZmetek extends JPanel implements ActionListener //, ChangeL
 		return mod;
 	}
 	
-	public void setTavba(){
-		this.doplnUdaje.removeMouseListener(sklad.getMyJButonnListener());
-		this.doplnUdaje.setBackground(barvy[12]);
-		for(int i = 0; i < nastavRezimPole[0].length; i++){
-			nastavRezimPole[0][i].setVisible(false);
-		}
-		for(int i = 0; i < nastavRezimPole[1].length; i++){
-			nastavRezimPole[1][i].setVisible(false);
-		}
-		for(int i = 0; i < nastavRezimPole[2].length; i++){
-			nastavRezimPole[2][i].setVisible(true);
-		}
-		
-		int width = 100;
-		for(int i = 0; i < tableFyzkusyEx.getColumnCount() - 1; i++){
-			width += tableFyzkusyEx.getColumnModel().getColumn(i).getWidth();
-		}
-		Dimension s = this.hlavniOkno.getObalVedlejsihoOkna().getPreferredSize();
-		s.width = width;
-		this.hlavniOkno.getObalVedlejsihoOkna().setPreferredSize(s);
-	}
-	
 	public void initLabels(){
 		this.textLabels = new JLabel [21];
 		textLabels[0] = textIdZakazky;
@@ -376,10 +356,6 @@ public class ExpediceZmetek extends JPanel implements ActionListener //, ChangeL
 		nastavRezimPole[2][2] = zadejCisloTavby;
 	}
 
-	public ColorCellTable getTableFyzkusyEx() {
-		return tableFyzkusyEx;
-	}
-
 	/**
 	 * 
 	 * @param hlavniOkno
@@ -393,9 +369,9 @@ public class ExpediceZmetek extends JPanel implements ActionListener //, ChangeL
 		fonty = sklad.getFonty();
 		
 		GridBagLayout gridBagLayout = new GridBagLayout();
-		gridBagLayout.columnWidths = new int[]{22, 160, 100, 20, 25, 66, 38, 60, 48, 40, 10, 0, 15, 10, 43, 20, 0, 30, 30, 20, 30, 20, 180, 0, 20, 0};
+		gridBagLayout.columnWidths = new int[]{22, 160, 100, 20, 25, 66, 38, 60, 48, 40, 10, 0, 15, 10, 43, 20, 0, 30, 30, 20, 30, 20, 120, 140, 0, 20, 0};
 		gridBagLayout.rowHeights = new int[]{21, 0, 0, 12, 0, 0, 0, 0, 0, 0, 30, 25, 32, 32, 0, 32, 0, 32, 0, 20, 0};
-		gridBagLayout.columnWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, Double.MIN_VALUE};
+		gridBagLayout.columnWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, Double.MIN_VALUE};
 		gridBagLayout.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, Double.MIN_VALUE};
 		setLayout(gridBagLayout);
 		
@@ -446,15 +422,6 @@ public class ExpediceZmetek extends JPanel implements ActionListener //, ChangeL
 		gbc_textJmenoZakaznika.gridy = 2;
 		add(textJmenoZakaznika, gbc_textJmenoZakaznika);
 		
-		lblNewLabel_3 = new JLabel("Seznam d\u00EDl\u010D\u00EDch term\u00EDn\u016F");
-		lblNewLabel_3.setFont(fb);
-		GridBagConstraints gbc_lblNewLabel_3 = new GridBagConstraints();
-		gbc_lblNewLabel_3.anchor = GridBagConstraints.WEST;
-		gbc_lblNewLabel_3.insets = new Insets(0, 0, 5, 5);
-		gbc_lblNewLabel_3.gridx = 22;
-		gbc_lblNewLabel_3.gridy = 3;
-		add(lblNewLabel_3, gbc_lblNewLabel_3);
-		
 		JLabel lblNewLabel_1 = new JLabel("Id zak\u00E1zky:");
 		popisLabels[3] = lblNewLabel_1;
 		GridBagConstraints gbc_lblNewLabel_1 = new GridBagConstraints();
@@ -489,18 +456,6 @@ public class ExpediceZmetek extends JPanel implements ActionListener //, ChangeL
 		gbc_textIdModelu.gridx = 13;
 		gbc_textIdModelu.gridy = 4;
 		add(textIdModelu, gbc_textIdModelu);
-		
-		list = new JList();
-		list.setFont(f);
-		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		list.setBorder(new LineBorder(new Color(192, 192, 192)));
-		GridBagConstraints gbc_list = new GridBagConstraints();
-		gbc_list.gridheight = 7;
-		gbc_list.insets = new Insets(0, 0, 5, 5);
-		gbc_list.fill = GridBagConstraints.BOTH;
-		gbc_list.gridx = 22;
-		gbc_list.gridy = 4;
-		add(list, gbc_list);
 		
 		JLabel lblsloObjednvky = new JLabel("\u010C\u00EDslo objedn\u00E1vky:");
 		popisLabels[5] = lblsloObjednvky;
@@ -813,6 +768,13 @@ public class ExpediceZmetek extends JPanel implements ActionListener //, ChangeL
 		
 		oznacOdlito = new MyJButton("Ozna\u010Dit jako (ne)odlito",16 ,1, sklad);
 		oznacOdlito.addActionListener(this);
+		oznacOdlito.setActionCommand("OznacOdlito");
+		GridBagConstraints gbc_oznacOdlito = new GridBagConstraints();
+		gbc_oznacOdlito.fill = GridBagConstraints.BOTH;
+		gbc_oznacOdlito.insets = new Insets(0, 0, 5, 5);
+		gbc_oznacOdlito.gridx = 1;
+		gbc_oznacOdlito.gridy = 12;
+		add(oznacOdlito, gbc_oznacOdlito);
 		
 		textIsOdhadLabel = new JLabel("ANO/NE");
 		GridBagConstraints gbc_textIsOdhadLabel = new GridBagConstraints();
@@ -822,13 +784,30 @@ public class ExpediceZmetek extends JPanel implements ActionListener //, ChangeL
 		gbc_textIsOdhadLabel.gridx = 20;
 		gbc_textIsOdhadLabel.gridy = 9;
 		add(textIsOdhadLabel, gbc_textIsOdhadLabel);
-		oznacOdlito.setActionCommand("OznacOdlito");
-		GridBagConstraints gbc_oznacOdlito = new GridBagConstraints();
-		gbc_oznacOdlito.fill = GridBagConstraints.BOTH;
-		gbc_oznacOdlito.insets = new Insets(0, 0, 5, 5);
-		gbc_oznacOdlito.gridx = 1;
-		gbc_oznacOdlito.gridy = 12;
-		add(oznacOdlito, gbc_oznacOdlito);
+		
+		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
+		GridBagConstraints gbc_tabbedPane = new GridBagConstraints();
+		gbc_tabbedPane.gridwidth = 2;
+		gbc_tabbedPane.gridheight = 7;
+		gbc_tabbedPane.insets = new Insets(0, 0, 5, 5);
+		gbc_tabbedPane.fill = GridBagConstraints.BOTH;
+		gbc_tabbedPane.gridx = 22;
+		gbc_tabbedPane.gridy = 4;
+		add(tabbedPane, gbc_tabbedPane);
+		
+		list = new JList<DateStor>();
+		tabbedPane.addTab("Seznam dílèích termínù", null, list, null);
+		list.setFont(f);
+		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		list.setBorder(new LineBorder(new Color(192, 192, 192)));
+		
+		scrollPane_2 = new JScrollPane();
+		tabbedPane.addTab("Stav zakázky", null, scrollPane_2, null);
+		
+		stavZakazkyTable = new ColorCellTable(sklad.getPrazdneTabulky()[0], scrollPane_2, false, sklad);
+		scrollPane_2.setViewportView(stavZakazkyTable);
+		
+		
 		
 		oznacZmetek = new MyJButton("(Ne)Ozna\u010Dit jako zmetek",16 ,1, sklad);
 		oznacZmetek.addActionListener(this);
@@ -1093,7 +1072,7 @@ public class ExpediceZmetek extends JPanel implements ActionListener //, ChangeL
 		add(btnUzavtZakzku, gbc_btnUzavtZakzku);
 		GridBagConstraints gbc_scrollPane_1 = new GridBagConstraints();
 		gbc_scrollPane_1.insets = new Insets(0, 0, 5, 5);
-		gbc_scrollPane_1.gridwidth = 23;
+		gbc_scrollPane_1.gridwidth = 24;
 		gbc_scrollPane_1.fill = GridBagConstraints.BOTH;
 		gbc_scrollPane_1.gridx = 1;
 		gbc_scrollPane_1.gridy = 18;
@@ -1359,7 +1338,6 @@ public class ExpediceZmetek extends JPanel implements ActionListener //, ChangeL
 		}
 	}
 
-	private boolean added = false;
 	private JLabel lblNewLabel_2;
 	private JLabel textKurz;
 	private JButton btnExpedovno;
@@ -1373,34 +1351,15 @@ public class ExpediceZmetek extends JPanel implements ActionListener //, ChangeL
 	private JLabel uzavreno;
 	private JDateChooser dateOdliti;
 	private JDateChooser dateExpedice;
-	private JList list;
-	private JLabel lblNewLabel_3;
+	private JList<DateStor> list;
 	private JButton zadejCisloTavby;
 	private JTextField textCisloFaktury;
 	private JButton zadatCisloFaktury;
 	private JLabel lblsloFaktury;
 	private JDateChooser dateZadaniZmetku;
-	
-	
-	/*@Override
-	public void stateChanged(ChangeEvent arg0) {
-		JCheckBox box = (JCheckBox) arg0.getSource();
-		if(box.isSelected() && !added){
-			doplnUdaje.setBackground(barvy[16]);
-			doplnUdaje.setEnabled(true);
-			comboBoxVinik.setEnabled(true);
-			comboBoxVada.setEnabled(true);
-			this.doplnUdaje.addMouseListener(sklad.getMyJButonnListener());
-			added = true;
-		} else if(!box.isSelected()){
-			doplnUdaje.setBackground(barvy[12]);
-			doplnUdaje.setEnabled(false);
-			comboBoxVinik.setEnabled(false);
-			comboBoxVada.setEnabled(false);
-			this.doplnUdaje.removeMouseListener(sklad.getMyJButonnListener());
-			added = false;
-		}
-	}*/
+	private JTabbedPane tabbedPane;
+	private JScrollPane scrollPane_2;
+	private ColorCellTable stavZakazkyTable;
 	
 	private void endZadavaniOdlitku(int i) throws SQLException, ParseException{
 		int idKusu = Integer.parseInt((String)this.tableFyzkusyEx.getValueAt(i, 0));
@@ -1526,43 +1485,4 @@ public class ExpediceZmetek extends JPanel implements ActionListener //, ChangeL
 		}
 		return true;
 	}
-	
-	/**
-	 * Nalezne øádek s prázdným dílèím termínem a dá do nìj dílèí termín z pùvodní, pokud na pùvodním øádku žádný termín není nic to nedìlá
-	 * @param row øádek, kde je puvodní dilèí termín
-	 */
-	private void presunDilciTermin(int row){
-		int dilciTermcol = 6;
-		int zmetekCol = 5;
-		boolean isUspesnaVymena = false;
-		boolean isPrazdne = false;
-		if(tableFyzkusyEx.getValueAt(row, dilciTermcol) != null){
-			if(!((String)tableFyzkusyEx.getValueAt(row, dilciTermcol)).equalsIgnoreCase("")){
-				for(int i = 0; i < tableFyzkusyEx.getRowCount();i++){
-					if(i == row)continue;
-					if(tableFyzkusyEx.getValueAt(i, dilciTermcol) == null){
-						if(((String)tableFyzkusyEx.getValueAt(i, zmetekCol)).equalsIgnoreCase("Ne")){
-							tableFyzkusyEx.setValueAt(tableFyzkusyEx.getValueAt(row, dilciTermcol), i, dilciTermcol);
-							isUspesnaVymena = true;
-							break;
-						}
-					} else if(((String)tableFyzkusyEx.getValueAt(i, dilciTermcol)).equalsIgnoreCase("")){
-						if(((String)tableFyzkusyEx.getValueAt(i, zmetekCol)).equalsIgnoreCase("Ne")){
-							tableFyzkusyEx.setValueAt(tableFyzkusyEx.getValueAt(row, dilciTermcol), i, dilciTermcol);
-							isUspesnaVymena = true;
-							break;
-						}
-					}
-				}
-			} else {
-				isPrazdne = true;
-			}
-		} else {
-			isPrazdne = true;
-		}
-		if(!isUspesnaVymena && !isPrazdne){
-			JOptionPane.showMessageDialog(hlavniOkno, "Už nelze dílèí termín pøesunou, prosím vygenerujte nové kusy místo zmetkù a pak dilèí termíny zapište ruènì");
-		}
-	}
-	
 }
