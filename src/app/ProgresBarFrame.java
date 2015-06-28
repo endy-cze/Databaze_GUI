@@ -17,10 +17,7 @@ import java.awt.event.ActionListener;
 
 import javax.swing.LayoutStyle.ComponentPlacement;
 
-import com.jgoodies.forms.factories.DefaultComponentFactory;
 import java.awt.Toolkit;
-import java.awt.Color;
-import java.awt.SystemColor;
 
 public class ProgresBarFrame extends JFrame {
 
@@ -71,8 +68,9 @@ public class ProgresBarFrame extends JFrame {
 		btnUriit.setActionCommand("Cancel");
 		btnUriit.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		
-		lblNewJgoodiesLabel = DefaultComponentFactory.getInstance().createLabel("Vytv\u00E1\u0159\u00EDm aplikaci");
-		
+		//lblNewJgoodiesLabel = DefaultComponentFactory.getInstance().createLabel("Vytv\u00E1\u0159\u00EDm aplikaci");
+		lblNewJgoodiesLabel = new JLabel("Vytv\u00E1\u0159\u00EDm aplikaci");
+
 		apProgresBar = new JProgressBar();
 		apProgresBar.setStringPainted(true);
 		

@@ -66,7 +66,7 @@ public class SQLStor {
 			{"{CALL pomdb.pridejVinika(?)}", "{CALL pomdb.pridejVadu(?)}", "{CALL pomdb.planovaniRozvrh(?,?)}", "{CALL pomdb.generujKusy(?)}",
 				"{CALL pomdb.planovaniRozvrhVycisteno(?,?)}", "{CALL pomdb.kapacitniPropocet(?,?)}", "{CALL pomdb.uzavriZakazku(?,?,?,?,?,?)}", "{CALL pomdb.obnovZakazku(?)}"},
 			{"{CALL pomdb.vypisOdlituVKgKcOdDo(?,?)}", "{CALL pomdb.vypisZpozdeneVyroby(?)}", "{CALL pomdb.vypisDleTerminuExpediceCisloTydne(?,?)}", "{CALL pomdb.vypisPolozekSOdhadHmot()}", "{CALL pomdb.vypisMzdySlevacu(?)}",
-				"{CALL pomdb.vypisOdlitychKusuOdDo(?,?)}", "{CALL pomdb.vypisVycistenychKusuOdDo(?,?)}", "{CALL pomdb.vypisRozpracovaneVyroby()}", "{CALL pomdb.vypisExpedovanychKusuOdDo(?,?)}", "{CALL pomdb.vypisKusuNaSkladu()}",
+				"{CALL pomdb.vypisOdlitychKusuOdDo(?,?,?,?)}", "{CALL pomdb.vypisVycistenychKusuOdDo(?,?)}", "{CALL pomdb.vypisRozpracovaneVyroby()}", "{CALL pomdb.vypisExpedovanychKusuOdDo(?,?)}", "{CALL pomdb.vypisKusuNaSkladu()}",
 				"{CALL pomdb.vypisStavNeuzavrenychZakazek(?,?,?,?,?,?,?)}", "{CALL pomdb.vypisDenniOdlitychKusu(?)}", "{CALL pomdb.vypisZmetky(?,?)}", "{CALL pomdb.vypisVinikyVKgKc(?,?)}",
 				"{CALL pomdb.vypisStavNeuzavrenychZakazek_short(?,?,?,?,?,?,?)}"},
 			{"{CALL pomdb.liciPlanZakl(?,?,?)}", "{CALL pomdb.liciPlanPlanovaci(?,?,?)}", "{CALL pomdb.vyberDilciTerminy(?)}", "{CALL pomdb.vyberDilciTerminySeJmeny(?)}", 
@@ -75,11 +75,12 @@ public class SQLStor {
 			{"{CALL pomdb.zalohaDatabaze()}"}
 	};
 	/**
-	 * Prikazy pro vybrani viniku a vad 
+	 * Prikazy pro vybrani viniku a vad a vlastních materialu
 	 */
-	private static final String [] vadyVinici = {
+	private final String [] vadyVinici = {
 		"{CALL pomdb.vyberViniky(?)}",
-		"{CALL pomdb.vyberVady(?)}"
+		"{CALL pomdb.vyberVady(?)}",
+		"{CALL pomdb.vyberVlastniMaterialy()}"
 		};
 	/**
 	 * Úložištì pro objekt Connection a pro objekty CallableStatement. Tato tøída je implementována pøesnì na míru mojí databáze.
@@ -1174,10 +1175,12 @@ public class SQLStor {
 	 * Vypise vsechny kusy co nejsou zmetky, nejsou v uzavrene zakazce a maji odlito = true v danem terminu 
 	 * @param od
 	 * @param do_
+	 * @param formovna
+	 * @param vlastni_material
 	 * @return
-	 * @throws SQLException 
+	 * @throws SQLException
 	 */
-	public ResultSet vypisOdlitychKusuOdDo(Date od, Date do_) throws SQLException{
+	public Statement vypisOdlitychKusuOdDo(Date od, Date do_, String formovna, String vlastni_material) throws SQLException{
 		if(od == null){
 			JOptionPane.showMessageDialog(hlavniOkno, "Datum od nesmí být prázdné");
 			return null;
@@ -1185,6 +1188,12 @@ public class SQLStor {
 		if(do_ == null){
 			JOptionPane.showMessageDialog(hlavniOkno, "Datum do nesmí být prázdné");
 			return null;
+		}
+		if(formovna == null){
+			formovna = "";
+		}
+		if(vlastni_material == null){
+			vlastni_material = "";
 		}
 		int i = 5, j = 5;
 		if(cst[i][j] == null){
@@ -1196,8 +1205,10 @@ public class SQLStor {
 		c.setDate("od", pomDate);
 		pomDate = new java.sql.Date (do_.getTime());
 		c.setDate("do_", pomDate);
-		rs = c.executeQuery();
-		return rs;
+		c.setString("formovna", formovna);
+		c.setString("vlastni_material", vlastni_material);
+		c.execute();
+		return c;
 	}
 	
 	/**
@@ -1691,6 +1702,18 @@ public class SQLStor {
 		c = cst[i][j];
 		c.setInt(1, idZakazky);
 		rs = c.executeQuery();
+		return rs;
+	}
+	
+	/**
+	 * Vratí seznam všech vlastním materiálù v databázi.
+	 * @return ResultSet seznam materialu
+	 * @throws SQLException
+	 */
+	public ResultSet vyberVlastniMaterialy() throws SQLException{
+		int i = 2;
+		CallableStatement s = conn.prepareCall(vadyVinici[i]);
+		rs = s.executeQuery();
 		return rs;
 	}
 	

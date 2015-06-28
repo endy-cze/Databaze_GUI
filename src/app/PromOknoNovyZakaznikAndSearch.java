@@ -21,6 +21,7 @@ import java.awt.Insets;
 import java.awt.BorderLayout;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.sql.SQLException;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -30,7 +31,6 @@ import sablony.MyJButton;
 import sablony.ParametryFiltr;
 import sablony.tabulka.ColorCellTable;
 import sablony.tabulka.TableColumnAdjuster;
-
 import storage.SkladOdkazu;
 
 import javax.swing.LayoutStyle.ComponentPlacement;
@@ -298,8 +298,9 @@ public class PromOknoNovyZakaznikAndSearch extends JPanel {
 	/**
 	 * 
 	 * @param hlavniOkno
+	 * @throws SQLException 
 	 */
-	public PromOknoNovyZakaznikAndSearch(MainFrame hlavniOkno) {
+	public PromOknoNovyZakaznikAndSearch(MainFrame hlavniOkno) throws SQLException {
 		this.hlavniOkno = hlavniOkno;
 		this.sklad = hlavniOkno.getSklad();
 		//this.barvy = sklad.getBarvy();

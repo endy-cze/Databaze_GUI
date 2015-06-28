@@ -120,7 +120,13 @@ public class CreateConectionToMySQL implements ActionListener {
         	}
         	//vytvarim aplikaci
         	prgbarFrame.setVytvarimAplikaci();
-        	MainFrame hlavniOkno = new MainFrame(conn, userName, prgbarFrame.getApProgresBar());
+        	MainFrame hlavniOkno = null;
+        	try{
+        		hlavniOkno = new MainFrame(conn, userName, prgbarFrame.getApProgresBar());
+        	} catch (SQLException e){
+    			JOptionPane.showMessageDialog(loginWindow, "Objevila se chyba pøi vytváøení GUI, CreateConection -doInBackground()");
+        	}
+        	
         	prgbarFrame.setHotovo();
         	return hlavniOkno;
         }

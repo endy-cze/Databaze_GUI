@@ -525,15 +525,24 @@ public class HledejListener implements ActionListener, MouseListener {
 			TableToExcel.exportToExcelNaVysku(hlavniOkno, mod, sdf.format(lastUsedDate1), (cisloVypisu+1)+". "+"Mzdy_slevacu", cisloVypisu);
 		}	
 	}
+	
+	/**
+	 * Nedodìláno !!! chybí mi vlastní materiál.
+	 * @param isVypis
+	 * @param cisloVypisu
+	 * @throws Exception
+	 */
 	private void vypisOdlitychKusuOdDo(boolean isVypis, int cisloVypisu) throws Exception{
 		if (isVypis) {
 			Date od = get1Date(), do_ = get2Date();
-			ResultSet rs = sql.vypisOdlitychKusuOdDo(od, do_);
-			if (rs != null) {
-				QueryTableModel tm = new QueryTableModel(rs);
+			String formovna = getFormovna();
+			String vlastniMaterialy = getVlastniMaterial();
+			Statement st = sql.vypisOdlitychKusuOdDo(od, do_, formovna, vlastniMaterialy);
+			if (st != null) {
+				QueryTableModel tm = new QueryTableModel(st);
 				table.setModel(tm);
 				columAdjuster.adjustColumns();
-				rs.close();
+				//st.close();
 			}
 		} else {
 			TableModel mod = table.getModel();
@@ -684,6 +693,10 @@ public class HledejListener implements ActionListener, MouseListener {
 			this.lastUsedFormovna = "chyba";
 		}
 		return formovna;
+	}
+	
+	private String getVlastniMaterial(){
+		return this.filtr.getSelectedVlastniMaterial();
 	}
 	
 	private void hledejZakaznikyVyhledej() throws Exception {

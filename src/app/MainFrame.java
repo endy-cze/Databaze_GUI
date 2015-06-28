@@ -30,6 +30,7 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.UIManager;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 
 import sablony.MyJButton;
 import sablony.MyPopUp;
@@ -220,7 +221,7 @@ public class MainFrame extends JFrame {
 		return sideListButton;
 	}
 	
-	private void initWindows(JProgressBar progresBar){
+	private void initWindows(JProgressBar progresBar) throws SQLException{
 		promOkna = new JPanel [5];
 		sklad.setPromOkna(promOkna);
 		
@@ -285,8 +286,9 @@ public class MainFrame extends JFrame {
 	
 	/**
 	 * Create the frame.
+	 * @throws SQLException 
 	 */
-	public MainFrame(Connection conn, String jmenoUzivatele,JProgressBar progresBar) {	
+	public MainFrame(Connection conn, String jmenoUzivatele,JProgressBar progresBar) throws SQLException {	
 		progresBar.setValue(1);
 		
 		

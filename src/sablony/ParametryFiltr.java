@@ -39,6 +39,8 @@ import storage.SkladOdkazu;
 import java.awt.Dimension;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 import javax.swing.JCheckBox;
 
@@ -83,6 +85,8 @@ public class ParametryFiltr extends JPanel {
 	};
 	private Font [] fonty ;
 	
+	private DefaultComboBoxModel<String> vlastniMaterialySeznamModel;
+	
 	private ColorCellTable table;
 	private TableColumnAdjuster columAdjuster;
 	
@@ -111,9 +115,10 @@ public class ParametryFiltr extends JPanel {
 	 *  pole[13] = JtextField id Zakazky  <br>
 	 *  pole[14] = Label Èíslo objednávky  <br>
 	 *  pole[15] = JtextField Èíslo objednávky  <br>
-	 *  pole[16] = checkVcetneUzavZak
+	 *  pole[16] = checkVcetneUzavZak <br>
+	 *  pole[17] = vlMaterialLabel
 	 */
-	private Component [] pole= new Component[17];
+	private Component [] pole= new Component[18];
 	
 	/**
 	 *  vypisy[0] = Label Datum od <br>
@@ -126,9 +131,11 @@ public class ParametryFiltr extends JPanel {
 	 *  vypisy[7] = JtextField napoveda datum <br>
 	 *  vypisy[8] = JtextField napoveda cislo tydne <br>
 	 *  vypisy[9] = JButton Prevod do PDF  <br>
+	 *  ... <br>
+	 *  vypisy[12] = JComboBox Vlastni material
 	 *  
 	 */
-	private Component [] vypisy = new Component[12];
+	private Component [] vypisy = new Component[13];
 	private short status = 0;
 	private JPanel panel;
 	private JLabel idZakazkyLabel;
@@ -140,6 +147,8 @@ public class ParametryFiltr extends JPanel {
 	private JButton prevodDoPdf;
 	private JLabel lblFormovna_1;
 	private JComboBox comboBoxFormovna;
+	private JLabel vlMaterialLabel;
+	private JComboBox<String> vlMaterialComboBox;
 	
 	public void addListeners(){
 		PanelFiltrListenerTextField list = new PanelFiltrListenerTextField(sklad, pole, vypisy);
@@ -216,8 +225,10 @@ public class ParametryFiltr extends JPanel {
 		}
 		vyhledej.setActionCommand("HledejModely");
 		
-		this.status = 2;
+		// vlastni material 
+		this.vlMaterialLabel.setVisible(false);
 		
+		this.status = 2;
 	}
 	
 	public void setZakazka(){
@@ -243,6 +254,8 @@ public class ParametryFiltr extends JPanel {
 				pole[i].setVisible(true);
 			}
 		}
+		// vlastni material 
+		this.vlMaterialLabel.setVisible(false);
 		
 		vyhledej.setActionCommand("HledejZakazky");
 		this.status = 3;
@@ -391,6 +404,8 @@ public class ParametryFiltr extends JPanel {
 		case 5: // 6.	Výpis odlitých (vyrobených) kusù za období
 			this.showOdDo();
 			prevodDoPdf.setVisible(false);
+			this.vlMaterialComboBox.setVisible(true);
+			this.vlMaterialLabel.setVisible(true);
 			break;
 		case 6: //7.	Výpis položek s odhadovou hmotností
 			this.showNothing();
@@ -468,14 +483,23 @@ public class ParametryFiltr extends JPanel {
 
 	/**
 	 * Create the panel.
+	 * @throws SQLException 
 	 */
-	public ParametryFiltr(SkladOdkazu sklad, ColorCellTable table) {
+	public ParametryFiltr(SkladOdkazu sklad, ColorCellTable table) throws SQLException {
 		this.hlavniOkno = sklad.getHlavniOkno();
 		this.sklad = sklad;
 		this.table = table;
 		this.barvy = sklad.getBarvy();
 		this.fonty = sklad.getFonty();
 		this.columAdjuster = sklad.getPromOknoNovyZakaznikAndSearchColumAdjuster();
+		
+		/**
+		 * Duležité možná èasem umístím do threadu!!!!
+		 */
+		ResultSet rs = sklad.getSql().vyberVlastniMaterialy();
+		vlastniMaterialySeznamModel = this.createComboBoxListModelFromResultSet(rs);
+		
+		
 		
 		setBorder(new EmptyBorder(10, 10, 10, 10));
 		setBackground(barvy[0]);
@@ -852,8 +876,54 @@ public class ParametryFiltr extends JPanel {
 		gbc_prevodDoPdf.gridy = 5;
 		panel.add(prevodDoPdf, gbc_prevodDoPdf);
 		
+		vlMaterialLabel = new JLabel("Vl. materi\u00E1l");
+		pole[17] = vlMaterialLabel;
+		vlMaterialLabel.setFont(fonty[4]);
+		vlMaterialLabel.setForeground(barvy[11]);
+		GridBagConstraints gbc_vlMaterialLabel = new GridBagConstraints();
+		gbc_vlMaterialLabel.anchor = GridBagConstraints.WEST;
+		gbc_vlMaterialLabel.insets = new Insets(0, 0, 5, 5);
+		gbc_vlMaterialLabel.gridx = 9;
+		gbc_vlMaterialLabel.gridy = 5;
+		panel.add(vlMaterialLabel, gbc_vlMaterialLabel);
+		
+		vlMaterialComboBox = new JComboBox<String>();
+		this.vlMaterialComboBox.setModel(vlastniMaterialySeznamModel);
+		vypisy[12] = vlMaterialComboBox;
+		GridBagConstraints gbc_vlMaterialComboBox = new GridBagConstraints();
+		gbc_vlMaterialComboBox.gridwidth = 3;
+		gbc_vlMaterialComboBox.insets = new Insets(0, 0, 5, 5);
+		gbc_vlMaterialComboBox.fill = GridBagConstraints.HORIZONTAL;
+		gbc_vlMaterialComboBox.gridx = 10;
+		gbc_vlMaterialComboBox.gridy = 5;
+		panel.add(vlMaterialComboBox, gbc_vlMaterialComboBox);
+		
 		
 		addListeners();
 		setZakaznik();
-	}	
+	}
+	
+	private DefaultComboBoxModel<String> createComboBoxListModelFromResultSet(ResultSet rs) throws SQLException{
+		int size = 0;
+		try {
+		    rs.last();
+		    size = rs.getRow();
+		    rs.beforeFirst();
+		}
+		catch(Exception ex) {
+			size = 0;
+		}
+		String [] vlMaterialy = new String [size];
+		int i = 0;
+		while(rs.next()){
+			vlMaterialy[i] = rs.getString(1); // ma jen jeden sloupec
+			i++;
+		}
+		DefaultComboBoxModel<String> model = new DefaultComboBoxModel<String>(vlMaterialy);
+		return model;
+	}
+	
+	public String getSelectedVlastniMaterial(){
+		return (String) this.vlMaterialComboBox.getSelectedItem();
+	}
 }
