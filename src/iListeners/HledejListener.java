@@ -49,47 +49,10 @@ public class HledejListener implements ActionListener, MouseListener {
 	private SQLStor sql;
 	
 	private SimpleDateFormat sdf = null;
-	private CallableStatement cs = null;
 	private ParametryFiltr filtr;
 	private ColorCellTable table;
 	private TableColumnAdjuster columAdjuster;
-	/**
-	 *  pole[0] = Label Jmeno Zakaznika <br>
-	 *  pole[1] = TextFiled Jmeno Zakaznika  <br>
-	 *  pole[2] = Label Cislo modelu  <br>
-	 *  pole[3] = JtextField Cislo modelu  <br>
-	 *  pole[4] = Label Nazev modelu  <br>
-	 *  pole[5] = JtextField Nazev modelu  <br>
-	 *  pole[6] = Label id modelu  <br>
-	 *  pole[7] = JtextField id modelu  <br>
-	 *  pole[8] = Label datum pøijetí zakázky  <br>
-	 *  pole[9] = DateChooser datum pøijeti zakazky  <br>
-	 *  pole[10] = Label Formovna  <br>
-	 *  pole[11] = ComboBox formovna  <br>
-	 *  pole[12] = Label id Zakazky  <br>
-	 *  pole[13] = JtextField id Zakazky  <br>
-	 *  pole[14] = Label Èíslo objednávky  <br>
-	 *  pole[15] = JtextField Èíslo objednávky  <br>
-	 *  pole[16] = checkVcetneUzavZak
-	 */
-	private Component [] pole;
-	/**
-	 *  vypisy[0] = Label Datum od <br>
-	 *  vypisy[1] = JDateChooser Datum od  <br>
-	 *  vypisy[2] = Label Datum do  <br>
-	 *  vypisy[3] = JDateChooser Datum do  <br>
-	 *  vypisy[4] = Label Cislo tydne  <br>
-	 *  vypisy[5] = JtextField Cislo tydne  <br>
-	 *  vypisy[6] = yearChooser <br>
-	 *  vypisy[7] = JtextField napoveda datum <br>
-	 *  vypisy[8] = JtextField napoveda cislo tydne <br>
-	 *  vypisy[9] = JButton Prevod do PDF  <br>
-	 *  
-	 */
-	private Component [] vypisy;
-	private static final int indexComboBoxFormovna = 11;
-	private JButton vyhledej;
-	private JButton prevodDoPdf;
+
 	private Color [] barvy;
 	private static final int vyskaNadTabulkou = 270;
 	
@@ -103,20 +66,19 @@ public class HledejListener implements ActionListener, MouseListener {
 	 */
 	private Date datumPoslVolaniMetody = null;
 	private static final String acesDenied = "execute command denied to user";
+	private String [] actionComands;
 	
-	public HledejListener(JButton vyhledej, JButton prevodDoPdf, ParametryFiltr filtr, ColorCellTable table, Component [] pole, Component [] vypisy, MainFrame hlavniOkno, TableColumnAdjuster columAdjuster){
-		this.vyhledej = vyhledej;
-		this.prevodDoPdf = prevodDoPdf;
+	public HledejListener(ParametryFiltr filtr, ColorCellTable table, MainFrame hlavniOkno, 
+			TableColumnAdjuster columAdjuster, String [] actionComands){
 		this.filtr = filtr;
 		this.table = table;
-		this.pole = pole;
-		this.vypisy = vypisy;
 		this.columAdjuster = columAdjuster;
 		this.hlavniOkno = hlavniOkno;
 		this.sklad = hlavniOkno.getSklad();
 		this.barvy = sklad.getBarvy();
 		this.sql = sklad.getSql();
 		this.sdf = sklad.getSdf();
+		this.actionComands = actionComands;
 	}
 	
 	@Override
@@ -159,7 +121,6 @@ public class HledejListener implements ActionListener, MouseListener {
 			else if(arg0.getActionCommand().equalsIgnoreCase("PDFPlanExpedice")){
 				this.planExpedice(true);
 			} else { //vypisy a tisk
-				//System.out.println("Impementuje se "+arg0.getActionCommand());
 				vypisyAndTisk(arg0.getActionCommand());
 			}
 		} catch (Exception e) {
@@ -209,7 +170,9 @@ public class HledejListener implements ActionListener, MouseListener {
 			JOptionPane.showMessageDialog(hlavniOkno, "Tabulka je prázdná");
 			return;
 		}
-		String [] comands =  sklad.getCommands()[4];
+		// String [] comands =  sklad.getCommands()[4];
+		String [] comands =  actionComands;
+		
 		int i = 0; boolean exist = false;
 		for(i = 0; i < comands.length; i++){
 			if(isVypis){
@@ -224,87 +187,61 @@ public class HledejListener implements ActionListener, MouseListener {
 				}
 			}
 		}
-		if(actionComand.equalsIgnoreCase("PDFZaklPlan")){
-			i = TableToExcel.liciPlanZakl;
-			exist = true;
-		} else if(actionComand.equalsIgnoreCase("PDFPlanovani")){
-			i = TableToExcel.liciPlanPlanovaci;
-			exist = true;
-		}
+		
 		if(exist){
 			switch(i){
-			case 0:
+			case ParametryFiltr.VypisStavNeuzavrenychZakazek:
 				this.vypisStavuNeuzavrenychZakazek(isVypis, i);
 				break;
-			case 1:
+			case ParametryFiltr.DenniVypisOdlitychKusu:
 				this.denniVypisOdlitku(isVypis, i);
 				break;
-			case 2:
+			case ParametryFiltr.VypisVycistenychKusuZaObdobi:
 				this.vypisVycistenychKusuOdDo(isVypis, i);
 				break;
-			case 3:
+			case ParametryFiltr.MzdySlevacu:
 				this.vypisMzdySlevacu(isVypis, i);
 				break;
-			case 4:
+			case ParametryFiltr.VypisOdlitkuVKgKc:
 				this.vypisTiskOdlitkuVKgKc(isVypis, i);
 				break;
-			case 5:
+			case ParametryFiltr.VypisOdlitychKusuOdDo:
 				this.vypisOdlitychKusuOdDo(isVypis, i);
 				break;
-			case 6:
+			case ParametryFiltr.VypisPolozekSOdhadHmot:
 				this.vypisPolozekSOdhadHmot(isVypis, i);
 				break;
-			case 7:
+			case ParametryFiltr.VypisDleTerminuExpedice:
 				this.vypisDleTerminuExpedice(isVypis, i);
 				break;
-			case 8:
+			case ParametryFiltr.VypisExpedice_od_do:
 				this.vypisExpedovanychKusuOdDo(isVypis, i);
 				break;
-			case 9:
+			case ParametryFiltr.VypisZpozdeneVyroby:
 				this.vypisTiskZpozdeneVyroby(isVypis, i);
 				break;
-			case 10:
+			case ParametryFiltr.InventuraRozpracVyroby:
 				this.inventuraRozpracVyroby(isVypis, i);
 				break;
-			case 11:
+			case ParametryFiltr.VypisSkladuKeDnesnimuDni:
 				this.vypisSkladuKeDnesnimuDni(isVypis, i);
 				break;
-			case 12:
+			case ParametryFiltr.VypisZmetkuZaObdobi:
 				this.vypisZmetkyMzdy(isVypis, i);
 				break;
-			case 13:
+			case ParametryFiltr.VypisVinikuVKgKcMzdy:
 				this.vypisVinikyVKgKc(isVypis, i);
 				break;
-			case TableToExcel.liciPlanZakl:
+			case ParametryFiltr.ZaklPlanLiti:
 				zaklLiciPlan(isVypis, TableToExcel.liciPlanZakl);
 				break;
-			case TableToExcel.liciPlanPlanovaci:
+			case ParametryFiltr.PlanovaniLiti:
 				liciPlan(isVypis, TableToExcel.liciPlanPlanovaci);
 				break;
 			default: JOptionPane.showMessageDialog(hlavniOkno, "Špatný vypis Hledejlistener vypis()");
 				break;
 			}
-		} 
-		/*if(!isVypis && !exist){
-			if (this.table.getModel().getColumnName(0).equalsIgnoreCase("Jmeno_zakaznika") && this.table.getModel().getColumnName(1).equalsIgnoreCase("Jmeno_modelu")) {
-				if (actionComand.equalsIgnoreCase("PDFZaklPlan")) {
-					FungujiciTabulka tab = new FungujiciTabulka(hlavniOkno);
-					boolean pom = tab.createPdf("ZaklLiciPlan-Tyden_"+tyden+"_rok_"+rok, this.table.getModel(), FungujiciTabulka.zaklLitiPlan);
-					if(pom)JOptionPane.showMessageDialog(hlavniOkno, "Uloženo jako PDF");
-				} else if (actionComand.equalsIgnoreCase("PDFPlanovani")) {
-					if(!this.table.getModel().getColumnName(9).equalsIgnoreCase("Material")){
-						JOptionPane.showMessageDialog(hlavniOkno, "Špatná tabuka");
-						return;
-					}
-					FungujiciTabulka tab = new FungujiciTabulka(hlavniOkno);
-					boolean pom = tab.createPdf("LiciPlan-Tyden_"+tyden+"_rok_"+rok, this.table.getModel(), FungujiciTabulka.liciPlan);
-					if(pom)JOptionPane.showMessageDialog(hlavniOkno, "Uloženo jako PDF");
-				}
-			} else {
-				JOptionPane.showMessageDialog(hlavniOkno, "Špatný (neimplementovaný) tisk, Hledejlistener 240 ");
-			}
-		}*/
-		
+		} 		
 	}
 	
 	private void kapPropocet() throws Exception{
@@ -312,7 +249,8 @@ public class HledejListener implements ActionListener, MouseListener {
 		if (poleCi != null) {
 			this.tyden = poleCi[0];
 			this.rok = poleCi[1];
-			char formovna = ((String)((JComboBox)vypisy[11]).getSelectedItem()).charAt(0);
+			//char formovna = ((String)((JComboBox)vypisy[11]).getSelectedItem()).charAt(0);
+			String formovna = filtr.getFormovna2Vypisy();
 			ResultSet rs = sql.kapacitniPropocet(tyden, rok, formovna);
 			if (rs != null) {
 				QueryTableModel tm = new QueryTableModel(rs);
@@ -386,8 +324,8 @@ public class HledejListener implements ActionListener, MouseListener {
 		//vypis
 		if(isVypis){
 			int idModelu = 0, idZakazky = 0;
-			String idModeliString = ((JTextField) pole[7]).getText();
-			String idZakazkyString = ((JTextField) pole[13]).getText();
+			String idModeliString = filtr.getIDModelu();
+			String idZakazkyString = filtr.getIDZakazky();
 			if(idModeliString.equalsIgnoreCase(""))idModeliString = "0";
 			if(idZakazkyString.equalsIgnoreCase(""))idZakazkyString = "0";
 			//datum kdy byla metoda volana, kvuli datumu v tisku
@@ -400,14 +338,15 @@ public class HledejListener implements ActionListener, MouseListener {
 				JOptionPane.showMessageDialog(hlavniOkno, "Špatnì napsané Id modelu nebo Id zakázky");
 				return;
 			}
+		
 			ResultSet rs =sql.vypisStavuNeuzavrenychZakazek(
-					 idZakazky,
-					((JTextField) pole[1]).getText(),
-					((JTextField) pole[3]).getText(),
-					((JTextField) pole[5]).getText(),
+					idZakazky,
+					filtr.getJmenoZakaznikaOrVadyOrVinika(),
+					filtr.getCisloModelu(),
+					filtr.getNazevModelu(),
 					idModelu,
-					((JDateChooser) pole[9]).getDate(),
-					((JTextField) pole[15]).getText());
+					filtr.getDatumZakazky(),
+					filtr.getCisloObjednavky());
 			if(rs == null){
 				JOptionPane.showMessageDialog(hlavniOkno, "Nenalezeny žádné zakázky");
 				return;
@@ -650,13 +589,13 @@ public class HledejListener implements ActionListener, MouseListener {
 	}
 	
 	private Date get1Date() throws Exception{
-		Date od = ((JDateChooser)vypisy[1]).getDate();
+		Date od = filtr.getOdDate();
 		lastUsedDate1 = od;
 		return od;
 	}
 	
 	private Date get2Date() throws Exception{
-		Date do_ = ((JDateChooser)vypisy[3]).getDate();
+		Date do_ = filtr.getDoDate();
 		lastUsedDate2 = do_;
 		return do_;
 	}
@@ -670,8 +609,8 @@ public class HledejListener implements ActionListener, MouseListener {
 	private int [] getWeekAndYear() throws Exception{
 		try {
 			int[] pole = new int[2];
-			pole[0] = Integer.parseInt(((JTextField) vypisy[5]).getText());
-			pole[1] = ((JYearChooser) vypisy[6]).getYear();
+			pole[0] = filtr.getCisloTydne();
+			pole[1] = filtr.getRok();
 			lastUsedWeekNumberAYear[0] = pole[0];
 			lastUsedWeekNumberAYear[1] = pole[1];
 			return pole;
@@ -682,7 +621,8 @@ public class HledejListener implements ActionListener, MouseListener {
 	}
 	
 	private String getFormovna() throws Exception{
-		String formovna = (String) ((JComboBox) vypisy[indexComboBoxFormovna]).getSelectedItem();
+		//String formovna = (String) ((JComboBox) vypisy[indexComboBoxFormovna]).getSelectedItem();
+		String formovna = filtr.getFormovna2Vypisy();
 		if(formovna.equalsIgnoreCase("T")){
 			this.lastUsedFormovna = "Tìžká formovna";
 		} else if(formovna.equalsIgnoreCase("S")){
@@ -696,19 +636,14 @@ public class HledejListener implements ActionListener, MouseListener {
 	}
 	
 	private String getVlastniMaterial(){
-		return this.filtr.getSelectedVlastniMaterial();
+		return filtr.getSelectedVlastniMaterial();
 	}
 	
 	private void hledejZakaznikyVyhledej() throws Exception {
-		String jmeno = ((JTextField) pole[1]).getText();
-		if (jmeno.contentEquals(" ")) {
-			JOptionPane.showMessageDialog(hlavniOkno,
-					"Ve vyhled\u00E1van\u00E9m jm\u00E9n\u011B je mezera");
-			return;
-		}
+		String jmeno = filtr.getJmenoZakaznikaOrVadyOrVinika();
 		ResultSet rs = sql.vyberZakazniky(jmeno);
 		if(rs == null)return;
-		
+
 		QueryTableModel tm = new QueryTableModel(rs);
 		table.setModel(tm);
 		columAdjuster.adjustColumns();
@@ -716,8 +651,8 @@ public class HledejListener implements ActionListener, MouseListener {
 	
 	private void hledejModelyVyhledej() throws Exception{
 		int idModelu = 0, idZakazky = 0;
-		String idModeliString = ((JTextField) pole[7]).getText();
-		String idZakazkyString = ((JTextField) pole[13]).getText();
+		String idModeliString = filtr.getIDModelu();
+		String idZakazkyString = filtr.getIDZakazky();
 		if(idModeliString.equalsIgnoreCase(""))idModeliString = "0";
 		if(idZakazkyString.equalsIgnoreCase(""))idZakazkyString = "0";
 		
@@ -725,18 +660,18 @@ public class HledejListener implements ActionListener, MouseListener {
 			idModelu = Integer.parseInt(idModeliString);
 			idZakazky = Integer.parseInt(idZakazkyString);
 		} catch (NumberFormatException e) {
-			JOptionPane.showMessageDialog(hlavniOkno,
-					"Špatnì napsané Id modelu nebo Id zakázky");
+			JOptionPane.showMessageDialog(hlavniOkno, "Špatnì napsané Id modelu nebo Id zakázky");
 			return;
 		}
-		ResultSet rs = sql.vyberModely(((JTextField) pole[1]).getText(),
-				((JTextField) pole[3]).getText(),
-				((JTextField) pole[5]).getText(),
+		ResultSet rs = sql.vyberModely(
+				 filtr.getJmenoZakaznikaOrVadyOrVinika(),
+				 filtr.getCisloModelu(),
+				 filtr.getNazevModelu(),
 				idModelu,
-				((JDateChooser) pole[9]).getDate(),
-				(String) ((JComboBox) pole[11]).getSelectedItem(),
+				filtr.getDatumZakazky(),
+				filtr.getFormovna1Pole(),
 				idZakazky,
-				((JCheckBox) pole[16]).isSelected());
+				filtr.isSelectedVcetneUzavreneZakazky());
 		if(rs == null)return;
 		
 		QueryTableModel tm = new QueryTableModel(rs);
@@ -746,8 +681,8 @@ public class HledejListener implements ActionListener, MouseListener {
 	
 	private void hledejZakazkyVyhledej() throws Exception{
 		int idModelu = 0, idZakazky = 0;
-		String idModeliString = ((JTextField) pole[7]).getText();
-		String idZakazkyString = ((JTextField) pole[13]).getText();
+		String idModeliString = filtr.getIDModelu();
+		String idZakazkyString = filtr.getIDZakazky();
 		if(idModeliString.equalsIgnoreCase(""))idModeliString = "0";
 		if(idZakazkyString.equalsIgnoreCase(""))idZakazkyString = "0";
 		
@@ -759,13 +694,13 @@ public class HledejListener implements ActionListener, MouseListener {
 			return;
 		}
 		ResultSet rs = sql.vyberZakazky(idZakazky,
-				((JTextField) pole[1]).getText(),
-				((JTextField) pole[3]).getText(),
-				((JTextField) pole[5]).getText(),
+				filtr.getJmenoZakaznikaOrVadyOrVinika(),
+				filtr.getCisloModelu(),
+				filtr.getNazevModelu(),
 				idModelu,
-				((JDateChooser) pole[9]).getDate(),
-				((JTextField) pole[15]).getText(),
-				((JCheckBox) pole[16]).isSelected());
+				filtr.getDatumZakazky(),
+				filtr.getCisloObjednavky(),
+				filtr.isSelectedVcetneUzavreneZakazky());
 		if(rs == null){
 			JOptionPane.showMessageDialog(hlavniOkno, "Nenalezeny žádné zakázky");
 			return;
@@ -784,7 +719,7 @@ public class HledejListener implements ActionListener, MouseListener {
 	 */
 	
 	private void hledejFyzKusyVyhledej() throws Exception, InterruptedException, ExecutionException{
-		String idZakazkyString = ((JTextField) pole[13]).getText();
+		String idZakazkyString = filtr.getIDZakazky();
 		int idZakazky = 0;
 		try{
 			idZakazky = Integer.parseInt(idZakazkyString);
@@ -802,8 +737,8 @@ public class HledejListener implements ActionListener, MouseListener {
 	
 	private void hledejZmetky() throws Exception, InterruptedException, ExecutionException{
 		int idModelu = 0, idZakazky = 0;
-		String idModeliString = ((JTextField) pole[7]).getText();
-		String idZakazkyString = ((JTextField) pole[13]).getText();
+		String idModeliString = filtr.getIDModelu();
+		String idZakazkyString = filtr.getIDZakazky();
 		if(idModeliString.equalsIgnoreCase(""))idModeliString = "0";
 		if(idZakazkyString.equalsIgnoreCase(""))idZakazkyString = "0";
 		
@@ -811,42 +746,29 @@ public class HledejListener implements ActionListener, MouseListener {
 			idModelu = Integer.parseInt(idModeliString);
 			idZakazky = Integer.parseInt(idZakazkyString);
 		} catch (NumberFormatException e) {
-			JOptionPane.showMessageDialog(hlavniOkno,
-					"Špatnì napsané Id modelu nebo Id zakázky");
+			JOptionPane.showMessageDialog(hlavniOkno, "Špatnì napsané Id modelu nebo Id zakázky");
 			return;
 		}
 		ResultSet rs = sql.vyberZmetky(idZakazky,
-				((JTextField) pole[1]).getText(),
-				((JTextField) pole[3]).getText(),
-				((JTextField) pole[5]).getText(),
+				filtr.getJmenoZakaznikaOrVadyOrVinika(),
+				filtr.getCisloModelu(),
+				filtr.getNazevModelu(),
 				idModelu,
-				((JDateChooser) pole[9]).getDate(),
-				((JTextField) pole[15]).getText(),
-				((JCheckBox) pole[16]).isSelected());
+				filtr.getDatumZakazky(),
+				filtr.getCisloObjednavky(),
+				filtr.isSelectedVcetneUzavreneZakazky());
 		if(rs == null){
-			JOptionPane.showMessageDialog(hlavniOkno,
-					"Nenalezeny žádné zakázky");
+			JOptionPane.showMessageDialog(hlavniOkno, "Nenalezeny žádné zakázky");
 			return;
 		}
 		
-		
-		ResultSet [] pole = new ResultSet[2];
-		pole[0] = rs;
-		pole[1] = rs;
-
 		QueryTableModel tm = new QueryTableModel(rs);
 		table.setModel(tm);
 		columAdjuster.adjustColumns();		
-		
 	}
 	
 	private void hledejViniky() throws SQLException{
-		String jmenoVady = ((JTextField) pole[1]).getText();
-		if (jmenoVady.contentEquals(" ")) {
-			JOptionPane.showMessageDialog(hlavniOkno,
-					"Ve vyhled\u00E1van\u00E9m jm\u00E9n\u011B je mezera");
-			return;
-		}
+		String jmenoVady = filtr.getJmenoZakaznikaOrVadyOrVinika();
 		ResultSet rs = sql.vyberViniky(jmenoVady);
 		if(rs == null)return;
 		
@@ -857,12 +779,7 @@ public class HledejListener implements ActionListener, MouseListener {
 	}
 	
 	private void hledejVady() throws SQLException{
-		String jmenoVady = ((JTextField) pole[1]).getText();
-		if (jmenoVady.contentEquals(" ")) {
-			JOptionPane.showMessageDialog(hlavniOkno,
-					"Ve vyhled\u00E1van\u00E9m jm\u00E9n\u011B je mezera");
-			return;
-		}
+		String jmenoVady = filtr.getJmenoZakaznikaOrVadyOrVinika();
 		ResultSet rs = sql.vyberVady(jmenoVady);
 		if(rs == null)return;
 		

@@ -13,7 +13,7 @@ import javax.swing.JLabel;
 import java.awt.Component;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
-import java.awt.BorderLayout;
+import java.security.InvalidParameterException;
 
 import javax.swing.BoxLayout;
 import javax.swing.border.EmptyBorder;
@@ -37,10 +37,9 @@ import sablony.tabulka.TableColumnAdjuster;
 import storage.SkladOdkazu;
 
 import java.awt.Dimension;
-import java.lang.reflect.InvocationTargetException;
-import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Date;
 
 import javax.swing.JCheckBox;
 
@@ -49,6 +48,7 @@ import com.toedter.calendar.JYearChooser;
 /**
  * Tøída, které rozšiøuje JPanel a reprezentuje oddíl v aplikaci, ve které vyplnujeme parametry pro vyhledávání.
  * Nastavují se zde actionComandy pro tisk a také pro vyhledávání zákazníku, modelu, zakázek, atd.
+ * Každý component v tomto JPanelu musí být umísten v <code>componentyFiltru</code>.
  * @author Ondøej Havlíèek
  *
  */
@@ -86,16 +86,18 @@ public class ParametryFiltr extends JPanel {
 	private Font [] fonty ;
 	
 	private DefaultComboBoxModel<String> vlastniMaterialySeznamModel;
+	private DefaultComboBoxModel<String> seznamFormoven;
+	private DefaultComboBoxModel<String> seznamFormovenAPrazdny;
 	
 	private ColorCellTable table;
 	private TableColumnAdjuster columAdjuster;
 	
-	private JTextField textField;
-	private JTextField textField_1;
+	private JTextField jmenoZakaznikaText;
+	private JTextField idModeluText;
 	private JTextField idZakazky;
-	private JTextField textField_4;
-	private JTextField textField_6;
-	private JTextField textField_7;
+	private JTextField cisloModeluText;
+	private JTextField cisloObjednavkyText;
+	private JTextField nazevModeluText;
 	private JButton vyhledej;
 	
 	/**
@@ -136,19 +138,419 @@ public class ParametryFiltr extends JPanel {
 	 *  
 	 */
 	private Component [] vypisy = new Component[13];
-	private short status = 0;
 	private JPanel panel;
 	private JLabel idZakazkyLabel;
-	private JTextField textField_2;
+	private JTextField cisloTydneText;
 	private JCheckBox checkVcetneUzavZak;
 	private JYearChooser yearChooser;
 	private JLabel napovedaDate;
 	private JLabel napovedaCisloT;
 	private JButton prevodDoPdf;
 	private JLabel formovnaLabel2;
-	private JComboBox comboBoxFormovna2;
 	private JLabel vlMaterialLabel;
 	private JComboBox<String> vlMaterialComboBox;
+	private JDateChooser datumZakazkyDateChooser;
+	/**
+	 * Slouží pro hledaní pøi výpisech
+	 */
+	private JComboBox<String> comboBoxFormovna2;
+	/**
+	 * Slouží pøi hledání pøi vyhledávání princip stejny pro hledani modelu
+	 */
+	private JComboBox<String> formovnaComboBox1;
+	private JDateChooser odDatum;
+	private JDateChooser doDatum;
+	
+	
+	public final String [] actionComands = {"HledejZakazniky", "HledejModely",
+			"HledejZakazky", "HledejFyzKusy", "HledejZmetky", "HledejViniky",
+			"HledejVady", "ZaklPlanLiti", "PlanovaniLiti", "HledejKapacitniProcet",
+			"PlanExpedice",
+			"VypisStavNeuzavrenychZakazek","DenniVypisOdlitychKusu",
+			"VypisVycistenychKusuZaObdobi", "MzdySlevacu", "VypisOdlitkuVKgKc",
+			"VypisOdlitychKusuOdDo", "VypisPolozekSOdhadHmot", "VypisDleTerminuExpedice",
+			"VypisExpedice od-do", "VypisZpozdeneVyroby", "InventuraRozpracVyroby",
+			"VypisSkladuKeDnesnimuDni", "VypisZmetkuZaObdobi", "VypisVinikuVKgKcMzdy"};
+		
+	private final int [] cisloAkceToStav ={FILTR_HLEDEJ_ZAKAZNIKY, FILTR_HLEDEJ_MODELY,
+			FILTR_HLEDEJ_ZAKAZKY, FILTR_HLEDEJ_FYZ_KUSY, FILTR_HLEDEJ_ZMETKY, FILTR_HLEDEJ_VINIKY,
+			FILTR_HLEDEJ_VADY, FILTR_CISLO_TYDNE_CISLO_ROKU_FORMOVNA_PDF, FILTR_CISLO_TYDNE_CISLO_ROKU_FORMOVNA_PDF,
+			FILTR_CISLO_TYDNE_CISLO_ROKU_FORMOVNA, FILTR_PRAZDNY_PDF,
+			 FILTR_HLEDEJZAKAZKY_BEZ_UZAVRENO_PDF, FILTR_DATUM_OD_PDF, FILTR_DATUM_OD_DO_PDF, FILTR_DATUM_OD_PDF,
+			FILTR_DATUM_OD_DO_PDF, FILTR_VYPIS_ODLITYCH_VYROBENYCH_KUSU, FILTR_PRAZDNY_PDF,
+			FILTR_POUZE_CISLO_TYDNE_CISLO_ROKU, FILTR_DATUM_OD_DO_PDF, FILTR_DATUM_OD,
+			FILTR_PRAZDNY_PDF, FILTR_PRAZDNY_PDF, FILTR_DATUM_OD_DO_PDF, FILTR_DATUM_OD_DO_PDF};
+	
+	/**
+	 * Seznam všech výpisù a hledání, pomocí kterých získám jednoznaèný stav v ParametryFiltr ktery chci a taky
+	 * získám ActionCommand podle tohoto Seznamu. Action comandy jsou seøazeny podle techto indexu tak je moc nemenit!
+	 */
+	public static final int HledejZakazniky = 0;
+	public static final int HledejModely = 1;
+	public static final int HledejZakazky =2;
+	public static final int HledejFyzKusy = 3;
+	public static final int HledejZmetky = 4;
+	public static final int HledejViniky = 5;
+	public static final int HledejVady = 6;
+	public static final int ZaklPlanLiti = 7;
+	public static final int PlanovaniLiti = 8;
+	public static final int HledejKapacitniProcet = 9;
+	public static final int PlanExpedice = 10;
+	public static final int VypisStavNeuzavrenychZakazek = 11;
+	public static final int DenniVypisOdlitychKusu = 12;
+	public static final int VypisVycistenychKusuZaObdobi = 13;
+	public static final int MzdySlevacu = 14;
+	public static final int VypisOdlitkuVKgKc = 15;
+	public static final int VypisOdlitychKusuOdDo = 16;
+	public static final int VypisPolozekSOdhadHmot = 17;
+	public static final int VypisDleTerminuExpedice = 18;
+	public static final int VypisExpedice_od_do = 19;
+	public static final int VypisZpozdeneVyroby = 20;
+	public static final int InventuraRozpracVyroby = 21;
+	public static final int VypisSkladuKeDnesnimuDni = 22;
+	public static final int VypisZmetkuZaObdobi = 23;
+	public static final int VypisVinikuVKgKcMzdy = 24;
+
+	/**
+	 * Stavy ParametryFiltr. Slouží pro jednoznaèné urèení rozložení komponentù v ParametryFiltr.
+	 */
+	private static final int FILTR_HLEDEJ_ZAKAZNIKY = 1;
+	private static final int FILTR_HLEDEJ_MODELY = 2;
+	private static final int FILTR_HLEDEJ_ZAKAZKY = 3;
+	private static final int FILTR_HLEDEJ_FYZ_KUSY = 4;
+	private static final int FILTR_HLEDEJ_ZMETKY = 5;
+	private static final int FILTR_HLEDEJ_VINIKY = 6;
+	private static final int FILTR_HLEDEJ_VADY = 7;
+	private static final int FILTR_HLEDEJZAKAZKY_BEZ_UZAVRENO_PDF = 8;
+	private static final int FILTR_POUZE_CISLO_TYDNE_CISLO_ROKU_PDF = 9;
+	private static final int FILTR_POUZE_CISLO_TYDNE_CISLO_ROKU = 10;
+	private static final int FILTR_DATUM_OD = 11;
+	private static final int FILTR_DATUM_OD_PDF = 12;
+	private static final int FILTR_DATUM_OD_DO_PDF = 13;
+	private static final int FILTR_PRAZDNY_PDF = 14;
+	private static final int FILTR_VYPIS_ODLITYCH_VYROBENYCH_KUSU = 15;
+	private static final int FILTR_CISLO_TYDNE_CISLO_ROKU_FORMOVNA = 16;
+	private static final int FILTR_CISLO_TYDNE_CISLO_ROKU_FORMOVNA_PDF = 17;
+	
+	private int stavAktualni = -1;
+	
+	private JLabel jmenoZakaznikaLabelOrElse;
+	private Component [] showZakazkyComponents = new Component [15];
+	private JLabel formovnaLabel1;
+	private JLabel cisloObjednavkyLabel;
+	private JLabel cisloTydneLabel;
+	private JLabel dateOdLabel;
+	private JLabel dateDoLabel;
+	
+	/**
+	 * Výpisy se mužou dìlat tady, ale vìtšina se dìlá v setVypisy()
+	 * @param cisloAkce
+	 */
+	public void setParametryFiltr(int cisloAkce){
+		String comand = actionComands[cisloAkce];
+		int stav =  cisloAkceToStav[cisloAkce];
+		this.setParametryFiltrState(stav, comand, cisloAkce);
+	}
+	
+	public void setVypisy(int j){ // abych to nemusel psat cely rucne v PromOknoNovyZakaznikAndSearch
+		this.setParametryFiltr(VypisStavNeuzavrenychZakazek + j);
+	}
+	
+	private void setParametryFiltrState(int stav, String actionCommand, int cisloAkce){
+		// vsechny komponenty nejdøív dam neviditelne a pak podle stav je zobrazuju a pøehazuju
+		Component [] componentyVeFiltru = panel.getComponents();
+		for(int i = 0; i < componentyVeFiltru.length; i++){
+			componentyVeFiltru[i].setVisible(false);
+		}
+		// nastavim action comandy pro "vyhledej" a "prevodDoPdf" JButtony
+		this.setActionComands(actionCommand, vyhledej, prevodDoPdf);
+		// poskládám componenty podle stavu
+		poskladejComponenty(stav);
+		// uprav texty na komponentech
+		upravTexty(cisloAkce);
+		// zobrazím všechny komponenty podle stavu
+		zobrazComponenty(stav);
+	}
+	
+	private void setActionComands(String actionCommand, JButton vyhledej, JButton prevodDoPdf){
+		vyhledej.setActionCommand(actionCommand);
+		prevodDoPdf.setActionCommand("PDF" + actionCommand);
+	}
+	
+	/**
+	 * V podstatì tahle metoda jen pøesouvá Jbutton vyhledej.
+	 * @param stav
+	 */
+	private void poskladejComponenty(int stav){
+		GridBagLayout layout = null;
+		GridBagConstraints gbc = null;
+		switch(stav){
+		case FILTR_HLEDEJ_ZAKAZNIKY:
+			pomMetoda2();
+			break;
+		case FILTR_HLEDEJ_MODELY:
+			pomMetoda();
+			break;
+		case FILTR_HLEDEJ_ZAKAZKY:
+			pomMetoda();
+			break;
+		case FILTR_HLEDEJ_FYZ_KUSY:
+			layout = (GridBagLayout) panel.getLayout();
+			gbc = layout.getConstraints(vyhledej);				
+			layout.removeLayoutComponent(vyhledej);
+			gbc.gridx = 4;
+			gbc.gridy = 2;
+			panel.add(vyhledej, gbc);
+			break;
+		case FILTR_HLEDEJ_ZMETKY: // stejny jako hledej zakazky
+			pomMetoda();
+			break;
+		case FILTR_HLEDEJ_VINIKY:
+			pomMetoda2();
+			break;
+		case FILTR_HLEDEJ_VADY:
+			pomMetoda2();
+			break;
+		case FILTR_HLEDEJZAKAZKY_BEZ_UZAVRENO_PDF:
+			pomMetoda();
+			break;
+		case FILTR_POUZE_CISLO_TYDNE_CISLO_ROKU_PDF:
+			pomMetoda();
+			break;
+		case FILTR_POUZE_CISLO_TYDNE_CISLO_ROKU:
+			pomMetoda();
+			break;
+		case FILTR_DATUM_OD:
+			pomMetoda();
+			break;
+		case FILTR_DATUM_OD_PDF:
+			pomMetoda();
+			break;
+		case FILTR_DATUM_OD_DO_PDF:
+			pomMetoda();
+			break;
+		case FILTR_PRAZDNY_PDF:
+			pomMetoda();
+			break;
+		case FILTR_VYPIS_ODLITYCH_VYROBENYCH_KUSU: // budou sice dva komponenty v jedne bunce ale nikdy nebudou visible oba dva najednou
+			layout = (GridBagLayout) panel.getLayout();
+			gbc = null;
+			
+			gbc = layout.getConstraints(vlMaterialLabel);				
+			layout.removeLayoutComponent(vlMaterialLabel);
+			gbc.gridx = 0;
+			gbc.gridy = 4;
+			panel.add(vlMaterialLabel, gbc);
+			
+			gbc = layout.getConstraints(vlMaterialComboBox);				
+			layout.removeLayoutComponent(vlMaterialComboBox);
+			gbc.gridx = 1;
+			gbc.gridy = 4;
+			panel.add(vlMaterialComboBox, gbc);
+			break;
+		case FILTR_CISLO_TYDNE_CISLO_ROKU_FORMOVNA:
+			pomMetoda();
+			break;
+		case FILTR_CISLO_TYDNE_CISLO_ROKU_FORMOVNA_PDF:
+			pomMetoda();
+			break;
+		default: JOptionPane.showMessageDialog(hlavniOkno, "Spatny vypis, ParametryFiltr.java -> poskladejComponenty() "+stav);
+			break;
+		}
+	}
+	
+	private void pomMetoda(){
+		GridBagLayout layout = null;
+		GridBagConstraints gbc = null;
+		layout = (GridBagLayout) panel.getLayout();
+		gbc = layout.getConstraints(vyhledej);
+		layout.removeLayoutComponent(vyhledej);
+		gbc.gridx = 0;
+		gbc.gridy = 5;
+		panel.add(vyhledej, gbc);
+	}
+	
+	private void pomMetoda2(){
+		GridBagLayout layout = (GridBagLayout) panel.getLayout();
+		GridBagConstraints gbc = layout.getConstraints(vyhledej);				
+		layout.removeLayoutComponent(vyhledej);
+		gbc.gridx = 4;
+		gbc.gridy = 0;
+		panel.add(vyhledej, gbc);
+	}
+	
+	private void zobrazComponenty(int stav){
+		vyhledej.setVisible(true); // ten je visible dycky
+		switch(stav){
+		case FILTR_HLEDEJ_ZAKAZNIKY:
+			jmenoZakaznikaLabelOrElse.setVisible(true);
+			jmenoZakaznikaText.setVisible(true);			
+			break;
+		case FILTR_HLEDEJ_MODELY:
+			for(int i = 0; i < showZakazkyComponents.length; i++){
+				showZakazkyComponents[i].setVisible(true);
+			}
+			this.formovnaLabel1.setVisible(true);
+			this.formovnaComboBox1.setVisible(true);
+			this.cisloObjednavkyLabel.setVisible(false);
+			this.cisloObjednavkyText.setVisible(false);
+			break;
+		case FILTR_HLEDEJ_ZAKAZKY:
+			for(int i = 0; i < showZakazkyComponents.length; i++){
+				showZakazkyComponents[i].setVisible(true);
+			}
+			break;
+		case FILTR_HLEDEJ_FYZ_KUSY:
+			this.idZakazky.setVisible(true);
+			this.idZakazkyLabel.setVisible(true);
+			break;
+		case FILTR_HLEDEJ_ZMETKY:
+			for(int i = 0; i < showZakazkyComponents.length; i++){
+				showZakazkyComponents[i].setVisible(true);
+			}
+			break;
+		case FILTR_HLEDEJ_VINIKY:
+			jmenoZakaznikaLabelOrElse.setVisible(true);
+			jmenoZakaznikaText.setVisible(true);	
+			break;
+		case FILTR_HLEDEJ_VADY:
+			jmenoZakaznikaLabelOrElse.setVisible(true);
+			jmenoZakaznikaText.setVisible(true);	
+			break;
+		case FILTR_HLEDEJZAKAZKY_BEZ_UZAVRENO_PDF:
+			for(int i = 0; i < showZakazkyComponents.length; i++){
+				showZakazkyComponents[i].setVisible(true);
+			}
+			checkVcetneUzavZak.setVisible(false);
+			prevodDoPdf.setVisible(true);
+			break;
+		case FILTR_POUZE_CISLO_TYDNE_CISLO_ROKU_PDF:
+			cisloTydneLabel.setVisible(true);
+			cisloTydneText.setVisible(true);
+			yearChooser.setVisible(true);
+			prevodDoPdf.setVisible(true);
+			break;
+		case FILTR_POUZE_CISLO_TYDNE_CISLO_ROKU:
+			cisloTydneLabel.setVisible(true);
+			cisloTydneText.setVisible(true);
+			yearChooser.setVisible(true);
+			break;
+		case FILTR_DATUM_OD:
+			dateOdLabel.setVisible(true);
+			odDatum.setVisible(true);
+			break;
+		case FILTR_DATUM_OD_PDF:
+			dateOdLabel.setVisible(true);
+			odDatum.setVisible(true);
+			prevodDoPdf.setVisible(true);
+			break;
+		case FILTR_DATUM_OD_DO_PDF:
+			dateOdLabel.setVisible(true);
+			odDatum.setVisible(true);
+			dateDoLabel.setVisible(true);
+			doDatum.setVisible(true);
+			prevodDoPdf.setVisible(true);
+			break;
+		case FILTR_PRAZDNY_PDF:
+			prevodDoPdf.setVisible(true);
+			break;
+		case FILTR_VYPIS_ODLITYCH_VYROBENYCH_KUSU:
+			dateOdLabel.setVisible(true);
+			odDatum.setVisible(true);
+			dateDoLabel.setVisible(true);
+			doDatum.setVisible(true);
+	
+			vlMaterialComboBox.setVisible(true);
+			vlMaterialLabel.setVisible(true);
+			comboBoxFormovna2.setVisible(true);
+			formovnaLabel2.setVisible(true);
+			break;
+		case FILTR_CISLO_TYDNE_CISLO_ROKU_FORMOVNA:
+			cisloTydneLabel.setVisible(true);
+			cisloTydneText.setVisible(true);
+			yearChooser.setVisible(true);
+			
+			comboBoxFormovna2.setVisible(true);
+			formovnaLabel2.setVisible(true);
+			break;
+		case FILTR_CISLO_TYDNE_CISLO_ROKU_FORMOVNA_PDF:
+			cisloTydneLabel.setVisible(true);
+			cisloTydneText.setVisible(true);
+			yearChooser.setVisible(true);
+			
+			comboBoxFormovna2.setVisible(true);
+			formovnaLabel2.setVisible(true);
+			prevodDoPdf.setVisible(true);
+			break;
+		default: JOptionPane.showMessageDialog(hlavniOkno, "Spatny vypis, ParametryFiltr.java -> poskladejComponenty() "+stav);
+			break;
+		}
+	}
+	
+	private void upravTexty(int cisloAkce){
+		switch(cisloAkce){
+		case HledejZakazniky:
+			jmenoZakaznikaLabelOrElse.setText("Jm\u00E9no z\u00E1kazn\u00EDka:");
+			break;
+		case HledejModely:
+			jmenoZakaznikaLabelOrElse.setText("Jm\u00E9no z\u00E1kazn\u00EDka:");
+			break;
+		case HledejZakazky:
+			jmenoZakaznikaLabelOrElse.setText("Jm\u00E9no z\u00E1kazn\u00EDka:");
+			break;
+		case HledejFyzKusy:
+			break;
+		case HledejZmetky:
+			jmenoZakaznikaLabelOrElse.setText("Jm\u00E9no z\u00E1kazn\u00EDka:");
+			break;
+		case HledejViniky:
+			jmenoZakaznikaLabelOrElse.setText("Jm\u00E9no viníka:");
+			break;
+		case HledejVady:
+			jmenoZakaznikaLabelOrElse.setText("Jm\u00E9no vady:");
+			break;
+		case ZaklPlanLiti:
+			break;
+		case PlanovaniLiti:
+			break;
+		case HledejKapacitniProcet:
+			break;
+		case PlanExpedice:
+			break;
+		case VypisStavNeuzavrenychZakazek:
+			napovedaDate.setText("Vypíše stav všech neuzavøených zakázek, (maximálnì ale 100 øádkù)");
+			break;
+		case DenniVypisOdlitychKusu:
+			break;
+		case VypisVycistenychKusuZaObdobi:
+			break;
+		case MzdySlevacu:
+			break;
+		case VypisOdlitkuVKgKc:
+			break;
+		case VypisOdlitychKusuOdDo:
+			break;
+		case VypisPolozekSOdhadHmot:
+			break;
+		case VypisDleTerminuExpedice:
+			break;
+		case VypisExpedice_od_do:
+			break;
+		case VypisZpozdeneVyroby:
+			break;
+		case InventuraRozpracVyroby:
+			break;
+		case VypisSkladuKeDnesnimuDni:
+			break;
+		case VypisZmetkuZaObdobi:
+			break;
+		case VypisVinikuVKgKcMzdy:
+			break;
+		default: JOptionPane.showMessageDialog(hlavniOkno, "Spatny vypis, ParametryFiltr.java -> upravTexty() " + cisloAkce);
+			break;
+		}
+	}
+	
 	
 	public void addListeners(){
 		PanelFiltrListenerTextField list = new PanelFiltrListenerTextField(sklad, pole, vypisy);
@@ -163,347 +565,13 @@ public class ParametryFiltr extends JPanel {
 			}
 		}
 		
-		HledejListener lt = new HledejListener(vyhledej, prevodDoPdf, this, table, pole, vypisy, hlavniOkno, columAdjuster);
+		HledejListener lt = new HledejListener(this, table, hlavniOkno, columAdjuster, actionComands);
 		vyhledej.addActionListener(lt);
 		vyhledej.addMouseListener(lt);
 		prevodDoPdf.addActionListener(lt);
 		prevodDoPdf.addMouseListener(lt);
 	}
 	
-	public void setZakaznik(){
-		if(status == 1){
-			return;
-		}
-		GridBagLayout layout = (GridBagLayout) panel.getLayout();
-		GridBagConstraints gbc = layout.getConstraints(vyhledej);				
-		layout.removeLayoutComponent(vyhledej);
-		gbc.gridx = 4;
-		gbc.gridy = 0;
-		panel.add(vyhledej, gbc);
-		
-		for(int i = 0; i < vypisy.length; i++){
-			vypisy[i].setVisible(false);
-		}	
-		
-		for(int i = 0; i < pole.length; i++){
-			if(i == 0 || i == 1){
-				pole[i].setVisible(true);		
-				if(pole[i] instanceof JLabel){
-					((JLabel)pole[i]).setText("Jm\u00E9no z\u00E1kazn\u00EDka:");
-				}
-				continue;
-			}
-			pole[i].setVisible(false);
-		}	
-		this.status = 1;
-		vyhledej.setActionCommand("HledejZakazniky");
-	}
-	
-	public void setModel(){
-		if(status == 2){
-			return;
-		}
-		for(int i = 0; i < vypisy.length; i++){
-			vypisy[i].setVisible(false);
-		}	
-		
-		if(status != 3){
-			GridBagLayout layout = (GridBagLayout) panel.getLayout();
-			GridBagConstraints gbc = layout.getConstraints(vyhledej);				
-			layout.removeLayoutComponent(vyhledej);
-			gbc.gridx = 0;
-			gbc.gridy = 5;
-			panel.add(vyhledej, gbc);
-		}
-		
-		for(int i = 0; i < pole.length; i++){
-			if(i == 14 || i == 15){
-				pole[i].setVisible(false);
-			}else {
-				pole[i].setVisible(true);
-			}
-		}
-		vyhledej.setActionCommand("HledejModely");
-		
-		// vlastni material 
-		this.vlMaterialLabel.setVisible(false);
-		
-		this.status = 2;
-	}
-	
-	public void setZakazka(){
-		if(status == 3){
-			return;
-		}
-		for(int i = 0; i < vypisy.length; i++){
-			vypisy[i].setVisible(false);
-		}	
-		if(status != 2){
-			GridBagLayout layout = (GridBagLayout) panel.getLayout();
-			GridBagConstraints gbc = layout.getConstraints(vyhledej);				
-			layout.removeLayoutComponent(vyhledej);
-			gbc.gridx = 0;
-			gbc.gridy = 5;
-			panel.add(vyhledej, gbc);
-		}
-		
-		for(int i = 0; i < pole.length; i++){
-			if(i == 11 || i == 10){
-				pole[i].setVisible(false);
-			}else {
-				pole[i].setVisible(true);
-			}
-		}
-		// vlastni material 
-		this.vlMaterialLabel.setVisible(false);
-		
-		vyhledej.setActionCommand("HledejZakazky");
-		this.status = 3;
-	}
-	
-	public void setZmetky(){
-		setZakazka();
-		status = 5;
-		for(int i = 0; i < vypisy.length; i++){
-			vypisy[i].setVisible(false);
-		}	
-		vyhledej.setActionCommand("HledejZmetky");
-	}
-	
-	public void setFyzKusy(){
-		if(status == 4){
-			return;
-		}		
-		for(int i = 0; i < vypisy.length; i++){
-			vypisy[i].setVisible(false);
-		}	
-		GridBagLayout layout = (GridBagLayout) panel.getLayout();
-		GridBagConstraints gbc = layout.getConstraints(vyhledej);				
-		layout.removeLayoutComponent(vyhledej);
-		gbc.gridx = 4;
-		gbc.gridy = 2;
-		panel.add(vyhledej, gbc);
-		
-		for(int i = 0; i < pole.length; i++){
-			if(i == 12 || i == 13){
-				pole[i].setVisible(true);
-				continue;			
-			}
-			pole[i].setVisible(false);
-		}			
-		
-		this.status = 4;
-		vyhledej.setActionCommand("HledejFyzKusy");
-	}
-	
-	public void setViniky(){
-		this.setZakaznik();
-		((JLabel)pole[0]).setText("Jm\u00E9no viníka:");
-		this.status = 8;
-		vyhledej.setActionCommand("HledejViniky");
-	}
-	
-	public void setVady(){
-		this.setZakaznik();
-		((JLabel)pole[0]).setText("Jm\u00E9no vady:");
-		this.status = 8;
-		vyhledej.setActionCommand("HledejVady");
-	}
-	
-	public void setKapPropocet(){
-		setPlanyLiti(true);
-		prevodDoPdf.setVisible(false);
-		this.formovnaLabel2.setVisible(true);
-		this.comboBoxFormovna2.setVisible(true);
-		vyhledej.setActionCommand("HledejKapacitniProcet");
-	}
-	
-	/**
-	 * 
-	 * @param isZakl
-	 */
-	public void setPlanyLiti(boolean isZakl){
-		this.setZakazka();
-		for(int i = 0; i < pole.length; i++){
-			pole[i].setVisible(false);
-		}
-		status = 6;
-		this.showCisloTydne();
-		if(isZakl){
-			vyhledej.setActionCommand("ZaklPlanLiti");
-			prevodDoPdf.setActionCommand("PDFZaklPlan");
-		}else {
-			vyhledej.setActionCommand("PlanovaniLiti");
-			prevodDoPdf.setActionCommand("PDFPlanovani");
-		}
-		comboBoxFormovna2.setVisible(true);
-		//if(isZakl){
-			prevodDoPdf.setVisible(true); // uložit jako pdf
-		//}
-	}
-	
-	public void setPlanExpedice(int j){
-		this.setZakazka();
-		for(int i = 0; i < pole.length; i++){
-			pole[i].setVisible(false);
-		}
-		String [] com = sklad.getCommands()[3];
-		vyhledej.setActionCommand(com[j]);
-		prevodDoPdf.setActionCommand("PDF"+com[j]);
-		status = 9;	
-		this.showNothing();
-		prevodDoPdf.setVisible(true);
-	}
-	
-	/**
-	 * Je tu switch blok. Nastavi okno  v Podokne parametry-filtr a zobrazi jednolitve boxy podle cisla zavolaneho vypisu.
-	 * Nastavi action comand Jbutonu vyhledej.
-	 * @param j
-	 */
-	public void setVypisy(int j){
-		this.setZakazka();
-		for(int i = 0; i < pole.length; i++){
-			pole[i].setVisible(false);
-		}
-		status = 6;
-		
-		String [] com = sklad.getCommands()[4];
-		//nastavime ActionComandy, pro vyhledavani a pro tisk
-		vyhledej.setActionCommand(com[j]);
-		prevodDoPdf.setActionCommand("PDF"+com[j]);
-		prevodDoPdf.setVisible(false); // uložit jako pdf
-		switch(j){
-		case 0: // 1.	Výpis stavu neuzavøené zakázky 
-			this.setZakazka();
-			status = 6;
-			checkVcetneUzavZak.setVisible(false);
-			// musim nastavit actionComand ještì jednou paè, setZakazka() se zmenil
-			vyhledej.setActionCommand(com[j]); 
-			prevodDoPdf.setVisible(true); // uložit jako excel
-			this.napovedaDate.setText("Vypíše stav všech neuzavøených zakázek, (maximálnì ale 100 øádkù)");
-			break;
-		case 1: // 2.	Denní výpis odlitých kusù
-			this.showOd();
-			prevodDoPdf.setVisible(true);
-			this.napovedaDate.setText("Denní výpis odlitkù");
-			break;
-		case 2: //3.	Výpis vyèištìných kusù za období
-			this.showOdDo();
-			prevodDoPdf.setVisible(true); // uložit jako excel
-			//prevodDoPdf.setActionCommand("PDFSoucetHmotnostiNorem");
-			this.napovedaDate.setText("Vypíše souèet hmotností a norem všech odlitkù, které se odlily za toto období");
-			break;
-		case 3: //4.	Mzdy slévaèù
-			this.showOd();
-			prevodDoPdf.setVisible(true);
-			break;
-		case 4: //5.	Výpis odlitkù v kg/Kè
-			this.showOdDo();
-			prevodDoPdf.setVisible(true);
-			break;
-		case 5: // 6.	Výpis odlitých (vyrobených) kusù za období
-			this.showOdDoFormovnaVlMaterial();
-			prevodDoPdf.setVisible(false);
-			break;
-		case 6: //7.	Výpis položek s odhadovou hmotností
-			this.showNothing();
-			prevodDoPdf.setVisible(true);
-			break;
-		case 7: //8.	Výpis termínu expedice v daném tydnu
-			this.showCisloTydne();
-			prevodDoPdf.setVisible(false);
-			//((JLabel)vypisy[0]).setText("Mezní datum expedice:");
-			//this.napovedaDate.setText("Vypíše všechny zakázky, které nejsou uzavøené a maji po termíny expedice po daném datumu");
-			break;
-		case 8: //9.	Výpis expedice zboží za odbdobí
-			this.showOdDo();
-			prevodDoPdf.setVisible(true);
-			break;
-		case 9: //10.	Výpis zpoždìní výroby ke dni
-			this.showDatum();
-			prevodDoPdf.setVisible(false);
-			break;
-		case 10: //11.	Inventura rozpracované výroby
-			this.showNothing();
-			prevodDoPdf.setVisible(true);
-			break;
-		case 11: //12.	Výpis skladu ke dnešnímu dni
-			this.showNothing();
-			prevodDoPdf.setVisible(true);
-			break;
-		case 12: //13.	Výpis zmetku za období
-			this.showOdDo();
-			prevodDoPdf.setVisible(true);
-			break;
-		case 13: //14.	Výpis viníku v kg/kè za období - mzdy
-			this.showOdDo();
-			prevodDoPdf.setVisible(true);
-			break;
-		default: JOptionPane.showMessageDialog(hlavniOkno, "Spatny vypis, ParametryFiltr.java -> setVypisy() "+j);
-			break;
-		}
-	}
-	
-	private void showCisloTydne(){
-		for(int i = 0; i < vypisy.length; i++)vypisy[i].setVisible(false);
-		vypisy[4].setVisible(true);
-		vypisy[5].setVisible(true);
-		vypisy[6].setVisible(true);
-		vypisy[8].setVisible(true);
-	}
-	
-	private void showOdDo(){
-		for(int i = 0; i < vypisy.length; i++)vypisy[i].setVisible(false);
-		((JLabel)vypisy[0]).setText("Datum od:");
-		vypisy[0].setVisible(true);
-		vypisy[1].setVisible(true);
-		vypisy[2].setVisible(true);
-		vypisy[3].setVisible(true);
-	}
-	
-	private void showOd(){
-		for(int i = 0; i < vypisy.length; i++)vypisy[i].setVisible(false);
-		vypisy[0].setVisible(true);
-		vypisy[1].setVisible(true);
-		((JLabel)vypisy[0]).setText("Datum od:");
-	}
-	
-	private void showDatum(){
-		for(int i = 0; i < vypisy.length; i++)vypisy[i].setVisible(false);
-		vypisy[0].setVisible(true);
-		vypisy[1].setVisible(true);	
-		((JLabel)vypisy[0]).setText("Datum:");
-	}
-	
-	private void showNothing(){
-		for(int i = 0; i < vypisy.length; i++)vypisy[i].setVisible(false);
-	}
-	
-	private void showOdDoFormovnaVlMaterial(){
-		showOdDo();
-		this.vlMaterialComboBox.setVisible(true);
-		this.vlMaterialLabel.setVisible(true);
-		this.comboBoxFormovna2.setVisible(true);
-		this.formovnaLabel2.setVisible(true);
-		
-		GridBagLayout layout = (GridBagLayout) panel.getLayout();
-		GridBagConstraints gbc = null;
-		
-		gbc = layout.getConstraints(vlMaterialLabel);				
-		layout.removeLayoutComponent(vlMaterialLabel);
-		gbc.gridx = 0;
-		gbc.gridy = 4;
-		panel.add(vlMaterialLabel, gbc);
-		
-		gbc = layout.getConstraints(vlMaterialComboBox);				
-		layout.removeLayoutComponent(vlMaterialComboBox);
-		gbc.gridx = 1;
-		gbc.gridy = 4;
-		panel.add(vlMaterialComboBox, gbc);
-		
-		
-	}
-
 	/**
 	 * Create the panel.
 	 * @throws SQLException 
@@ -517,7 +585,7 @@ public class ParametryFiltr extends JPanel {
 		this.columAdjuster = sklad.getPromOknoNovyZakaznikAndSearchColumAdjuster();
 		
 		/**
-		 * Duležité možná èasem umístím do threadu!!!!
+		 * Duležité možná èasem umístím do threadu!!!! ale asi ne probíha to pøi vytvaøení GUI takže to je v pozadí
 		 */
 		ResultSet rs = sklad.getSql().vyberVlastniMaterialy();
 		vlastniMaterialySeznamModel = this.createComboBoxListModelFromResultSet(rs);
@@ -538,112 +606,121 @@ public class ParametryFiltr extends JPanel {
 		layout.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
 		panel.setLayout(layout);
 		
-		JLabel lblNewLabel = new JLabel("Jm\u00E9no z\u00E1kazn\u00EDka:");
-		pole[0] = lblNewLabel;
-		lblNewLabel.setFont(fonty[4]);
-		lblNewLabel.setForeground(barvy[11]);
-		GridBagConstraints gbc_lblNewLabel = new GridBagConstraints();
-		gbc_lblNewLabel.anchor = GridBagConstraints.WEST;
-		gbc_lblNewLabel.insets = new Insets(0, 0, 5, 5);
-		gbc_lblNewLabel.gridx = 0;
-		gbc_lblNewLabel.gridy = 0;
-		panel.add(lblNewLabel, gbc_lblNewLabel);
+		jmenoZakaznikaLabelOrElse = new JLabel("Jm\u00E9no z\u00E1kazn\u00EDka:");
+		pole[0] = jmenoZakaznikaLabelOrElse;
+		showZakazkyComponents[0] = jmenoZakaznikaLabelOrElse;
+		jmenoZakaznikaLabelOrElse.setFont(fonty[4]);
+		jmenoZakaznikaLabelOrElse.setForeground(barvy[11]);
+		GridBagConstraints gbc_jmenoZakaznikaLabelOrElse = new GridBagConstraints();
+		gbc_jmenoZakaznikaLabelOrElse.anchor = GridBagConstraints.WEST;
+		gbc_jmenoZakaznikaLabelOrElse.insets = new Insets(0, 0, 5, 5);
+		gbc_jmenoZakaznikaLabelOrElse.gridx = 0;
+		gbc_jmenoZakaznikaLabelOrElse.gridy = 0;
+		panel.add(jmenoZakaznikaLabelOrElse, gbc_jmenoZakaznikaLabelOrElse);
 		
-		textField = new JTextField();
-		pole[1] = textField;
-		textField.setForeground(Color.WHITE);
-		textField.setFont(fonty[4]);
-		textField.setBorder(new EmptyBorder(2, 0, 2, 0));
-		textField.setBackground(barvy[20]);
-		GridBagConstraints gbc_textField = new GridBagConstraints();
-		gbc_textField.gridwidth = 3;
-		gbc_textField.insets = new Insets(0, 0, 5, 5);
-		gbc_textField.fill = GridBagConstraints.BOTH;
-		gbc_textField.gridx = 1;
-		gbc_textField.gridy = 0;
-		panel.add(textField, gbc_textField);
-		textField.setColumns(10);
+		jmenoZakaznikaText = new JTextField();
+		pole[1] = jmenoZakaznikaText;
+		showZakazkyComponents[1] = jmenoZakaznikaText;
+		jmenoZakaznikaText.setForeground(Color.WHITE);
+		jmenoZakaznikaText.setFont(fonty[4]);
+		jmenoZakaznikaText.setBorder(new EmptyBorder(2, 0, 2, 0));
+		jmenoZakaznikaText.setBackground(barvy[20]);
+		GridBagConstraints gbc_jmenoZakaznikaText = new GridBagConstraints();
+		gbc_jmenoZakaznikaText.gridwidth = 3;
+		gbc_jmenoZakaznikaText.insets = new Insets(0, 0, 5, 5);
+		gbc_jmenoZakaznikaText.fill = GridBagConstraints.BOTH;
+		gbc_jmenoZakaznikaText.gridx = 1;
+		gbc_jmenoZakaznikaText.gridy = 0;
+		panel.add(jmenoZakaznikaText, gbc_jmenoZakaznikaText);
+		jmenoZakaznikaText.setColumns(10);
 		
-		JLabel lblsloModelu = new JLabel("\u010C\u00EDslo modelu");
-		pole[2] = lblsloModelu;
-		lblsloModelu.setForeground(barvy[11]);
-		lblsloModelu.setFont(fonty[4]);
-		GridBagConstraints gbc_lblsloModelu = new GridBagConstraints();
-		gbc_lblsloModelu.anchor = GridBagConstraints.WEST;
-		gbc_lblsloModelu.insets = new Insets(0, 0, 5, 5);
-		gbc_lblsloModelu.gridx = 5;
-		gbc_lblsloModelu.gridy = 0;
-		panel.add(lblsloModelu, gbc_lblsloModelu);
+		JLabel cisloModeluLabel = new JLabel("\u010C\u00EDslo modelu");
+		pole[2] = cisloModeluLabel;
+		showZakazkyComponents[2] = cisloModeluLabel;
+		cisloModeluLabel.setForeground(barvy[11]);
+		cisloModeluLabel.setFont(fonty[4]);
+		GridBagConstraints gbc_cisloModeluLabel = new GridBagConstraints();
+		gbc_cisloModeluLabel.anchor = GridBagConstraints.WEST;
+		gbc_cisloModeluLabel.insets = new Insets(0, 0, 5, 5);
+		gbc_cisloModeluLabel.gridx = 5;
+		gbc_cisloModeluLabel.gridy = 0;
+		panel.add(cisloModeluLabel, gbc_cisloModeluLabel);
 		
-		textField_4 = new JTextField();
-		pole[3] = textField_4;
-		textField_4.setForeground(Color.WHITE);
-		textField_4.setFont(fonty[4]);
-		textField_4.setColumns(10);
-		textField_4.setBorder(null);
-		textField_4.setBackground(barvy[20]);
-		GridBagConstraints gbc_textField_4 = new GridBagConstraints();
-		gbc_textField_4.gridwidth = 2;
-		gbc_textField_4.insets = new Insets(0, 0, 5, 5);
-		gbc_textField_4.fill = GridBagConstraints.BOTH;
-		gbc_textField_4.gridx = 6;
-		gbc_textField_4.gridy = 0;
-		panel.add(textField_4, gbc_textField_4);
+		cisloModeluText = new JTextField();
+		pole[3] = cisloModeluText;
+		showZakazkyComponents[3] = cisloModeluText;
+		cisloModeluText.setForeground(Color.WHITE);
+		cisloModeluText.setFont(fonty[4]);
+		cisloModeluText.setColumns(10);
+		cisloModeluText.setBorder(null);
+		cisloModeluText.setBackground(barvy[20]);
+		GridBagConstraints gbc_cisloModeluText = new GridBagConstraints();
+		gbc_cisloModeluText.gridwidth = 2;
+		gbc_cisloModeluText.insets = new Insets(0, 0, 5, 5);
+		gbc_cisloModeluText.fill = GridBagConstraints.BOTH;
+		gbc_cisloModeluText.gridx = 6;
+		gbc_cisloModeluText.gridy = 0;
+		panel.add(cisloModeluText, gbc_cisloModeluText);
 		
-		JLabel lblNzevModelu = new JLabel("N\u00E1zev modelu");
-		pole[4] = lblNzevModelu;
-		lblNzevModelu.setForeground(barvy[11]);
-		lblNzevModelu.setFont(fonty[4]);
-		GridBagConstraints gbc_lblNzevModelu = new GridBagConstraints();
-		gbc_lblNzevModelu.insets = new Insets(0, 0, 5, 5);
-		gbc_lblNzevModelu.anchor = GridBagConstraints.WEST;
-		gbc_lblNzevModelu.gridx = 9;
-		gbc_lblNzevModelu.gridy = 0;
-		panel.add(lblNzevModelu, gbc_lblNzevModelu);
+		JLabel nazevModeluLabel = new JLabel("N\u00E1zev modelu");
+		pole[4] = nazevModeluLabel;
+		showZakazkyComponents[4] = nazevModeluLabel;
+		nazevModeluLabel.setForeground(barvy[11]);
+		nazevModeluLabel.setFont(fonty[4]);
+		GridBagConstraints gbc_nazevModeluLabel = new GridBagConstraints();
+		gbc_nazevModeluLabel.insets = new Insets(0, 0, 5, 5);
+		gbc_nazevModeluLabel.anchor = GridBagConstraints.WEST;
+		gbc_nazevModeluLabel.gridx = 9;
+		gbc_nazevModeluLabel.gridy = 0;
+		panel.add(nazevModeluLabel, gbc_nazevModeluLabel);
 		
-		textField_7 = new JTextField();
-		pole[5] = textField_7;
-		textField_7.setForeground(Color.WHITE);
-		textField_7.setFont(fonty[4]);
-		textField_7.setColumns(10);
-		textField_7.setBorder(null);
-		textField_7.setBackground(barvy[20]);
-		GridBagConstraints gbc_textField_7 = new GridBagConstraints();
-		gbc_textField_7.gridwidth = 3;
-		gbc_textField_7.insets = new Insets(0, 0, 5, 5);
-		gbc_textField_7.fill = GridBagConstraints.BOTH;
-		gbc_textField_7.gridx = 10;
-		gbc_textField_7.gridy = 0;
-		panel.add(textField_7, gbc_textField_7);
+		nazevModeluText = new JTextField();
+		pole[5] = nazevModeluText;
+		showZakazkyComponents[5] = nazevModeluText;
+		nazevModeluText.setForeground(Color.WHITE);
+		nazevModeluText.setFont(fonty[4]);
+		nazevModeluText.setColumns(10);
+		nazevModeluText.setBorder(null);
+		nazevModeluText.setBackground(barvy[20]);
+		GridBagConstraints gbc_nazevModeluText = new GridBagConstraints();
+		gbc_nazevModeluText.gridwidth = 3;
+		gbc_nazevModeluText.insets = new Insets(0, 0, 5, 5);
+		gbc_nazevModeluText.fill = GridBagConstraints.BOTH;
+		gbc_nazevModeluText.gridx = 10;
+		gbc_nazevModeluText.gridy = 0;
+		panel.add(nazevModeluText, gbc_nazevModeluText);
 		
-		JLabel lblIdModelu = new JLabel("Id modelu:");
-		pole[6] = lblIdModelu;
-		lblIdModelu.setForeground(barvy[11]);
-		lblIdModelu.setFont(fonty[4]);
-		GridBagConstraints gbc_lblIdModelu = new GridBagConstraints();
-		gbc_lblIdModelu.anchor = GridBagConstraints.WEST;
-		gbc_lblIdModelu.insets = new Insets(0, 0, 5, 5);
-		gbc_lblIdModelu.gridx = 0;
-		gbc_lblIdModelu.gridy = 1;
-		panel.add(lblIdModelu, gbc_lblIdModelu);
+		JLabel idModeluLabel = new JLabel("Id modelu:");
+		pole[6] = idModeluLabel;
+		showZakazkyComponents[6] = idModeluLabel;
+		idModeluLabel.setForeground(barvy[11]);
+		idModeluLabel.setFont(fonty[4]);
+		GridBagConstraints gbc_idModeluLabel = new GridBagConstraints();
+		gbc_idModeluLabel.anchor = GridBagConstraints.WEST;
+		gbc_idModeluLabel.insets = new Insets(0, 0, 5, 5);
+		gbc_idModeluLabel.gridx = 0;
+		gbc_idModeluLabel.gridy = 1;
+		panel.add(idModeluLabel, gbc_idModeluLabel);
 		
-		textField_1 = new JTextField();
-		pole[7] = textField_1;
-		textField_1.setForeground(Color.WHITE);
-		textField_1.setFont(fonty[4]);
-		textField_1.setColumns(10);
-		textField_1.setBorder(null);
-		textField_1.setBackground(barvy[20]);
-		GridBagConstraints gbc_textField_1 = new GridBagConstraints();
-		gbc_textField_1.gridwidth = 2;
-		gbc_textField_1.insets = new Insets(0, 0, 5, 5);
-		gbc_textField_1.fill = GridBagConstraints.BOTH;
-		gbc_textField_1.gridx = 1;
-		gbc_textField_1.gridy = 1;
-		panel.add(textField_1, gbc_textField_1);
+		idModeluText = new JTextField();
+		pole[7] = idModeluText;
+		showZakazkyComponents[7] = idModeluText;
+		idModeluText.setForeground(Color.WHITE);
+		idModeluText.setFont(fonty[4]);
+		idModeluText.setColumns(10);
+		idModeluText.setBorder(null);
+		idModeluText.setBackground(barvy[20]);
+		GridBagConstraints gbc_idModeluText = new GridBagConstraints();
+		gbc_idModeluText.gridwidth = 2;
+		gbc_idModeluText.insets = new Insets(0, 0, 5, 5);
+		gbc_idModeluText.fill = GridBagConstraints.BOTH;
+		gbc_idModeluText.gridx = 1;
+		gbc_idModeluText.gridy = 1;
+		panel.add(idModeluText, gbc_idModeluText);
 		
 		JLabel lblDatumPijetZakzky = new JLabel("Zak\u00E1zka p\u0159ijata po");
 		pole[8] = lblDatumPijetZakzky;
+		showZakazkyComponents[8] = lblDatumPijetZakzky;
 		lblDatumPijetZakzky.setForeground(barvy[11]);
 		lblDatumPijetZakzky.setFont(fonty[4]);
 		GridBagConstraints gbc_lblDatumPijetZakzky = new GridBagConstraints();
@@ -653,39 +730,42 @@ public class ParametryFiltr extends JPanel {
 		gbc_lblDatumPijetZakzky.gridy = 1;
 		panel.add(lblDatumPijetZakzky, gbc_lblDatumPijetZakzky);
 		
-		JDateChooser dateChooser = new JDateChooser();
-		GridBagConstraints gbc_dateChooser = new GridBagConstraints();
-		pole[9] = dateChooser;
-		gbc_dateChooser.gridwidth = 2;
-		gbc_dateChooser.insets = new Insets(0, 0, 5, 5);
-		gbc_dateChooser.fill = GridBagConstraints.BOTH;
-		gbc_dateChooser.gridx = 6;
-		gbc_dateChooser.gridy = 1;
-		panel.add(dateChooser, gbc_dateChooser);
+		datumZakazkyDateChooser = new JDateChooser();
+		pole[9] = datumZakazkyDateChooser;
+		showZakazkyComponents[9] = datumZakazkyDateChooser;
+		GridBagConstraints gbc_datumZakazkyDateChooser = new GridBagConstraints();
+		gbc_datumZakazkyDateChooser.gridwidth = 2;
+		gbc_datumZakazkyDateChooser.insets = new Insets(0, 0, 5, 5);
+		gbc_datumZakazkyDateChooser.fill = GridBagConstraints.BOTH;
+		gbc_datumZakazkyDateChooser.gridx = 6;
+		gbc_datumZakazkyDateChooser.gridy = 1;
+		panel.add(datumZakazkyDateChooser, gbc_datumZakazkyDateChooser);
 		
-		JLabel lblFormovna = new JLabel("Formovna");
-		pole[10] = lblFormovna;
-		lblFormovna.setForeground(barvy[11]);
-		lblFormovna.setFont(fonty[4]);
-		GridBagConstraints gbc_lblFormovna = new GridBagConstraints();
-		gbc_lblFormovna.anchor = GridBagConstraints.WEST;
-		gbc_lblFormovna.insets = new Insets(0, 0, 5, 5);
-		gbc_lblFormovna.gridx = 9;
-		gbc_lblFormovna.gridy = 1;
-		panel.add(lblFormovna, gbc_lblFormovna);
+		formovnaLabel1 = new JLabel("Formovna");
+		pole[10] = formovnaLabel1;
+		formovnaLabel1.setForeground(barvy[11]);
+		formovnaLabel1.setFont(fonty[4]);
+		GridBagConstraints gbc_formovnaLabel1 = new GridBagConstraints();
+		gbc_formovnaLabel1.anchor = GridBagConstraints.WEST;
+		gbc_formovnaLabel1.insets = new Insets(0, 0, 5, 5);
+		gbc_formovnaLabel1.gridx = 9;
+		gbc_formovnaLabel1.gridy = 1;
+		panel.add(formovnaLabel1, gbc_formovnaLabel1);
 		
-		JComboBox comboBox = new JComboBox();
-		pole[11] = comboBox;
-		comboBox.setModel(new DefaultComboBoxModel(new String[] {"", "T", "S", "M"}));
-		GridBagConstraints gbc_comboBox = new GridBagConstraints();
-		gbc_comboBox.insets = new Insets(0, 0, 5, 5);
-		gbc_comboBox.fill = GridBagConstraints.HORIZONTAL;
-		gbc_comboBox.gridx = 10;
-		gbc_comboBox.gridy = 1;
-		panel.add(comboBox, gbc_comboBox);
+		formovnaComboBox1 = new JComboBox<String>();
+		pole[11] = formovnaComboBox1;
+		seznamFormovenAPrazdny = new DefaultComboBoxModel<String>(new String[] {"", "T", "S", "M"});
+		formovnaComboBox1.setModel(seznamFormovenAPrazdny);
+		GridBagConstraints gbc_formovnaComboBox1 = new GridBagConstraints();
+		gbc_formovnaComboBox1.insets = new Insets(0, 0, 5, 5);
+		gbc_formovnaComboBox1.fill = GridBagConstraints.HORIZONTAL;
+		gbc_formovnaComboBox1.gridx = 10;
+		gbc_formovnaComboBox1.gridy = 1;
+		panel.add(formovnaComboBox1, gbc_formovnaComboBox1);
 		
 		idZakazkyLabel = new JLabel("Id zak\u00E1zky:");
 		pole[12] = idZakazkyLabel;
+		showZakazkyComponents[10] = idZakazkyLabel;
 		idZakazkyLabel.setForeground(barvy[11]);
 		idZakazkyLabel.setFont(fonty[4]);
 		GridBagConstraints gbc_lblIdZakzky = new GridBagConstraints();
@@ -696,8 +776,9 @@ public class ParametryFiltr extends JPanel {
 		panel.add(idZakazkyLabel, gbc_lblIdZakzky);
 		
 		idZakazky = new JTextField();
-		idZakazky.setBorder(new EmptyBorder(2, 0, 2, 0));
 		pole[13] = idZakazky;
+		showZakazkyComponents[11] = idZakazky;
+		idZakazky.setBorder(new EmptyBorder(2, 0, 2, 0));
 		idZakazky.setForeground(Color.WHITE);
 		idZakazky.setFont(fonty[4]);
 		idZakazky.setColumns(10);
@@ -710,35 +791,38 @@ public class ParametryFiltr extends JPanel {
 		gbc_idZakazky.gridy = 2;
 		panel.add(idZakazky, gbc_idZakazky);
 		
-		JLabel lblsloObjednvky = new JLabel("\u010C\u00EDslo objedn\u00E1vky");
-		pole[14] = lblsloObjednvky;
-		lblsloObjednvky.setForeground(barvy[11]);
-		lblsloObjednvky.setFont(fonty[4]);
-		GridBagConstraints gbc_lblsloObjednvky = new GridBagConstraints();
-		gbc_lblsloObjednvky.anchor = GridBagConstraints.WEST;
-		gbc_lblsloObjednvky.insets = new Insets(0, 0, 5, 5);
-		gbc_lblsloObjednvky.gridx = 5;
-		gbc_lblsloObjednvky.gridy = 2;
-		panel.add(lblsloObjednvky, gbc_lblsloObjednvky);
+		cisloObjednavkyLabel = new JLabel("\u010C\u00EDslo objedn\u00E1vky");
+		pole[14] = cisloObjednavkyLabel;
+		showZakazkyComponents[12] = cisloObjednavkyLabel;
+		cisloObjednavkyLabel.setForeground(barvy[11]);
+		cisloObjednavkyLabel.setFont(fonty[4]);
+		GridBagConstraints gbc_cisloObjednavkyLabel = new GridBagConstraints();
+		gbc_cisloObjednavkyLabel.anchor = GridBagConstraints.WEST;
+		gbc_cisloObjednavkyLabel.insets = new Insets(0, 0, 5, 5);
+		gbc_cisloObjednavkyLabel.gridx = 5;
+		gbc_cisloObjednavkyLabel.gridy = 2;
+		panel.add(cisloObjednavkyLabel, gbc_cisloObjednavkyLabel);
 		
-		textField_6 = new JTextField();
-		pole[15] = textField_6;
-		textField_6.setForeground(Color.WHITE);
-		textField_6.setFont(fonty[4]);
-		textField_6.setColumns(10);
-		textField_6.setBorder(null);
-		textField_6.setBackground(barvy[20]);
-		GridBagConstraints gbc_textField_6 = new GridBagConstraints();
-		gbc_textField_6.gridwidth = 2;
-		gbc_textField_6.insets = new Insets(0, 0, 5, 5);
-		gbc_textField_6.fill = GridBagConstraints.BOTH;
-		gbc_textField_6.gridx = 6;
-		gbc_textField_6.gridy = 2;
-		panel.add(textField_6, gbc_textField_6);
+		cisloObjednavkyText = new JTextField();
+		pole[15] = cisloObjednavkyText;
+		showZakazkyComponents[13] = cisloObjednavkyText;
+		cisloObjednavkyText.setForeground(Color.WHITE);
+		cisloObjednavkyText.setFont(fonty[4]);
+		cisloObjednavkyText.setColumns(10);
+		cisloObjednavkyText.setBorder(null);
+		cisloObjednavkyText.setBackground(barvy[20]);
+		GridBagConstraints gbc_cisloObjednavkyText = new GridBagConstraints();
+		gbc_cisloObjednavkyText.gridwidth = 2;
+		gbc_cisloObjednavkyText.insets = new Insets(0, 0, 5, 5);
+		gbc_cisloObjednavkyText.fill = GridBagConstraints.BOTH;
+		gbc_cisloObjednavkyText.gridx = 6;
+		gbc_cisloObjednavkyText.gridy = 2;
+		panel.add(cisloObjednavkyText, gbc_cisloObjednavkyText);
 		
 		checkVcetneUzavZak = new JCheckBox("Pouze uzav\u0159en\u00E9 zak\u00E1zky");
-		checkVcetneUzavZak.setBorder(null);
 		pole[16] = checkVcetneUzavZak;
+		showZakazkyComponents[14] = checkVcetneUzavZak;
+		checkVcetneUzavZak.setBorder(null);
 		checkVcetneUzavZak.setFont(new Font("Tahoma", Font.PLAIN, 12));
 		checkVcetneUzavZak.setForeground(barvy[11]);
 		checkVcetneUzavZak.setBackground(barvy[0]);
@@ -750,47 +834,47 @@ public class ParametryFiltr extends JPanel {
 		gbc_checkVcetneUzavZak.gridy = 2;
 		panel.add(checkVcetneUzavZak, gbc_checkVcetneUzavZak);
 		
-		JLabel lblDatumOd = new JLabel("Datum od:");
-		vypisy[0] = lblDatumOd;
-		lblDatumOd.setForeground(barvy[11]);
-		lblDatumOd.setFont(fonty[4]);
-		GridBagConstraints gbc_lblDatumOd = new GridBagConstraints();
-		gbc_lblDatumOd.insets = new Insets(0, 0, 5, 5);
-		gbc_lblDatumOd.anchor = GridBagConstraints.WEST;
-		gbc_lblDatumOd.gridx = 0;
-		gbc_lblDatumOd.gridy = 3;
-		panel.add(lblDatumOd, gbc_lblDatumOd);
+		dateOdLabel = new JLabel("Datum od:");
+		vypisy[0] = dateOdLabel;
+		dateOdLabel.setForeground(barvy[11]);
+		dateOdLabel.setFont(fonty[4]);
+		GridBagConstraints gbc_dateOdLabel = new GridBagConstraints();
+		gbc_dateOdLabel.insets = new Insets(0, 0, 5, 5);
+		gbc_dateOdLabel.anchor = GridBagConstraints.WEST;
+		gbc_dateOdLabel.gridx = 0;
+		gbc_dateOdLabel.gridy = 3;
+		panel.add(dateOdLabel, gbc_dateOdLabel);
 		
-		JDateChooser dateChooser_1 = new MyJDateChooser();
-		vypisy[1] = dateChooser_1;
-		GridBagConstraints gbc_dateChooser_1 = new GridBagConstraints();
-		gbc_dateChooser_1.fill = GridBagConstraints.HORIZONTAL;
-		gbc_dateChooser_1.gridwidth = 2;
-		gbc_dateChooser_1.insets = new Insets(0, 0, 5, 5);
-		gbc_dateChooser_1.gridx = 1;
-		gbc_dateChooser_1.gridy = 3;
-		panel.add(dateChooser_1, gbc_dateChooser_1);
+		odDatum = new MyJDateChooser();
+		vypisy[1] = odDatum;
+		GridBagConstraints gbc_odDatum = new GridBagConstraints();
+		gbc_odDatum.fill = GridBagConstraints.HORIZONTAL;
+		gbc_odDatum.gridwidth = 2;
+		gbc_odDatum.insets = new Insets(0, 0, 5, 5);
+		gbc_odDatum.gridx = 1;
+		gbc_odDatum.gridy = 3;
+		panel.add(odDatum, gbc_odDatum);
 		
-		JLabel lblDatumDo = new JLabel("Datum do:");
-		vypisy[2] = lblDatumDo;
-		lblDatumDo.setForeground(barvy[11]);
-		lblDatumDo.setFont(fonty[4]);
-		GridBagConstraints gbc_lblDatumDo = new GridBagConstraints();
-		gbc_lblDatumDo.anchor = GridBagConstraints.WEST;
-		gbc_lblDatumDo.insets = new Insets(0, 0, 5, 5);
-		gbc_lblDatumDo.gridx = 5;
-		gbc_lblDatumDo.gridy = 3;
-		panel.add(lblDatumDo, gbc_lblDatumDo);
+		dateDoLabel = new JLabel("Datum do:");
+		vypisy[2] = dateDoLabel;
+		dateDoLabel.setForeground(barvy[11]);
+		dateDoLabel.setFont(fonty[4]);
+		GridBagConstraints gbc_dateDoLabel = new GridBagConstraints();
+		gbc_dateDoLabel.anchor = GridBagConstraints.WEST;
+		gbc_dateDoLabel.insets = new Insets(0, 0, 5, 5);
+		gbc_dateDoLabel.gridx = 5;
+		gbc_dateDoLabel.gridy = 3;
+		panel.add(dateDoLabel, gbc_dateDoLabel);
 		
-		JDateChooser dateChooser_2 = new MyJDateChooser();
-		vypisy[3] = dateChooser_2;
-		GridBagConstraints gbc_dateChooser_2 = new GridBagConstraints();
-		gbc_dateChooser_2.gridwidth = 2;
-		gbc_dateChooser_2.insets = new Insets(0, 0, 5, 5);
-		gbc_dateChooser_2.fill = GridBagConstraints.BOTH;
-		gbc_dateChooser_2.gridx = 6;
-		gbc_dateChooser_2.gridy = 3;
-		panel.add(dateChooser_2, gbc_dateChooser_2);
+		doDatum = new MyJDateChooser();
+		vypisy[3] = doDatum;
+		GridBagConstraints gbc_doDatum = new GridBagConstraints();
+		gbc_doDatum.gridwidth = 2;
+		gbc_doDatum.insets = new Insets(0, 0, 5, 5);
+		gbc_doDatum.fill = GridBagConstraints.BOTH;
+		gbc_doDatum.gridx = 6;
+		gbc_doDatum.gridy = 3;
+		panel.add(doDatum, gbc_doDatum);
 		
 		napovedaDate = new JLabel("N\u00E1pov\u011Bda");
 		vypisy[7] = napovedaDate;
@@ -804,31 +888,31 @@ public class ParametryFiltr extends JPanel {
 		gbc_napovedaDate.gridy = 3;
 		panel.add(napovedaDate, gbc_napovedaDate);
 		
-		JLabel lblsloTdne = new JLabel("\u010C\u00EDslo t\u00FDdne");
-		vypisy[4] = lblsloTdne;
-		lblsloTdne.setFont(fonty[4]);
-		lblsloTdne.setForeground(barvy[11]);
-		GridBagConstraints gbc_lblsloTdne = new GridBagConstraints();
-		gbc_lblsloTdne.anchor = GridBagConstraints.WEST;
-		gbc_lblsloTdne.fill = GridBagConstraints.VERTICAL;
-		gbc_lblsloTdne.insets = new Insets(0, 0, 5, 5);
-		gbc_lblsloTdne.gridx = 0;
-		gbc_lblsloTdne.gridy = 4;
-		panel.add(lblsloTdne, gbc_lblsloTdne);
+		cisloTydneLabel = new JLabel("\u010C\u00EDslo t\u00FDdne");
+		vypisy[4] = cisloTydneLabel;
+		cisloTydneLabel.setFont(fonty[4]);
+		cisloTydneLabel.setForeground(barvy[11]);
+		GridBagConstraints gbc_cisloTydneLabel = new GridBagConstraints();
+		gbc_cisloTydneLabel.anchor = GridBagConstraints.WEST;
+		gbc_cisloTydneLabel.fill = GridBagConstraints.VERTICAL;
+		gbc_cisloTydneLabel.insets = new Insets(0, 0, 5, 5);
+		gbc_cisloTydneLabel.gridx = 0;
+		gbc_cisloTydneLabel.gridy = 4;
+		panel.add(cisloTydneLabel, gbc_cisloTydneLabel);
 		
-		textField_2 = new JTextField();
-		vypisy[5] = textField_2;
-		textField_2.setForeground(Color.WHITE);
-		textField_2.setFont(new Font("Tahoma", Font.PLAIN, 12));
-		textField_2.setColumns(10);
-		textField_2.setBorder(new EmptyBorder(2, 0, 2, 0));
-		textField_2.setBackground(new Color(98, 98, 98));
-		GridBagConstraints gbc_textField_2 = new GridBagConstraints();
-		gbc_textField_2.insets = new Insets(0, 0, 5, 5);
-		gbc_textField_2.fill = GridBagConstraints.HORIZONTAL;
-		gbc_textField_2.gridx = 1;
-		gbc_textField_2.gridy = 4;
-		panel.add(textField_2, gbc_textField_2);
+		cisloTydneText = new JTextField();
+		vypisy[5] = cisloTydneText;
+		cisloTydneText.setForeground(Color.WHITE);
+		cisloTydneText.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		cisloTydneText.setColumns(10);
+		cisloTydneText.setBorder(new EmptyBorder(2, 0, 2, 0));
+		cisloTydneText.setBackground(new Color(98, 98, 98));
+		GridBagConstraints gbc_cisloTydneText = new GridBagConstraints();
+		gbc_cisloTydneText.insets = new Insets(0, 0, 5, 5);
+		gbc_cisloTydneText.fill = GridBagConstraints.HORIZONTAL;
+		gbc_cisloTydneText.gridx = 1;
+		gbc_cisloTydneText.gridy = 4;
+		panel.add(cisloTydneText, gbc_cisloTydneText);
 		
 		yearChooser = new JYearChooser();
 		vypisy[6] = yearChooser;
@@ -850,9 +934,10 @@ public class ParametryFiltr extends JPanel {
 		gbc_formovnaLabel2.gridy = 4;
 		panel.add(formovnaLabel2, gbc_formovnaLabel2);
 		
-		comboBoxFormovna2 = new JComboBox();
+		comboBoxFormovna2 = new JComboBox<String>();
 		vypisy[11] = comboBoxFormovna2;
-		comboBoxFormovna2.setModel(new DefaultComboBoxModel(new String[] {"T", "S", "M"}));
+		seznamFormoven = new DefaultComboBoxModel<String>(new String[] {"T", "S", "M"});
+		comboBoxFormovna2.setModel(seznamFormoven);
 		GridBagConstraints gbc_comboBoxFormovna2 = new GridBagConstraints();
 		gbc_comboBoxFormovna2.insets = new Insets(0, 0, 5, 5);
 		gbc_comboBoxFormovna2.fill = GridBagConstraints.HORIZONTAL;
@@ -923,7 +1008,8 @@ public class ParametryFiltr extends JPanel {
 		
 		
 		addListeners();
-		setZakaznik();
+		//setHledejZakazniky();
+		setParametryFiltr(ParametryFiltr.HledejZakazniky);
 	}
 	
 	private DefaultComboBoxModel<String> createComboBoxListModelFromResultSet(ResultSet rs) throws SQLException{
@@ -946,7 +1032,53 @@ public class ParametryFiltr extends JPanel {
 		return model;
 	}
 	
+	
+	public String getJmenoZakaznikaOrVadyOrVinika(){
+		return jmenoZakaznikaText.getText();
+	}
+	public String getCisloModelu(){
+		return this.cisloModeluText.getText();
+	}
+	public String getNazevModelu(){
+		return this.nazevModeluText.getText();
+	}
+	public String getIDZakazky() throws NumberFormatException{
+		return  this.idZakazky.getText();
+	}
+	public String getIDModelu() throws NumberFormatException{
+		return this.idModeluText.getText();
+	}
+	public Date getDatumZakazky(){
+		return datumZakazkyDateChooser.getDate();
+	}
+	public String getFormovna1Pole(){
+		return (String) formovnaComboBox1.getSelectedItem();
+	}
 	public String getSelectedVlastniMaterial(){
 		return (String) this.vlMaterialComboBox.getSelectedItem();
+	}
+	public boolean isSelectedVcetneUzavreneZakazky(){
+		return checkVcetneUzavZak.isSelected();
+	}
+	public String getCisloObjednavky(){
+		return cisloObjednavkyText.getText();
+	}
+	public Date getOdDate(){
+		return odDatum.getDate();
+	}
+	public Date getDoDate(){
+		return doDatum.getDate();
+	}
+	public int getCisloTydne()  throws NumberFormatException{
+		String s = this.cisloTydneText.getText();
+		int id = 0;
+		id = Integer.parseInt(s);
+		return id;
+	}
+	public int getRok(){
+		return this.yearChooser.getYear();
+	}
+	public String getFormovna2Vypisy(){
+		return  (String) comboBoxFormovna2.getSelectedItem();
 	}
 }

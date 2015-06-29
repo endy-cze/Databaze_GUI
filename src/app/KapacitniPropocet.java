@@ -131,7 +131,7 @@ public class KapacitniPropocet extends JDialog {
         public QueryTableModel doInBackground() { 
     		ResultSet rs;
 			try {
-				rs = sql.kapacitniPropocet(cisloTydne, rok, f);
+				rs = sql.kapacitniPropocet(cisloTydne, rok, Character.toString(f));
 				QueryTableModel model = new QueryTableModel(rs); // , new String[] {"Datum lití","Propoèet "+jmenoSloupce}
 				rs.close();
 				return model;

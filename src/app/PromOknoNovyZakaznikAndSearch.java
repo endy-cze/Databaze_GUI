@@ -161,9 +161,10 @@ public class PromOknoNovyZakaznikAndSearch extends JPanel {
 		pridatZakaznika.setActionCommand("PridatZakaznikaAction");
 		idZakaznikaText.setVisible(false);
 		idZakaznika_1.setVisible(false);
-		panelFiltr.setZakaznik();	
 		pridatZakaznikaLabel.setText("P\u0159idat nov\u00E9ho z\u00E1kazn\u00EDka");
 		jmenoZakaznikaPridejLabel.setText("Jm\u00E9no z\u00E1kazn\u00EDka: ");
+		//panelFiltr.setHledejZakazniky();	
+		panelFiltr.setParametryFiltr(ParametryFiltr.HledejZakazniky);
 	}
 	
 	public void setPridejVinika(){
@@ -173,9 +174,11 @@ public class PromOknoNovyZakaznikAndSearch extends JPanel {
 		pridatZakaznika.setActionCommand("PridatVinikaAction");
 		idZakaznikaText.setVisible(false);
 		idZakaznika_1.setVisible(false);
-		panelFiltr.setViniky();	
 		pridatZakaznikaLabel.setText("P\u0159idat nov\u00E9ho viníka");
 		jmenoZakaznikaPridejLabel.setText("Jm\u00E9no viníka: ");
+		
+		//panelFiltr.setHledejViniky();	
+		panelFiltr.setParametryFiltr(ParametryFiltr.HledejViniky);
 	}
 	
 	public void setPridejVadu(){
@@ -185,51 +188,61 @@ public class PromOknoNovyZakaznikAndSearch extends JPanel {
 		pridatZakaznika.setActionCommand("PridatVaduAction");
 		idZakaznikaText.setVisible(false);
 		idZakaznika_1.setVisible(false);
-		panelFiltr.setVady();
 		pridatZakaznikaLabel.setText("P\u0159idat novou vadu");
 		jmenoZakaznikaPridejLabel.setText("Jm\u00E9no vady: ");
+		
+		//panelFiltr.setHledejVady();
+		panelFiltr.setParametryFiltr(ParametryFiltr.HledejVady);
 	}
 	
 	public void setVyhledejZakaznika(){
-		panelFiltr.setZakaznik();
+		//panelFiltr.setHledejZakazniky();
+		panelFiltr.setParametryFiltr(ParametryFiltr.HledejZakazniky);
 		nadpis.setText("Seznam z\u00E1kazn\u00EDk\u016F:");
 		this.vyberUprav.setText("Vyber z\u00E1kazn\u00EDka");
 	}
 	
 	public void setVyhledejModel(){
-		panelFiltr.setModel();
+		//panelFiltr.setHledejModely();
+		panelFiltr.setParametryFiltr(ParametryFiltr.HledejModely);
 		nadpis.setText("Seznam model\u016F:");
 		this.vyberUprav.setText("Vyber model");
 	}
 	
 	public void setVyhledejZakazku(){
-		panelFiltr.setZakazka();
+		//panelFiltr.setHledejZakazky();
+		panelFiltr.setParametryFiltr(ParametryFiltr.HledejZakazky);
 		nadpis.setText("Seznam zak\u00E1zek:");
 		this.vyberUprav.setText("Vyber zak\u00E1zku");
 	}
 	
 	public void setVyhledejFyzKusy(){
-		panelFiltr.setFyzKusy();
+		//panelFiltr.setHledejFyzKusy();
+		panelFiltr.setParametryFiltr(ParametryFiltr.HledejFyzKusy);
 		nadpis.setText("Seznam kus\u016F:");
 		this.vyberUprav.setText("Vyber zak\u00E1zku");
 	}
 	
 	public void setVyhledejZmetky(){
-		panelFiltr.setZmetky();
+		//panelFiltr.setHledejZmetky();
+		panelFiltr.setParametryFiltr(ParametryFiltr.HledejZmetky);
 		nadpis.setText("Seznam kus\u016F:");
 		this.vyberUprav.setText("Vyber zak\u00E1zku");
 	}
 	
 	public void setVyhledejViniky(){
-		panelFiltr.setViniky();
+		//panelFiltr.setHledejViniky();
+		panelFiltr.setParametryFiltr(ParametryFiltr.HledejViniky);
 	}
 	
 	public void setVyhledejVady(){
-		panelFiltr.setVady();
+		//panelFiltr.setHledejVady();
+		panelFiltr.setParametryFiltr(ParametryFiltr.HledejVady);
 	}
 	
 	public void setVyhledejKapPropocet(){
-		panelFiltr.setKapPropocet();
+		//panelFiltr.setKapPropocet();
+		panelFiltr.setParametryFiltr(ParametryFiltr.HledejKapacitniProcet);
 	}
 	
 	public void setPlanovani(){
@@ -527,11 +540,17 @@ public class PromOknoNovyZakaznikAndSearch extends JPanel {
 	}
 	
 	public void setPanelFiltrSetPlanyLiti(boolean pom){
-		panelFiltr.setPlanyLiti(pom);
+		// panelFiltr.setPlanyLiti(pom);
+		if(pom){
+			panelFiltr.setParametryFiltr(ParametryFiltr.ZaklPlanLiti);
+		} else {
+			panelFiltr.setParametryFiltr(ParametryFiltr.PlanovaniLiti);
+		}
 	}
 	
 	public void setPanelFiltrSetPlanExpedice(int j){
-		panelFiltr.setPlanExpedice(j);
+		//panelFiltr.setPlanExpedice(j);
+		panelFiltr.setParametryFiltr(ParametryFiltr.PlanExpedice);
 	}
 	
 

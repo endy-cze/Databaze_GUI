@@ -396,7 +396,7 @@ public class SQLStor {
 
 	/**
 	 * 
-	 * @param jmenoZakaznika pokud nechcete vyhledavat podle jmena zákazníka, zadejte "" a ne null jinak error :P
+	 * @param jmenoZakaznika pokud nechcete vyhledavat podle jmena zákazníka, zadejte "" a ne null
 	 * @param cisloModelu
 	 * @param nazevModelu
 	 * @param idModelu
@@ -936,6 +936,18 @@ public class SQLStor {
 		return c;
 	}
 	
+	/**
+	 * 
+	 * @param idZakazky
+	 * @param jmenoZakaznika
+	 * @param cisloModelu
+	 * @param nazevModelu
+	 * @param idModelu
+	 * @param datumZakazky
+	 * @param cisloObjednavky
+	 * @return
+	 * @throws SQLException
+	 */
 	public ResultSet vypisStavuNeuzavrenychZakazek(int idZakazky, String jmenoZakaznika, String cisloModelu, String nazevModelu, int idModelu, java.util.Date datumZakazky, String cisloObjednavky) throws SQLException{
 		if(idZakazky < 0){
 			JOptionPane.showMessageDialog(hlavniOkno, "Id zakázky je menší než nula");
@@ -1655,11 +1667,15 @@ public class SQLStor {
 	 * @return
 	 * @throws SQLException
 	 */
-	public ResultSet kapacitniPropocet(int cisloTydne, int rok, char formovna) throws SQLException{
+	public ResultSet kapacitniPropocet(int cisloTydne, int rok, String formovna) throws SQLException{
 		int i = 4, j = 5;
 		if(cst[i][j] == null){
 			cst[i][j] = conn.prepareCall(sqlPrikazy[i][j]);
 			naposledyPouzito[i][j] = new Date();
+		}
+		if(formovna.length() != 1){
+			JOptionPane.showMessageDialog(hlavniOkno, "V kapacitnim propoètu je chyba, kapacitniPropocet() SQLStor.java");
+			return null;
 		}
 		Calendar pom = Calendar.getInstance();
 		pom.set(Calendar.DAY_OF_WEEK, 2);
@@ -1669,7 +1685,7 @@ public class SQLStor {
 		java.sql.Date sqlDate = new java.sql.Date(pom.getTime().getTime()); 
 		c = cst[i][j];
 		c.setDate(1, sqlDate);
-		c.setString(2, Character.toString(formovna));
+		c.setString(2, formovna);
 		rs = c.executeQuery();
 		return rs;
 	}
