@@ -605,6 +605,7 @@ public class Planovani extends JPanel implements ActionListener, ListSelectionLi
 		add(textKurz, gbc_textKurz);
 		
 		lblTermnExpedice = new JLabel("Term\u00EDn expedice:");
+		lblTermnExpedice.setFont(f);
 		popisLabels[20] = lblTermnExpedice;
 		GridBagConstraints gbc_lblTermnExpedice = new GridBagConstraints();
 		gbc_lblTermnExpedice.anchor = GridBagConstraints.WEST;

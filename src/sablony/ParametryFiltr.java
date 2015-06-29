@@ -145,8 +145,8 @@ public class ParametryFiltr extends JPanel {
 	private JLabel napovedaDate;
 	private JLabel napovedaCisloT;
 	private JButton prevodDoPdf;
-	private JLabel lblFormovna_1;
-	private JComboBox comboBoxFormovna;
+	private JLabel formovnaLabel2;
+	private JComboBox comboBoxFormovna2;
 	private JLabel vlMaterialLabel;
 	private JComboBox<String> vlMaterialComboBox;
 	
@@ -313,8 +313,8 @@ public class ParametryFiltr extends JPanel {
 	public void setKapPropocet(){
 		setPlanyLiti(true);
 		prevodDoPdf.setVisible(false);
-		this.lblFormovna_1.setVisible(true);
-		this.comboBoxFormovna.setVisible(true);
+		this.formovnaLabel2.setVisible(true);
+		this.comboBoxFormovna2.setVisible(true);
 		vyhledej.setActionCommand("HledejKapacitniProcet");
 	}
 	
@@ -336,7 +336,7 @@ public class ParametryFiltr extends JPanel {
 			vyhledej.setActionCommand("PlanovaniLiti");
 			prevodDoPdf.setActionCommand("PDFPlanovani");
 		}
-		comboBoxFormovna.setVisible(true);
+		comboBoxFormovna2.setVisible(true);
 		//if(isZakl){
 			prevodDoPdf.setVisible(true); // uložit jako pdf
 		//}
@@ -402,10 +402,8 @@ public class ParametryFiltr extends JPanel {
 			prevodDoPdf.setVisible(true);
 			break;
 		case 5: // 6.	Výpis odlitých (vyrobených) kusù za období
-			this.showOdDo();
+			this.showOdDoFormovnaVlMaterial();
 			prevodDoPdf.setVisible(false);
-			this.vlMaterialComboBox.setVisible(true);
-			this.vlMaterialLabel.setVisible(true);
 			break;
 		case 6: //7.	Výpis položek s odhadovou hmotností
 			this.showNothing();
@@ -465,9 +463,9 @@ public class ParametryFiltr extends JPanel {
 	
 	private void showOd(){
 		for(int i = 0; i < vypisy.length; i++)vypisy[i].setVisible(false);
-		((JLabel)vypisy[0]).setText("Datum od:");
 		vypisy[0].setVisible(true);
 		vypisy[1].setVisible(true);
+		((JLabel)vypisy[0]).setText("Datum od:");
 	}
 	
 	private void showDatum(){
@@ -479,6 +477,31 @@ public class ParametryFiltr extends JPanel {
 	
 	private void showNothing(){
 		for(int i = 0; i < vypisy.length; i++)vypisy[i].setVisible(false);
+	}
+	
+	private void showOdDoFormovnaVlMaterial(){
+		showOdDo();
+		this.vlMaterialComboBox.setVisible(true);
+		this.vlMaterialLabel.setVisible(true);
+		this.comboBoxFormovna2.setVisible(true);
+		this.formovnaLabel2.setVisible(true);
+		
+		GridBagLayout layout = (GridBagLayout) panel.getLayout();
+		GridBagConstraints gbc = null;
+		
+		gbc = layout.getConstraints(vlMaterialLabel);				
+		layout.removeLayoutComponent(vlMaterialLabel);
+		gbc.gridx = 0;
+		gbc.gridy = 4;
+		panel.add(vlMaterialLabel, gbc);
+		
+		gbc = layout.getConstraints(vlMaterialComboBox);				
+		layout.removeLayoutComponent(vlMaterialComboBox);
+		gbc.gridx = 1;
+		gbc.gridy = 4;
+		panel.add(vlMaterialComboBox, gbc);
+		
+		
 	}
 
 	/**
@@ -816,26 +839,26 @@ public class ParametryFiltr extends JPanel {
 		gbc_yearChooser.gridy = 4;
 		panel.add(yearChooser, gbc_yearChooser);
 		
-		lblFormovna_1 = new JLabel("Formovna:");
-		vypisy[10] = lblFormovna_1;
-		lblFormovna_1.setForeground(new Color(246, 246, 246));
-		lblFormovna_1.setFont(new Font("Tahoma", Font.PLAIN, 12));
-		GridBagConstraints gbc_lblFormovna_1 = new GridBagConstraints();
-		gbc_lblFormovna_1.anchor = GridBagConstraints.WEST;
-		gbc_lblFormovna_1.insets = new Insets(0, 0, 5, 5);
-		gbc_lblFormovna_1.gridx = 5;
-		gbc_lblFormovna_1.gridy = 4;
-		panel.add(lblFormovna_1, gbc_lblFormovna_1);
+		formovnaLabel2 = new JLabel("Formovna:");
+		vypisy[10] = formovnaLabel2;
+		formovnaLabel2.setForeground(new Color(246, 246, 246));
+		formovnaLabel2.setFont(fonty[4]);
+		GridBagConstraints gbc_formovnaLabel2 = new GridBagConstraints();
+		gbc_formovnaLabel2.anchor = GridBagConstraints.WEST;
+		gbc_formovnaLabel2.insets = new Insets(0, 0, 5, 5);
+		gbc_formovnaLabel2.gridx = 5;
+		gbc_formovnaLabel2.gridy = 4;
+		panel.add(formovnaLabel2, gbc_formovnaLabel2);
 		
-		comboBoxFormovna = new JComboBox();
-		vypisy[11] = comboBoxFormovna;
-		comboBoxFormovna.setModel(new DefaultComboBoxModel(new String[] {"T", "S", "M"}));
-		GridBagConstraints gbc_comboBoxFormovna = new GridBagConstraints();
-		gbc_comboBoxFormovna.insets = new Insets(0, 0, 5, 5);
-		gbc_comboBoxFormovna.fill = GridBagConstraints.HORIZONTAL;
-		gbc_comboBoxFormovna.gridx = 6;
-		gbc_comboBoxFormovna.gridy = 4;
-		panel.add(comboBoxFormovna, gbc_comboBoxFormovna);
+		comboBoxFormovna2 = new JComboBox();
+		vypisy[11] = comboBoxFormovna2;
+		comboBoxFormovna2.setModel(new DefaultComboBoxModel(new String[] {"T", "S", "M"}));
+		GridBagConstraints gbc_comboBoxFormovna2 = new GridBagConstraints();
+		gbc_comboBoxFormovna2.insets = new Insets(0, 0, 5, 5);
+		gbc_comboBoxFormovna2.fill = GridBagConstraints.HORIZONTAL;
+		gbc_comboBoxFormovna2.gridx = 6;
+		gbc_comboBoxFormovna2.gridy = 4;
+		panel.add(comboBoxFormovna2, gbc_comboBoxFormovna2);
 		
 		napovedaCisloT = new JLabel("N\u00E1pov\u011Bda");
 		vypisy[8] = napovedaCisloT;
@@ -891,7 +914,7 @@ public class ParametryFiltr extends JPanel {
 		this.vlMaterialComboBox.setModel(vlastniMaterialySeznamModel);
 		vypisy[12] = vlMaterialComboBox;
 		GridBagConstraints gbc_vlMaterialComboBox = new GridBagConstraints();
-		gbc_vlMaterialComboBox.gridwidth = 3;
+		gbc_vlMaterialComboBox.gridwidth = 2;
 		gbc_vlMaterialComboBox.insets = new Insets(0, 0, 5, 5);
 		gbc_vlMaterialComboBox.fill = GridBagConstraints.HORIZONTAL;
 		gbc_vlMaterialComboBox.gridx = 10;

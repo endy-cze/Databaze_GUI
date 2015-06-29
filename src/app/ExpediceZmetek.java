@@ -64,7 +64,8 @@ public class ExpediceZmetek extends JPanel implements ActionListener //, ChangeL
 	private MainFrame hlavniOkno;
 	private JScrollPane scrollPane_1;
 	private SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
-	
+	private static final String acesDenied = "execute command denied to user";
+
 	private ColorCellTable tableFyzkusyEx;
 	
 	private JLabel [] textLabels;
@@ -369,7 +370,7 @@ public class ExpediceZmetek extends JPanel implements ActionListener //, ChangeL
 		fonty = sklad.getFonty();
 		
 		GridBagLayout gridBagLayout = new GridBagLayout();
-		gridBagLayout.columnWidths = new int[]{22, 160, 100, 20, 25, 66, 38, 60, 48, 40, 10, 0, 15, 10, 43, 20, 0, 30, 30, 20, 30, 20, 120, 140, 0, 20, 0};
+		gridBagLayout.columnWidths = new int[]{22, 160, 100, 20, 25, 66, 38, 60, 48, 40, 10, 0, 15, 10, 43, 20, 0, 30, 30, 20, 30, 20, 130, 80, 20, 20, 0};
 		gridBagLayout.rowHeights = new int[]{21, 0, 0, 12, 0, 0, 0, 0, 0, 0, 30, 25, 32, 32, 0, 32, 0, 32, 0, 20, 0};
 		gridBagLayout.columnWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, Double.MIN_VALUE};
 		gridBagLayout.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, Double.MIN_VALUE};
@@ -1308,6 +1309,7 @@ public class ExpediceZmetek extends JPanel implements ActionListener //, ChangeL
 			} else if (event.equalsIgnoreCase("DokonciZadavani")) {
 				boolean[][] zmeneno = tableFyzkusyEx.getZmeneno();
 				boolean pomBol = false;
+				int upraveno = 0;
 				for (int i = 0; i < zmeneno.length; i++) {
 					pomBol = false;
 					for (int j = 0; j < zmeneno[i].length; j++) {
@@ -1317,6 +1319,7 @@ public class ExpediceZmetek extends JPanel implements ActionListener //, ChangeL
 					}
 					if (pomBol) { // radek je zmenen musí se aktualizovat
 						endZadavaniOdlitku(i);
+						upraveno++;
 						if (zmeneno[i][10] || zmeneno[i][12]) {
 							if (!endZadavaniVadyAVinika(i)) {
 								JOptionPane.showMessageDialog(hlavniOkno,"Nìjakému upravenému kusu se nepodaøilo pøidat vadu a vinika");
@@ -1325,7 +1328,11 @@ public class ExpediceZmetek extends JPanel implements ActionListener //, ChangeL
 						}
 					}
 				}
-				JOptionPane.showMessageDialog(hlavniOkno,"Parametry fyzických kusù úspìšnì pøeneseny do databáze");
+				if(upraveno > 0){
+					JOptionPane.showMessageDialog(hlavniOkno,"Parametry fyzických kusù úspìšnì pøeneseny do databáze, upraveno: "+upraveno);
+				} else {
+					JOptionPane.showMessageDialog(hlavniOkno,"Nebyly provedeny žádné zmìny v databázi");					
+				}
 			} else if (event.equalsIgnoreCase("UzavriZakazku")){
 				int id = Integer.parseInt(textIdZakazky.getText());
 				sql.uzavriZakazku(id);
@@ -1334,7 +1341,15 @@ public class ExpediceZmetek extends JPanel implements ActionListener //, ChangeL
 				sql.obnovZakazku(id);
 			}
 		} catch (Exception e) {
-			ExceptionWin.showExceptionMessage(e);
+			if(e.getLocalizedMessage() != null){
+				if(e.getLocalizedMessage().startsWith(acesDenied)){
+					JOptionPane.showMessageDialog(hlavniOkno, "Na tuto operaci nemáte pravomoce");
+				}else {
+					ExceptionWin.showExceptionMessage(e);
+				}
+			} else {
+				ExceptionWin.showExceptionMessage(e);
+			}
 		}
 	}
 

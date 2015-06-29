@@ -124,8 +124,8 @@ public class SQLStor {
 		}
 		c = cst[i][j];
 		c.setInt(1, idZakazky);
-		JOptionPane.showMessageDialog(hlavniOkno, "Nové kusy generovány");
 		c.execute();
+		JOptionPane.showMessageDialog(hlavniOkno, "Nové kusy generovány");
 	}
 	
 	/**

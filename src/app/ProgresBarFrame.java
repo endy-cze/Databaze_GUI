@@ -36,7 +36,7 @@ public class ProgresBarFrame extends JFrame {
 
 	/**
 	 * Launch the application.
-	 */
+	 
 	public static void main(String[] args) {
 		try {
 			ProgresBarFrame dialog = new ProgresBarFrame();
@@ -46,6 +46,7 @@ public class ProgresBarFrame extends JFrame {
 			e.printStackTrace();
 		}
 	}
+	*/
 
 	/**
 	 * Create the dialog.
