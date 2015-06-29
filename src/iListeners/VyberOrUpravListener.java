@@ -358,18 +358,25 @@ public class VyberOrUpravListener implements ActionListener {
 	}
 	
 	/**
-	 * Záloha databáze
+	 * Záloha, obnova databáze
 	 * @param j index, ktery popup menu se dìla (obnova nebo zaloha, vìtšinou zaloha)
 	 * @throws ExecutionException 
 	 * @throws InterruptedException 
 	 */
 	private void index8(int j) throws InterruptedException, ExecutionException {
-		ProgresBarFrame bar = sklad.getBar();
-		bar.setZalohaDB();
-		bar.setVisible(true);
-		ZalohujObnovDB zaloha = new ZalohujObnovDB(this.sklad, ZalohujObnovDB.ZALOHUJ);
-		zaloha.execute();
-		
-		
+		switch(j){
+		case 0:
+			ProgresBarFrame bar = sklad.getBar();
+			bar.setZalohaDB();
+			bar.setVisible(true);
+			ZalohujObnovDB zaloha = new ZalohujObnovDB(this.sklad, ZalohujObnovDB.ZALOHUJ);
+			zaloha.execute();
+			break;
+		case 1:
+			//nothing zatim
+			break;
+		default: JOptionPane.showMessageDialog(hlavniOkno, "neco je spatne VyberorUpravListener index8()");	
+			break;
+		}
 	}
 }

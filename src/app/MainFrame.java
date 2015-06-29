@@ -201,7 +201,7 @@ public class MainFrame extends JFrame {
 		sidePopupMenulist[i] = new MyPopUp(jmena7, sidePopupMenuItems, i, sklad);
 		
 		i = 8;
-		String [] jmena8 = {"Záloha databáze"};
+		String [] jmena8 = {"Záloha databáze", "Obnova databáze"};
 		sidePopupMenulist[i] = new MyPopUp(jmena8, sidePopupMenuItems, i, sklad);
 	}
 	
@@ -215,7 +215,7 @@ public class MainFrame extends JFrame {
 		sideListButton[5] = new MyJButton("\u00DAprava zak\u00E1zky",10,1, sklad);
 		sideListButton[6] = new MyJButton("Pøidat vady nebo viníky", 10, 1, sklad);
 		sideListButton[7] = new MyJButton("Smazat fyz. kusy", 10, 1, sklad);
-		sideListButton[8] = new MyJButton("Záloha databáze", 10, 1, sklad);
+		sideListButton[8] = new MyJButton("Záloha a obnova databáze", 10, 1, sklad);
 		
 		sklad.setSideListButton(sideListButton);
 		return sideListButton;

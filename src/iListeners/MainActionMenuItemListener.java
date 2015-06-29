@@ -327,7 +327,10 @@ public class MainActionMenuItemListener implements ActionListener {
 	private void index8(int j){
 		switch(j){
 		case 0:
-			searchOkno.setZalohaDB();
+			searchOkno.setZalohaObnovaDB(true);
+			break;
+		case 1:
+			searchOkno.setZalohaObnovaDB(false);
 			break;
 		default: JOptionPane.showMessageDialog(hlavniOkno, "Nìco je špatnì v MainActionMenuItemListener, index7()");	
 			break;
