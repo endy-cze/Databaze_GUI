@@ -43,6 +43,7 @@ public class SQLStor {
 	private static final int maxDelkaVlastnihoMaterialu = 10, maxDelkaCislaTavby = 10;
 	private static final int maxPocetKusuNovaZakazka = 1500;
 	private static final double maxCena = 1e9;
+	private static final int maxDelkaCislaFaktury = 19;
 	private ProgresBarFrame prgbar = new ProgresBarFrame();
 	private SimpleDateFormat sdf;
 	
@@ -61,7 +62,7 @@ public class SQLStor {
 			{"{CALL pomdb.vyberZakazniky(?)}", "{CALL pomdb.vyberModely(?,?,?,?,?,?,?,?)}", "{CALL pomdb.vyberZakazky2(?,?,?,?,?,?,?,?)}",
 				"{CALL pomdb.vyberFyzKusy(?,?)}", "{CALL pomdb.vyberZmetky(?,?,?,?,?,?,?,?)}"},	//select
 			{"{CALL pomdb.upravZakaznika(?,?)}", "{CALL pomdb.upravModel(?,?,?,?,?,?,?,?,?)}", "{CALL pomdb.upravZakazku(?,?,?,?,?,?,?,?,?,?,?,?,?)}"},  //update
-			{"{CALL pomdb.zadejCisloTavby(?,?)}", "{CALL pomdb.zadejPlanovanyDatumLiti(?,?)}", "{CALL pomdb.zadejOdlitek(?,?,?,?,?,?,?,?,?,?,?)}",
+			{ "{CALL pomdb.zadej_cislo_faktury_cislo_tavby_prohlizeci(?,?,?)}", "{CALL pomdb.zadejPlanovanyDatumLiti(?,?)}", "{CALL pomdb.zadejOdlitek(?,?,?,?,?,?,?,?,?,?,?)}",
 				"{CALL pomdb.zadejUdajeOZmetku(?,?,?,?)}", "{CALL pomdb.zadejDilciTerminy(?,?,?)}"}, // "{CALL pomdb.zadejDatumVycistenehoKusu(?,?,?)}"
 			{"{CALL pomdb.pridejVinika(?)}", "{CALL pomdb.pridejVadu(?)}", "{CALL pomdb.planovaniRozvrh(?,?)}", "{CALL pomdb.generujKusy(?)}",
 				"{CALL pomdb.planovaniRozvrhVycisteno(?,?)}", "{CALL pomdb.kapacitniPropocet(?,?)}", "{CALL pomdb.uzavriZakazku(?,?,?,?,?,?)}", "{CALL pomdb.obnovZakazku(?)}"},
@@ -1349,23 +1350,26 @@ public class SQLStor {
 		return c;
 	}
 	
-	/**
-	 * 
-	 * @param fyzKusu
-	 * @param cisloTavby
-	 * @throws SQLException
-	 */
-	public void zadejCisloTavby(int fyzKusu, String cisloTavby) throws SQLException{
-		if(fyzKusu < 0){
+	public void zadejCisloTavbyCisloFaktury(int idKusu, String cisloTavby, String cisloFaktury) throws SQLException{
+		if(idKusu  < 0){
 			JOptionPane.showMessageDialog(hlavniOkno, "Id fyz. kusu je špatnì zapsaný");
-			return;			
-		}
-		if(cisloTavby == null){
-			JOptionPane.showMessageDialog(hlavniOkno, "Èíslo tavby je prázdné");
 			return;
-		} else if (cisloTavby.equalsIgnoreCase("")|| cisloTavby.length() > maxDelkaCislaTavby){
-			JOptionPane.showMessageDialog(hlavniOkno, "Èíslo tavby je moc dlouhé nebo je prázdné, èíslo tavby muže mít "+maxDelkaCislaTavby+" znakù");
-			return;		
+		}
+		if(cisloTavby != null){
+			if(cisloTavby.length() > maxDelkaCislaTavby){
+				JOptionPane.showMessageDialog(hlavniOkno, "Èíslo tavby mùže mít maximálnì "+maxDelkaCislaTavby+" znakù");
+				return;
+			} else if(cisloTavby.equalsIgnoreCase("")){
+				cisloTavby = null;
+			}
+		}
+		if(cisloFaktury != null){
+			if(cisloFaktury.length() > maxDelkaCislaFaktury){
+				JOptionPane.showMessageDialog(hlavniOkno, "Èíslo faktury mùže mít maximálnì "+maxDelkaCislaFaktury+" znakù");
+				return;
+			} else if(cisloFaktury.equalsIgnoreCase("")){
+				cisloFaktury = null;
+			}
 		}
 		
 		int i = 3, j = 0;
@@ -1374,8 +1378,17 @@ public class SQLStor {
 			naposledyPouzito[i][j] = new Date();
 		}
 		c = cst[i][j];
-		c.setInt(1, fyzKusu);
-		c.setString(2, cisloTavby);
+		c.setInt("idKusu", idKusu);
+		if(cisloTavby == null){
+			c.setNull("cisloTavby", java.sql.Types.VARCHAR);
+		} else {
+			c.setString("cisloTavby", cisloTavby);
+		}
+		if(cisloFaktury == null){
+			c.setNull("cisloFaktury", java.sql.Types.VARCHAR);
+		} else {
+			c.setString("cisloFaktury", cisloFaktury);
+		}
 		c.execute();
 	}
 	

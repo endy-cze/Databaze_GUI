@@ -138,9 +138,18 @@ public class ExpediceZmetek extends JPanel implements ActionListener //, ChangeL
 	private JLabel lblVada;
 	private JLabel lblZadatTavbu;
 	
+	/**
+	 * Pro cteni tabulky zakazek
+	 */
 	private static final int pozicePoznamkyVParametrech = 21;
 	private static final int pozicePaganyrkyVParametech = 22;
 	private static final int poziceUzavreneZakazkyVParametrech = 20;
+	
+	/**
+	 * Pro zadavani odlitku
+	 */
+	private static final int poziceCislaTavbyVTabulce = 2;
+	private static final int poziceCislaFakturyVTabulce = 8;
 	
 	private String[] parametryZakazky;
 
@@ -1308,24 +1317,32 @@ public class ExpediceZmetek extends JPanel implements ActionListener //, ChangeL
 				
 			} else if (event.equalsIgnoreCase("DokonciZadavani")) {
 				boolean[][] zmeneno = tableFyzkusyEx.getZmeneno();
-				boolean pomBol = false;
+				boolean pomBol = false, isProhlizec = true;
 				int upraveno = 0;
 				for (int i = 0; i < zmeneno.length; i++) {
 					pomBol = false;
+					isProhlizec = true;
 					for (int j = 0; j < zmeneno[i].length; j++) {
 						if (zmeneno[i][j]) {
+							if(j != poziceCislaTavbyVTabulce || j != poziceCislaFakturyVTabulce){
+								isProhlizec = false;
+							}
 							pomBol = true;
 						}
 					}
 					if (pomBol) { // radek je zmenen musí se aktualizovat
-						endZadavaniOdlitku(i);
-						upraveno++;
-						if (zmeneno[i][10] || zmeneno[i][12]) {
-							if (!endZadavaniVadyAVinika(i)) {
-								JOptionPane.showMessageDialog(hlavniOkno,"Nìjakému upravenému kusu se nepodaøilo pøidat vadu a vinika");
-								break;
+						if(isProhlizec){ // zmeneno je jen cislo faktury nebo cislo tavby tzn j = 2 nebo j =8
+							endZadavaniCislaTavbyCislaFaktury(i);
+						} else {
+							endZadavaniOdlitku(i);
+							if (zmeneno[i][10] || zmeneno[i][12]) {
+								if (!endZadavaniVadyAVinika(i)) {
+									JOptionPane.showMessageDialog(hlavniOkno,"Nìjakému upravenému kusu se nepodaøilo pøidat vadu a vinika");
+									break;
+								}
 							}
 						}
+						upraveno++;
 					}
 				}
 				if(upraveno > 0){
@@ -1500,4 +1517,13 @@ public class ExpediceZmetek extends JPanel implements ActionListener //, ChangeL
 		}
 		return true;
 	}
+	
+	private void endZadavaniCislaTavbyCislaFaktury(int i) throws SQLException{
+		String cisloTavby = (String) tableFyzkusyEx.getValueAt(i, poziceCislaTavbyVTabulce);
+		String cisloFaktury = (String) tableFyzkusyEx.getValueAt(i, poziceCislaFakturyVTabulce);
+		int idKusu = Integer.parseInt((String)this.tableFyzkusyEx.getValueAt(i, 0));
+		sql.zadejCisloTavbyCisloFaktury(idKusu, cisloTavby, cisloFaktury);
+	}
+		
+	
 }
