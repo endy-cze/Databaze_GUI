@@ -2,15 +2,12 @@ package iListeners;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.concurrent.ExecutionException;
 
-import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.filechooser.FileNameExtensionFilter;
 
 import app.ExpediceZmetek;
 import app.MainFrame;
@@ -376,21 +373,7 @@ public class VyberOrUpravListener implements ActionListener {
 			zaloha.execute();
 			break;
 		case 1:
-			JOptionPane.showMessageDialog(hlavniOkno, "Vyberte soubor zalohy se jmenem \"<datum>_seznam_zakazek\", zbytek souborù musí být ve stejné složce");
-			
-			JFileChooser chooser = new JFileChooser(new File("./"));
-		    FileNameExtensionFilter filter = new FileNameExtensionFilter("Soubor CSV", "csv");
-		    chooser.setFileFilter(filter);
-		    chooser.setName("Kokos");
-		    chooser.setDialogTitle("Vyberte soubor seznam_zakazek.csv");
-		    new File("./");
-		    
-		    int returnVal = chooser.showOpenDialog(this.hlavniOkno);
-		    if(returnVal == JFileChooser.APPROVE_OPTION) {
-		       System.out.println("You chose to open this file: " +
-		            chooser.getSelectedFile().getName());
-		       System.out.println(chooser.getSelectedFile().getAbsolutePath());
-		    }
+			//nothing zatim
 			break;
 		default: JOptionPane.showMessageDialog(hlavniOkno, "neco je spatne VyberorUpravListener index8()");	
 			break;

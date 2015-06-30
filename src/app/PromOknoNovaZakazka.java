@@ -225,7 +225,7 @@ public class PromOknoNovaZakazka extends JPanel implements ActionListener {
 							date = sdf.parse(parametryZakazky[i]);
 							((MyJDateChooser) listComponents[i][j]).setDate(date);
 						} catch (ParseException e) {
-							ExceptionWin.showExceptionMessage(e);
+							e.printStackTrace();
 						} 
 					} 
 					else if (listComponents[i][j] instanceof JLabel){

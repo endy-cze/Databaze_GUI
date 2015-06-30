@@ -6,9 +6,6 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
-
-import thread.ZalohujObnovDB;
-
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JFrame;
@@ -16,14 +13,13 @@ import javax.swing.JProgressBar;
 import javax.swing.JLabel;
 
 import java.awt.Cursor;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.LayoutStyle.ComponentPlacement;
 
 import java.awt.Toolkit;
 
-public class ProgresBarFrame extends JFrame implements ActionListener {
+public class ProgresBarFrame extends JFrame {
 
 	/**
 	 * 
@@ -37,8 +33,6 @@ public class ProgresBarFrame extends JFrame implements ActionListener {
 	private JLabel apHotovo;
 	private JProgressBar apProgresBar;
 	private JProgressBar dbProgressBar;
-	
-	private ZalohujObnovDB threadToCancel;
 
 	/**
 	 * Launch the application.
@@ -170,23 +164,5 @@ public class ProgresBarFrame extends JFrame implements ActionListener {
 	
 	public JProgressBar getApProgresBar() {
 		return apProgresBar;
-	}
-	
-	public void setThreadToCancel(ZalohujObnovDB thread){
-		threadToCancel = thread;
-	}
-	
-
-	@Override
-	public void actionPerformed(ActionEvent e) {
-		if(e.getActionCommand().equals("Cancel")){
-			if(threadToCancel != null){
-				if(!threadToCancel.isCancelled() && !threadToCancel.isDone()){
-					threadToCancel.cancel(true);
-				}
-				this.setVisible(false);
-			}
-		}
-		
 	}
 }
