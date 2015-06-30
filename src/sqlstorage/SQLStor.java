@@ -84,6 +84,11 @@ public class SQLStor {
 		"{CALL pomdb.vyberVlastniMaterialy()}"
 		};
 	/**
+	 * Timer ktery generuje kazdou chvilku akci ktera zkontroluje zda ma uzavøit statements.
+	 */
+	private Timer casovac;
+	
+	/**
 	 * Úložištì pro objekt Connection a pro objekty CallableStatement. Tato tøída je implementována pøesnì na míru mojí databáze.
 	 * @param sklad Sklad, kde jsou uloženy vìtšina promìnných, respektive jejich odkazy
 	 */
@@ -104,7 +109,7 @@ public class SQLStor {
 			}
 		}
 		PosluchacCasovace posluchac = new PosluchacCasovace();
-        Timer casovac = new Timer(dobaNaZavrenyPripojeni, posluchac);
+        casovac = new Timer(dobaNaZavrenyPripojeni, posluchac);
         casovac.start();
 	}
 	
@@ -1906,6 +1911,7 @@ public class SQLStor {
 		} else{
 			JOptionPane.showMessageDialog(hlavniOkno, "Spojeni s databazí už bylo døíve pøerušeno");
 		}
+		this.casovac.stop();
 	}
 	
 	
