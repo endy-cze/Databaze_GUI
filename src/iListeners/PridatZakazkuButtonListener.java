@@ -104,7 +104,6 @@ public class PridatZakazkuButtonListener implements ActionListener {
 				JOptionPane.showMessageDialog(sklad.getHlavniOkno(), "Na tuto operaci nemáte pravomoce");
 			} else {
 				ExceptionWin.showExceptionMessage(e);
-				e.printStackTrace();
 			}
 		}
 	}

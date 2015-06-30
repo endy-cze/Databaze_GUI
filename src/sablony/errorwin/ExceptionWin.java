@@ -21,22 +21,8 @@ public class ExceptionWin {
     	okno.setVisible(true);
 	}
 	
-	/**
-	 * 
-	 * @param e
-	 * @param isExitProgram
-	 */
-	public ExceptionWin(Exception e, boolean isExitProgram){
-		StringWriter sw = new StringWriter();
-        PrintWriter pw = new PrintWriter(sw, true);
-    	e.printStackTrace(pw);
-    	error = sw.toString();
-    	ErrorWin okno = ErrorWin.createErrorWin(error, isExitProgram);
-    	okno.setBounds(50, 50, okno.getWidth(), okno.getHeight());
-    	okno.setVisible(true);
-	}
-	
 	public static ExceptionWin showExceptionMessage(Exception e){
+		e.printStackTrace();
 		ExceptionWin win = new ExceptionWin(e);
 		StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw, true);
@@ -47,10 +33,6 @@ public class ExceptionWin {
     	
     	
 		return win;
-	}
-	
-	public void nic(){
-		
 	}
 
 }

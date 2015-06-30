@@ -124,7 +124,6 @@ public class HledejListener implements ActionListener, MouseListener {
 				vypisyAndTisk(arg0.getActionCommand());
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
 			if(e.getLocalizedMessage() != null){
 				if(e.getLocalizedMessage().startsWith(acesDenied)){
 					JOptionPane.showMessageDialog(hlavniOkno, "Na tuto operaci nemáte pravomoce");
