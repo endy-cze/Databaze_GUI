@@ -35,6 +35,7 @@ import sablony.tabulka.QueryTableModel;
 import sablony.tabulka.TableColumnAdjuster;
 import sqlstorage.SQLStor;
 import storage.SkladOdkazu;
+import tiskExcel.PlanovaniLitiToExcelTisk;
 import tiskExcel.TableToExcel;
 
 /**
@@ -298,7 +299,9 @@ public class HledejListener implements ActionListener, MouseListener {
 		} else {
 			TableModel mod = table.getModel();
 			String extend = lastUsedWeekNumberAYear[0] +" v roce "+  lastUsedWeekNumberAYear[1] + ", " + this.lastUsedFormovna;
-			TableToExcel.exportToExcelNaSirku(hlavniOkno, mod, extend, "Planovaci_lici_plan", cisloExportu);
+			
+			//TableToExcel.exportToExcelNaSirku(hlavniOkno, mod, extend, "Planovaci_lici_plan", cisloExportu);
+			PlanovaniLitiToExcelTisk.exportPlanovaniLitiToExcel(hlavniOkno, mod, extend, "Planovaci_lici_plan", sdf);
 		}
 	}
 	

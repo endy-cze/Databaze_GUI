@@ -165,11 +165,6 @@ public class TableToExcel {
 			JOptionPane.showMessageDialog(hlavniOkno, "Máte otevøený soubor, do kterého se zapisuje. Zavøete jej prosím");
 			wb.close();
 		}
-		
-		/*FileOutputStream fileOut = new FileOutputStream("./vypisy/"+name+".xls");
-		wb.write(fileOut);
-		wb.close();
-		fileOut.close();*/
 	}
 	
 	/**
