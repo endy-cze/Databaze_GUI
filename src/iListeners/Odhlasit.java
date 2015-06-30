@@ -31,11 +31,11 @@ public class Odhlasit implements ActionListener, WindowListener {
 			System.out.println("Vypínám všechna pøipojení");
 			sklad.getHlavniOkno().odhlasit();
 			//JOptionPane.showMessageDialog(sklad.getHlavniOkno(), "Úspìšnì jste se odhlásili, ukonèuji aplikaci");
-			System.gc();
+			sklad.getHlavniOkno().setVisible(false);
+			sklad.getHlavniOkno().dispose();
 			System.exit(i);
-		} catch (SQLException e1) {
-			// TODO Auto-generated catch block
-			ExceptionWin win = new ExceptionWin(e1, true);
+		} catch (Exception e1) {
+			ExceptionWin.showExceptionMessage(e1);
 		}
 	}
 	@Override

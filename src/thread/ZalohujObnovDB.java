@@ -16,6 +16,7 @@ import sqlstorage.SQLStor;
 import storage.SkladOdkazu;
 import app.MainFrame;
 import app.ProgresBarFrame;
+import sablony.errorwin.ExceptionWin;
 
 import com.opencsv.CSVWriter;
 
@@ -27,6 +28,7 @@ public class ZalohujObnovDB extends SwingWorker<Integer, Void>{
 	public static final int ZADNYRESULTSET = -1;
 	public static final int SPATNYACTIONTYPE = -2;
 	public static final int SLOZNANEVYTVORENA = -3;
+	public static final int ERROR = -4;
 	public static final int ZALOHAOK = 0;
 	
 	private final int actionType;
@@ -39,6 +41,7 @@ public class ZalohujObnovDB extends SwingWorker<Integer, Void>{
 		this.sklad = sklad;
 		hlavniOkno = sklad.getHlavniOkno();
 		bar = sklad.getBar();
+		bar.setThreadToCancel(this);
 	}
 	
 	
@@ -48,39 +51,64 @@ public class ZalohujObnovDB extends SwingWorker<Integer, Void>{
 		SQLStor sqlStor = sklad.getSql();
 		SimpleDateFormat sdf = sklad.getSdf2();
 		Date dnes = new Date();
-		if(actionType == ZALOHUJ){
-			stm = sqlStor.zalohaDB();
-		}
-		
-		if(stm == null){
-			return SPATNYACTIONTYPE;
-		}
-		
-		do {
-			ResultSet rs = stm.getResultSet();
-			if (rs == null) {
-				return ZADNYRESULTSET;
+		CSVWriter writer = null;
+		try {
+			if (actionType == ZALOHUJ) {
+				stm = sqlStor.zalohaDB();
 			}
-			//create folder
-			String folder = "./zaloha_databaze";
-			File f = new File(folder);
-			try {
-				if (f.mkdir()) {
-					//System.out.println("Directory Created");
-				} else {
-					//System.out.println("Directory is not created");
+
+			if (stm == null) {
+				return SPATNYACTIONTYPE;
+			}
+
+			do {
+				ResultSet rs = stm.getResultSet();
+				if (rs == null) {
+					return ZADNYRESULTSET;
 				}
-			} catch (Exception e) {
-				return SLOZNANEVYTVORENA;
+				// create folder
+				String folder = "./zaloha_databaze";
+				File f = new File(folder);
+				try {
+					if (f.mkdir()) {
+						// System.out.println("Directory Created");
+					} else {
+						// System.out.println("Directory is not created");
+					}
+				} catch (Exception e) {
+					return SLOZNANEVYTVORENA;
+				}
+				ResultSetMetaData meta = rs.getMetaData();
+
+				writer = new CSVWriter(
+						new FileWriter(folder + "/" + sdf.format(dnes) + "_" + meta.getTableName(1) + ".csv"), ',',
+						CSVWriter.DEFAULT_QUOTE_CHARACTER, CSVWriter.DEFAULT_LINE_END);
+
+				// write data
+				// feed in your array (or convert your data to an array)
+				String[] data;
+				int colCount = meta.getColumnCount();
+				while (rs.next()) {
+					data = new String[colCount];
+					for (int i = 0; i < colCount; i++) {
+						data[i] = rs.getString(i + 1);
+						if(data[i] == null)data[i] = "\\N";
+						data[i] = data[i].replaceAll("[\\n\\r]+", "\\\\n");	// escapovani novych radku a tabulatoru
+						data[i] = data[i].replaceAll("[\\t]+", "\\\\t");
+					}
+					writer.writeNext(data, true);
+					writer.flush();
+				}
+								
+				writer.close();
+			} while (stm.getMoreResults());
+		} catch (Exception e) {
+			ExceptionWin.showExceptionMessage(e);
+			if(writer != null){
+				writer.close();
 			}
-			ResultSetMetaData meta = rs.getMetaData();
-			
-			CSVWriter writer = new CSVWriter(new FileWriter(folder+"/"+sdf.format(dnes)+"_"+
-			meta.getTableName(1)+".csv"),',',CSVWriter.DEFAULT_QUOTE_CHARACTER, CSVWriter.DEFAULT_LINE_END);
-			// feed in your array (or convert your data to an array)
-			writer.writeAll(rs, true);
-			writer.close();
-		} while (stm.getMoreResults());
+			return ERROR;
+		}
 		return ZALOHAOK;
 	}
 	
@@ -101,13 +129,10 @@ public class ZalohujObnovDB extends SwingWorker<Integer, Void>{
 			} else if(i == ZalohujObnovDB.SLOZNANEVYTVORENA){
 				JOptionPane.showMessageDialog(hlavniOkno, "Složka nevytvoøena");
 			}		
-		} catch (InterruptedException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ExecutionException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+			ExceptionWin.showExceptionMessage(e);
+		} 
      }
 	
 

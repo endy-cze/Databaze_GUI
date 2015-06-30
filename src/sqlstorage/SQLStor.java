@@ -1926,8 +1926,7 @@ public class SQLStor {
 							System.out.println("Callable statement "+i+" " +j+" zrušeno");
 							naposledyPouzito[i][j] = null;
 						} catch (SQLException e1) {
-							ExceptionWin win = new ExceptionWin(e1);
-							win.nic();
+							ExceptionWin.showExceptionMessage(e1); 
 						}
     				}
     			}

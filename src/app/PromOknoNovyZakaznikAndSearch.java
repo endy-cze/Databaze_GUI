@@ -74,7 +74,7 @@ public class PromOknoNovyZakaznikAndSearch extends JPanel {
 		
 	private JTextField noveJmenoZakaznikaTextField;
 	private ColorCellTable table;
-	private JPanel panelVyhledej;
+	private JPanel panelVyhledejVyber;
 	private JPanel idZakaznikaPanel;
 	private JLabel nadpis;
 	private JButton pridatZakaznika;
@@ -127,16 +127,16 @@ public class PromOknoNovyZakaznikAndSearch extends JPanel {
 	}
 	
 	private void setVisibleProhlizeny(){
-		panelVyhledej.setVisible(false);
+		panelVyhledejVyber.setVisible(false);
 		idZakaznikaPanel.setVisible(false);
 	}
 	
 	private void setVisiblePridej(){
-		panelVyhledej.setVisible(false);
+		panelVyhledejVyber.setVisible(false);
 		idZakaznikaPanel.setVisible(true);
 	}
 	private void setVisibleVyhledej(){
-		panelVyhledej.setVisible(true);
+		panelVyhledejVyber.setVisible(true);
 		idZakaznikaPanel.setVisible(false);
 	}
 	
@@ -457,30 +457,30 @@ public class PromOknoNovyZakaznikAndSearch extends JPanel {
 		
 		
 		
-		panelVyhledej = new JPanel();
-		panelVyhledej.setBorder(new EmptyBorder(0, 0, 0, 0));
-		panelVyhledej.setBackground(barvy[12]);
-		panelVyhledej.setPreferredSize(new Dimension(10, 45));
-		panelVyhledej.setMaximumSize(new Dimension(32767, 40));
-		obal.add(panelVyhledej);
+		panelVyhledejVyber = new JPanel();
+		panelVyhledejVyber.setBorder(new EmptyBorder(0, 0, 0, 0));
+		panelVyhledejVyber.setBackground(barvy[12]);
+		panelVyhledejVyber.setPreferredSize(new Dimension(10, 45));
+		panelVyhledejVyber.setMaximumSize(new Dimension(32767, 40));
+		obal.add(panelVyhledejVyber);
 		
 		vyberUprav = new MyJButton("Vyber z\u00E1kazn\u00EDka",16,1, sklad);
 		vyberUprav.setPreferredSize(new Dimension(170, 30));
-		GroupLayout gl_panelVyhledej = new GroupLayout(panelVyhledej);
-		gl_panelVyhledej.setHorizontalGroup(
-			gl_panelVyhledej.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_panelVyhledej.createSequentialGroup()
+		GroupLayout gl_panelVyhledejVyber = new GroupLayout(panelVyhledejVyber);
+		gl_panelVyhledejVyber.setHorizontalGroup(
+			gl_panelVyhledejVyber.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_panelVyhledejVyber.createSequentialGroup()
 					.addComponent(vyberUprav, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 					.addContainerGap(740, Short.MAX_VALUE))
 		);
-		gl_panelVyhledej.setVerticalGroup(
-			gl_panelVyhledej.createParallelGroup(Alignment.LEADING)
-				.addGroup(Alignment.TRAILING, gl_panelVyhledej.createSequentialGroup()
+		gl_panelVyhledejVyber.setVerticalGroup(
+			gl_panelVyhledejVyber.createParallelGroup(Alignment.LEADING)
+				.addGroup(Alignment.TRAILING, gl_panelVyhledejVyber.createSequentialGroup()
 					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 					.addComponent(vyberUprav, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 					.addContainerGap())
 		);
-		panelVyhledej.setLayout(gl_panelVyhledej);
+		panelVyhledejVyber.setLayout(gl_panelVyhledejVyber);
 		
 		
 		

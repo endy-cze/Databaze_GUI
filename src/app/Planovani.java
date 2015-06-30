@@ -982,11 +982,9 @@ public class Planovani extends JPanel implements ActionListener, ListSelectionLi
 					JOptionPane.showMessageDialog(hlavniOkno, "Na tuto operaci nemáte pravomoce");
 				} else {
 					ExceptionWin.showExceptionMessage(e1);
-					e1.printStackTrace();
 				}
 			} else {
 				ExceptionWin.showExceptionMessage(e1);
-				e1.printStackTrace();
 			}
 		}
 	}
@@ -1511,9 +1509,7 @@ public class Planovani extends JPanel implements ActionListener, ListSelectionLi
 			try {
 				dialog.setTable(Integer.parseInt(cisloTydne), Integer.parseInt(rok), f);
 			} catch (Exception e) {
-				ExceptionWin win = new ExceptionWin(e);
-				win.nic();
-				e.printStackTrace();
+				ExceptionWin.showExceptionMessage(e);
 			}
 		}
 	}
