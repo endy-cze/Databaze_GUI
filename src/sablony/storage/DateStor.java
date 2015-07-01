@@ -1,4 +1,4 @@
-package sablony;
+package sablony.storage;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;

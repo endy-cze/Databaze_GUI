@@ -32,11 +32,11 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.TableModel;
 
-import sablony.DateStor;
 import sablony.MyJButton;
 import sablony.MyJDateChooser;
-import sablony.ZmenaHodnoty;
 import sablony.errorwin.ExceptionWin;
+import sablony.storage.DateStor;
+import sablony.storage.ZmenaHodnoty;
 import sablony.tabulka.ColorCellTable;
 import sablony.tabulka.QueryTableModel;
 import sqlstorage.SQLStor;

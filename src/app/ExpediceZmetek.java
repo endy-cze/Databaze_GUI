@@ -24,9 +24,9 @@ import javax.swing.JTextPane;
 import javax.swing.JScrollPane;
 import javax.swing.JButton;
 
-import sablony.DateStor;
 import sablony.MyJButton;
 import sablony.errorwin.ExceptionWin;
+import sablony.storage.DateStor;
 import sablony.tabulka.ColorCellTable;
 import sablony.tabulka.QueryTableModel;
 import sqlstorage.SQLStor;

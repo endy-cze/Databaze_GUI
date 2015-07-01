@@ -26,15 +26,14 @@ import javax.swing.JTextField;
 import javax.swing.JButton;
 import javax.swing.JRadioButton;
 
-import sablony.DateStor;
 import sablony.MyJButton;
 import sablony.MyJDateChooser;
 import sablony.errorwin.ExceptionWin;
+import sablony.storage.DateStor;
 import storage.SkladOdkazu;
 
 import javax.swing.JComboBox;
 import javax.swing.JTextArea;
-
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.border.LineBorder;
 import javax.swing.text.JTextComponent;

@@ -19,8 +19,8 @@ import javax.swing.Timer;
 
 import app.MainFrame;
 import app.ProgresBarFrame;
-import sablony.DateStor;
 import sablony.errorwin.ExceptionWin;
+import sablony.storage.DateStor;
 import storage.SkladOdkazu;
 /**
  * Objekt pro ukládání Connection a CallableStatements pro komunikaci s databází.

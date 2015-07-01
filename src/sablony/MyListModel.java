@@ -8,6 +8,8 @@ import java.util.Date;
 
 import javax.swing.DefaultListModel;
 
+import sablony.storage.DateStor;
+
 public class MyListModel extends DefaultListModel<DateStor> {
 	
 	public MyListModel(ResultSet rs, SimpleDateFormat sdf) throws SQLException{

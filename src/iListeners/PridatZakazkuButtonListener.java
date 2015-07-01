@@ -15,8 +15,8 @@ import javax.swing.text.JTextComponent;
 
 import com.toedter.calendar.JDateChooser;
 
-import sablony.DateStor;
 import sablony.errorwin.ExceptionWin;
+import sablony.storage.DateStor;
 import sqlstorage.SQLStor;
 import storage.SkladOdkazu;
 import app.MainFrame;
