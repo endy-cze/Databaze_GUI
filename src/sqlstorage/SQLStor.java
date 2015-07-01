@@ -62,14 +62,14 @@ public class SQLStor {
 			{"{CALL pomdb.vyberZakazniky(?)}", "{CALL pomdb.vyberModely(?,?,?,?,?,?,?,?)}", "{CALL pomdb.vyberZakazky2(?,?,?,?,?,?,?,?)}",
 				"{CALL pomdb.vyberFyzKusy(?,?)}", "{CALL pomdb.vyberZmetky(?,?,?,?,?,?,?,?)}"},	//select
 			{"{CALL pomdb.upravZakaznika(?,?)}", "{CALL pomdb.upravModel(?,?,?,?,?,?,?,?,?)}", "{CALL pomdb.upravZakazku(?,?,?,?,?,?,?,?,?,?,?,?,?)}"},  //update
-			{ "{CALL pomdb.zadej_cislo_faktury_cislo_tavby_prohlizeci(?,?,?)}", "{CALL pomdb.zadejPlanovanyDatumLiti(?,?)}", "{CALL pomdb.zadejOdlitek(?,?,?,?,?,?,?,?,?,?,?)}",
+			{"{CALL pomdb.zadej_cislo_faktury_cislo_tavby_prohlizeci(?,?,?)}", "{CALL pomdb.zadejPlanovanyDatumLiti(?,?)}", "{CALL pomdb.zadejOdlitek(?,?,?,?,?,?,?,?,?,?,?)}",
 				"{CALL pomdb.zadejUdajeOZmetku(?,?,?,?)}", "{CALL pomdb.zadejDilciTerminy(?,?,?)}"}, // "{CALL pomdb.zadejDatumVycistenehoKusu(?,?,?)}"
 			{"{CALL pomdb.pridejVinika(?)}", "{CALL pomdb.pridejVadu(?)}", "{CALL pomdb.planovaniRozvrh(?,?)}", "{CALL pomdb.generujKusy(?)}",
 				"{CALL pomdb.planovaniRozvrhVycisteno(?,?)}", "{CALL pomdb.kapacitniPropocet(?,?)}", "{CALL pomdb.uzavriZakazku(?,?,?,?,?,?)}", "{CALL pomdb.obnovZakazku(?)}"},
 			{"{CALL pomdb.vypisOdlituVKgKcOdDo(?,?)}", "{CALL pomdb.vypisZpozdeneVyroby(?)}", "{CALL pomdb.vypisDleTerminuExpediceCisloTydne(?,?)}", "{CALL pomdb.vypisPolozekSOdhadHmot()}", "{CALL pomdb.vypisMzdySlevacu(?)}",
 				"{CALL pomdb.vypisOdlitychKusuOdDo(?,?,?,?)}", "{CALL pomdb.vypisVycistenychKusuOdDo(?,?)}", "{CALL pomdb.vypisRozpracovaneVyroby()}", "{CALL pomdb.vypisExpedovanychKusuOdDo(?,?)}", "{CALL pomdb.vypisKusuNaSkladu()}",
 				"{CALL pomdb.vypisStavNeuzavrenychZakazek(?,?,?,?,?,?,?)}", "{CALL pomdb.vypisDenniOdlitychKusu(?)}", "{CALL pomdb.vypisZmetky(?,?)}", "{CALL pomdb.vypisVinikyVKgKc(?,?)}",
-				"{CALL pomdb.vypisStavNeuzavrenychZakazek_short(?,?,?,?,?,?,?)}"},
+				"{CALL pomdb.vypisStavNeuzavrenychZakazek_short(?,?,?,?,?,?,?)}", "{CALL pomdb.vypisOdlitychKusuOdDoRegEx(?,?,?,?)}"},
 			{"{CALL pomdb.liciPlanZakl(?,?,?)}", "{CALL pomdb.liciPlanPlanovaci(?,?,?)}", "{CALL pomdb.vyberDilciTerminy(?)}", "{CALL pomdb.vyberDilciTerminySeJmeny(?)}", 
 				"{CALL pomdb.plan_expedice()}"},
 			{"{CALL pomdb.smaz_fyz_kus(?,?)}"},
@@ -1225,6 +1225,64 @@ public class SQLStor {
 		c.setDate("do_", pomDate);
 		c.setString("formovna", formovna);
 		c.setString("vlastni_material", vlastni_material);
+		c.execute();
+		return c;
+	}
+	
+	/**
+	 * Vypise vsechny kusy co nejsou zmetky, nejsou v uzavrene zakazce a maji odlito = true v danem terminu 
+	 * @param od
+	 * @param do_
+	 * @param formovna
+	 * @param vlastni_materialy Vytvoøí z techto jmen regularni vyraz, ktery potom pošle do databaze pro shody.
+	 * @return
+	 * @throws SQLException
+	 */
+	public Statement vypisOdlitychKusuOdDoRegEx(Date od, Date do_, String formovna, String [] vlastni_materialy) throws SQLException{
+		if(od == null){
+			JOptionPane.showMessageDialog(hlavniOkno, "Datum od nesmí být prázdné");
+			return null;
+		}
+		if(do_ == null){
+			JOptionPane.showMessageDialog(hlavniOkno, "Datum do nesmí být prázdné");
+			return null;
+		}
+		if(formovna == null){
+			formovna = "";
+		}
+		if(vlastni_materialy == null){
+			JOptionPane.showMessageDialog(hlavniOkno, "Vlastni materialy nesmí být prazdné :P");
+			return null;
+		}
+		int i = 5, j = 15;
+		if(cst[i][j] == null){
+			cst[i][j] = conn.prepareCall(sqlPrikazy[i][j]);
+			naposledyPouzito[i][j] = new Date();
+		}
+		// tvorba regularniho vyrazu
+		String regEx = "";
+		if(vlastni_materialy[0] == null){
+			vlastni_materialy[0] = "Vše";
+		}
+		if(vlastni_materialy[0].equals("Vše")){
+			regEx = "."; // beru vse
+		} else {
+			regEx = "^"+vlastni_materialy[0]+"$";
+			for(int m = 1; m < vlastni_materialy.length; m++){
+				regEx += "|^"+vlastni_materialy[m]+"$";
+			}
+		}
+		if(regEx.length() > 500){
+			JOptionPane.showMessageDialog(hlavniOkno, "Je vybráno více materiálù než je dovoleno.");
+			return null;
+		}
+		c = cst[i][j];
+		java.sql.Date pomDate = new java.sql.Date (od.getTime());
+		c.setDate("od", pomDate);
+		pomDate = new java.sql.Date (do_.getTime());
+		c.setDate("do_", pomDate);
+		c.setString("formovna", formovna);
+		c.setString("vlastni_material_reg_ex", regEx);
 		c.execute();
 		return c;
 	}

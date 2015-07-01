@@ -13,7 +13,6 @@ import javax.swing.JLabel;
 import java.awt.Component;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
-import java.security.InvalidParameterException;
 
 import javax.swing.BoxLayout;
 import javax.swing.border.EmptyBorder;
@@ -44,6 +43,8 @@ import java.util.Date;
 import javax.swing.JCheckBox;
 
 import com.toedter.calendar.JYearChooser;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 /**
  * Tøída, které rozšiøuje JPanel a reprezentuje oddíl v aplikaci, ve které vyplnujeme parametry pro vyhledávání.
@@ -88,6 +89,8 @@ public class ParametryFiltr extends JPanel {
 	private DefaultComboBoxModel<String> vlastniMaterialySeznamModel;
 	private DefaultComboBoxModel<String> seznamFormoven;
 	private DefaultComboBoxModel<String> seznamFormovenAPrazdny;
+	
+	private MyPopUp seznamVlMater;
 	
 	private ColorCellTable table;
 	private TableColumnAdjuster columAdjuster;
@@ -148,7 +151,7 @@ public class ParametryFiltr extends JPanel {
 	private JButton prevodDoPdf;
 	private JLabel formovnaLabel2;
 	private JLabel vlMaterialLabel;
-	private JComboBox<String> vlMaterialComboBox;
+	private JButton vlMaterialJbutton;
 	private JDateChooser datumZakazkyDateChooser;
 	/**
 	 * Slouží pro hledaní pøi výpisech
@@ -342,11 +345,11 @@ public class ParametryFiltr extends JPanel {
 			gbc.gridy = 4;
 			panel.add(vlMaterialLabel, gbc);
 			
-			gbc = layout.getConstraints(vlMaterialComboBox);				
-			layout.removeLayoutComponent(vlMaterialComboBox);
+			gbc = layout.getConstraints(vlMaterialJbutton);				
+			layout.removeLayoutComponent(vlMaterialJbutton);
 			gbc.gridx = 1;
 			gbc.gridy = 4;
-			panel.add(vlMaterialComboBox, gbc);
+			panel.add(vlMaterialJbutton, gbc);
 			break;
 		case FILTR_CISLO_TYDNE_CISLO_ROKU_FORMOVNA:
 			pomMetoda();
@@ -460,7 +463,7 @@ public class ParametryFiltr extends JPanel {
 			dateDoLabel.setVisible(true);
 			doDatum.setVisible(true);
 	
-			vlMaterialComboBox.setVisible(true);
+			vlMaterialJbutton.setVisible(true);
 			vlMaterialLabel.setVisible(true);
 			comboBoxFormovna2.setVisible(true);
 			formovnaLabel2.setVisible(true);
@@ -590,7 +593,7 @@ public class ParametryFiltr extends JPanel {
 		ResultSet rs = sklad.getSql().vyberVlastniMaterialy();
 		vlastniMaterialySeznamModel = this.createComboBoxListModelFromResultSet(rs);
 		
-		
+		seznamVlMater = MyPopUp.createPopupResultSetVlastniMaterialy(rs);
 		
 		setBorder(new EmptyBorder(10, 10, 10, 10));
 		setBackground(barvy[0]);
@@ -995,16 +998,22 @@ public class ParametryFiltr extends JPanel {
 		gbc_vlMaterialLabel.gridy = 5;
 		panel.add(vlMaterialLabel, gbc_vlMaterialLabel);
 		
-		vlMaterialComboBox = new JComboBox<String>();
-		this.vlMaterialComboBox.setModel(vlastniMaterialySeznamModel);
-		vypisy[12] = vlMaterialComboBox;
-		GridBagConstraints gbc_vlMaterialComboBox = new GridBagConstraints();
-		gbc_vlMaterialComboBox.gridwidth = 2;
-		gbc_vlMaterialComboBox.insets = new Insets(0, 0, 5, 5);
-		gbc_vlMaterialComboBox.fill = GridBagConstraints.HORIZONTAL;
-		gbc_vlMaterialComboBox.gridx = 10;
-		gbc_vlMaterialComboBox.gridy = 5;
-		panel.add(vlMaterialComboBox, gbc_vlMaterialComboBox);
+		//vlMaterialJbutton = new JComboBox<String>();
+		vlMaterialJbutton = new JButton("Vyber materiály");
+		vlMaterialJbutton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				seznamVlMater.show(vlMaterialJbutton, vlMaterialJbutton.getWidth(), 0);
+			}
+		});
+		//this.vlMaterialJbutton.setModel(vlastniMaterialySeznamModel);
+		vypisy[12] = vlMaterialJbutton;
+		GridBagConstraints gbc_vlMaterialJbutton = new GridBagConstraints();
+		gbc_vlMaterialJbutton.gridwidth = 2;
+		gbc_vlMaterialJbutton.insets = new Insets(0, 0, 5, 5);
+		gbc_vlMaterialJbutton.fill = GridBagConstraints.HORIZONTAL;
+		gbc_vlMaterialJbutton.gridx = 10;
+		gbc_vlMaterialJbutton.gridy = 5;
+		panel.add(vlMaterialJbutton, gbc_vlMaterialJbutton);
 		
 		
 		addListeners();
@@ -1054,8 +1063,29 @@ public class ParametryFiltr extends JPanel {
 	public String getFormovna1Pole(){
 		return (String) formovnaComboBox1.getSelectedItem();
 	}
-	public String getSelectedVlastniMaterial(){
-		return (String) this.vlMaterialComboBox.getSelectedItem();
+	/*public String getSelectedVlastniMaterial(){
+		return (String) this.vlMaterialJbutton.getSelectedItem();
+	}*/
+	public String [] getSelectedVlMaterials(){
+		JCheckBox [] checkBoxItems = this.seznamVlMater.getCheckBoxItems();
+		if(checkBoxItems[0].isSelected()){ // je vybrano vše
+			return new String[] {checkBoxItems[0].getText()};
+		}
+		int size = 0;
+		for(int i = 1; i < checkBoxItems.length; i++){ // prvni item je Vše
+			if(checkBoxItems[i].isSelected()){
+				size++;
+			}
+		}
+		String [] selectedMaterials = new String [size];
+		int pom = 0;
+		for(int i = 1; i < checkBoxItems.length; i++){ // prvni item je Vše
+			if(checkBoxItems[i].isSelected()){
+				selectedMaterials[pom] = checkBoxItems[i].getText();
+				pom++;
+			}
+		}
+		return selectedMaterials;
 	}
 	public boolean isSelectedVcetneUzavreneZakazky(){
 		return checkVcetneUzavZak.isSelected();

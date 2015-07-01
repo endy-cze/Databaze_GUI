@@ -477,8 +477,10 @@ public class HledejListener implements ActionListener, MouseListener {
 		if (isVypis) {
 			Date od = get1Date(), do_ = get2Date();
 			String formovna = getFormovna();
-			String vlastniMaterialy = getVlastniMaterial();
-			Statement st = sql.vypisOdlitychKusuOdDo(od, do_, formovna, vlastniMaterialy);
+			//String vlastniMaterialy = getVlastniMaterial();
+			String [] seznamVlastniMaterialy = this.getVlastniMaterialy();
+			//Statement st = sql.vypisOdlitychKusuOdDo(od, do_, formovna, vlastniMaterialy);
+			Statement st = sql.vypisOdlitychKusuOdDoRegEx(od, do_, formovna, seznamVlastniMaterialy);
 			if (st != null) {
 				QueryTableModel tm = new QueryTableModel(st);
 				table.setModel(tm);
@@ -637,8 +639,11 @@ public class HledejListener implements ActionListener, MouseListener {
 		return formovna;
 	}
 	
-	private String getVlastniMaterial(){
+	/*private String getVlastniMaterial(){
 		return filtr.getSelectedVlastniMaterial();
+	}*/
+	private String [] getVlastniMaterialy(){
+		return filtr.getSelectedVlMaterials();
 	}
 	
 	private void hledejZakaznikyVyhledej() throws Exception {
