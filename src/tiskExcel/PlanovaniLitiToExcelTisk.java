@@ -35,12 +35,20 @@ public class PlanovaniLitiToExcelTisk {
 		"Jméno modelu", "Materiál", "Vlastní materiál"};
 	private final String [][] columnNamesPlanLiti = {
 			{"Zákazník", "Jméno modelu", "Èíslo modelu", "Po", "Út", "St", "Èt", "Pá", "Celk."},
-			{"Materiál", "Materiál vl.", "Hmotnost", "Termín", "Objed.", "Odl – zm.", "Norma", "Norma celk."}
+			{"Materiál", "Mater. 2", "Hmotnost", "Termín", "Objed.", "Odl – zm.", "Norma", "Norma celk."}
 			};
 	private final int [][] sirkyBunek = {
 			{2,2,2,1,1,  1,1,1,1},
 			{1,1,1,1,1,  1,3,3}
 	};
+	
+	private final static int maxWidthMaterial = 256 * 9; // 9 je pocet písmen
+	private final static int maxWidtColumnIndex= 1;
+	private final static int paperSizeInChars= 11 * 9 - 2; // delka stranky A4 v poctu pismenech pismena velikosti 12
+	private final static int widthTerminLiti = 256 * 12;
+	private final static int terminLitiColumnIndex = 3;
+	private final static int widthObjednano = 256 * 1	;
+	private final static int objednanoColumnIndex = 256 * 7;
 	
 	private final static int TEXT = 1;
 	private final static int CISLO = 2;
@@ -111,8 +119,30 @@ public class PlanovaniLitiToExcelTisk {
 		style.setBorderRight(CellStyle.BORDER_THIN);
 		style.setBorderTop(CellStyle.BORDER_DOUBLE);
 		style.setFont(font);
+		
+/*		
+		HSSFCellStyle obycBorderGeneralAlign = wb.createCellStyle();
+		obycBorderGeneralAlign.setBorderBottom(CellStyle.BORDER_THIN);
+		obycBorderGeneralAlign.setBorderLeft(CellStyle.BORDER_THIN);
+		obycBorderGeneralAlign.setBorderRight(CellStyle.BORDER_THIN);
+		obycBorderGeneralAlign.setBorderTop(CellStyle.BORDER_THIN);
+		obycBorderGeneralAlign.setFont(font);
+		obycBorderGeneralAlign.setAlignment(CellStyle.ALIGN_GENERAL);
+		
+		// styl bunky s dvojitou hranici dole a 12 pismem
+		HSSFCellStyle styleGeneralAlign = wb.createCellStyle();
+		styleGeneralAlign.setBorderBottom(CellStyle.BORDER_THIN);
+		styleGeneralAlign.setBorderLeft(CellStyle.BORDER_THIN);
+		styleGeneralAlign.setBorderRight(CellStyle.BORDER_THIN);
+		styleGeneralAlign.setBorderTop(CellStyle.BORDER_DOUBLE);
+		styleGeneralAlign.setFont(font);
+		styleGeneralAlign.setAlignment(CellStyle.ALIGN_GENERAL);
+*/
+		
 		//insert data
 		this.insertDataPlanovani(model, sheet, obycBorder, style);
+		//this.insertDataPlanovani(model, sheet, obycBorder, style, obycBorderGeneralAlign, styleGeneralAlign);
+		
 		//set First row as header at all printed pages
 		sheet.setRepeatingRows(CellRangeAddress.valueOf("1:2"));	
 		
@@ -170,6 +200,7 @@ public class PlanovaniLitiToExcelTisk {
 	 * @throws Exception
 	 */
 	private void insertDataPlanovani(QueryTableModel model, HSSFSheet sheet, HSSFCellStyle obycBorder, HSSFCellStyle stylBunkySDvojitouHranici) throws Exception{
+			// ,HSSFCellStyle obycBorderGeneralAlign, HSSFCellStyle stylBunkySDvojitouHraniciGeneralAlign) throws Exception{
 		Row row = null;
 		Cell cell = null;
 		
@@ -227,9 +258,11 @@ public class PlanovaniLitiToExcelTisk {
 							sloupecModeluData++;
 						}
 						sloupec++;
+						//cell.setCellStyle(obycBorderGeneralAlign);¨
 						cell.setCellStyle(obycBorder);
 						if( j % 2 == 0){
 							cell.setCellStyle(stylBunkySDvojitouHranici);
+							//cell.setCellStyle(stylBunkySDvojitouHraniciGeneralAlign);
 						}
 					}
 					sheet.addMergedRegion(new CellRangeAddress(rowIndex +2,rowIndex +2,cisBunky,cisBunky + sirkyBunek[j][i] - 1));
@@ -244,5 +277,42 @@ public class PlanovaniLitiToExcelTisk {
 		for(int i = 0; i < colCount ; i++){//mam totiž jeden sloupec navic aby se mi srovnali tabulky viz QuerytableModel
 			sheet.autoSizeColumn(i,true);
 		}
+		
+		
+		
+		for(int i = 0; i < colCount ; i++){
+			sheet.autoSizeColumn(i,true);
+		}
+		
+		
+		// overeni že se vše vejde
+		// zmerim si delku  použite stranky
+		int paperWidth = 0;
+		for(int i = 0; i < colCount ; i++){
+			paperWidth += sheet.getColumnWidth(i);
+		}
+		int widthInChars = paperWidth / 256;
+		
+		// nastaveni sirky datumu to je vždy stejny
+		if (widthInChars > paperSizeInChars){
+			sheet.setColumnWidth(terminLitiColumnIndex, widthTerminLiti);
+		}
+		// mozna nastavim i sirku odlito a odlito - zm, to je vetsinou jen jedno cislo
+		/*
+		if (widthInChars > paperSizeInChars){
+			sheet.setColumnWidth(objednanoColumnIndex, widthObjednano);
+		}*/
+		
+		// nastaveni sirky materialu
+		if (widthInChars > paperSizeInChars){
+			// v prvnim radku je prvni bunka sloucena do dvou
+			// ve druhem radu je vl. material  a pak material
+			int rozdilDoOptimalityInChars = widthInChars - paperSizeInChars;
+			int width = Math.max(maxWidthMaterial, sheet.getColumnWidth(maxWidtColumnIndex) - rozdilDoOptimalityInChars * 256);
+			sheet.setColumnWidth(maxWidtColumnIndex, width);	
+		}
+		
+		// nastaveni sirky datumu to je vždy stejny
+		
 	}
 }
