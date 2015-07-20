@@ -67,6 +67,9 @@ public class HledejListener implements ActionListener, MouseListener {
 	 */
 	private Date datumPoslVolaniMetody = null;
 	private static final String acesDenied = "execute command denied to user";
+	/**
+	 * ActionComandy z ParametryFiltr
+	 */
 	private String [] actionComands;
 	
 	public HledejListener(ParametryFiltr filtr, ColorCellTable table, MainFrame hlavniOkno, 
@@ -318,7 +321,7 @@ public class HledejListener implements ActionListener, MouseListener {
 		} else {
 			TableModel model = table.getModel();
 			String extend = this.sdf.format(datumPoslVolaniMetody);
-			TableToExcel.exportToExcelNaSirku(hlavniOkno, model, extend, "Plan_expedice", TableToExcel.planExpedice);
+			TableToExcel.exportToExcelNaSirku(hlavniOkno, model, extend, "Plan_expedice", ParametryFiltr.PlanExpedice);
 		}
 	}
 	

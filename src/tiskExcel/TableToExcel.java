@@ -27,6 +27,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.util.CellRangeAddress;
 
 import app.MainFrame;
+import sablony.ParametryFiltr;
 import sablony.tabulka.QueryTableModel;
 
 /**
@@ -237,61 +238,58 @@ public class TableToExcel {
 		 * viz metoda vypisyAndTisk(.,.) v HledejListener.java
 		 */
 		switch(cisloExportu){
-		case 0:
+		case ParametryFiltr.VypisStavNeuzavrenychZakazek:
 			atr[0] = "Stav neuzavøených zakázek";atr[1] = "Stav neuzavøených zakázek ke dni ";atr[2] = "./vypisy";
 			break;
-		case 1:
+		case ParametryFiltr.DenniVypisOdlitychKusu:
 			atr[0] = "Výpis odlitých kusù";atr[1] = "Výpis odlitých kusù ke dni ";atr[2] = "./vypisy";
 			break;
-		case 2:
+		case ParametryFiltr.VypisVycistenychKusuZaObdobi:
 			atr[0] = "Výpis vyèištìných kusù za období";atr[1] = "Vyèištìné kusy od ";atr[2] = "./vypisy";
 			break;
-		case 3:
+		case ParametryFiltr.MzdySlevacu:
 			atr[0] = "Mzdy slévaèù";atr[1] = "Mzdy slévaèù ke dni ";atr[2] = "./vypisy";
 			break;
-		case 4:
+		case ParametryFiltr.VypisOdlitkuVKgKc:
 			atr[0] = "Výpis odlitkù v kg-kè za období";atr[1] = "Výpis odlitkù v kg-kè od " ;atr[2] = "./vypisy";
 			break;
-		case 5:
+		case ParametryFiltr.VypisOdlitychKusuOdDo:
 			atr[0] = "Výpis vyrobených kusù za období";atr[1] = atr[0];atr[2] = "./vypisy";
 			break;
-		case 6:
+		case ParametryFiltr.VypisPolozekSOdhadHmot:
 			atr[0] = "Výpis položek s odhadovanou hmotností";atr[1] = "Položky s odhadovou hmotností ke dni ";atr[2] = "./vypisy";
 			break;
-		case 7:
+		case ParametryFiltr.VypisDleTerminuExpedice:
 			atr[0] = "Výpis zakázek s termínem expedice v daném týdnu";atr[1] = atr[0];atr[2] = "./vypisy";
 			break;
-		case 8:
+		case ParametryFiltr.VypisExpedice_od_do:
 			atr[0] = "Výpis expedice zboží za období";atr[1] = "Expedice zboží od ";atr[2] = "./vypisy";
 			break;
-		case 9:
+		case ParametryFiltr.VypisZpozdeneVyroby:
 			atr[0] = "Výpis zpoždìné výroby ke dni";atr[1] = atr[0];atr[2] = "./vypisy";
 			break;
-		case 10:
+		case ParametryFiltr.InventuraRozpracVyroby:
 			atr[0] = "Inventura rozpracované výroby";atr[1] = "Rozpracovaná výroba ke dni ";atr[2] = "./vypisy";
 			break;
-		case 11:
+		case ParametryFiltr.VypisSkladuKeDnesnimuDni:
 			atr[0] = "Výpis skladu ke dnešnímu dni";atr[1] = "Seznam kusù na skladì ke dni ";atr[2] = "./vypisy";
 			break;
-		case 12:
+		case ParametryFiltr.VypisZmetkuZaObdobi:
 			atr[0] = "Výpis zmetkù za období";atr[1] = "Výpis zmetkù od ";atr[2] = "./vypisy";
 			break;
-		case 13:
+		case ParametryFiltr.VypisVinikuVKgKcMzdy:
 			atr[0] = "Výpis viníkù v kg-kè období";atr[1] = "Výpis viníkù v kg/kè od ";atr[2] = "./vypisy";
 			break;
-		case TableToExcel.liciPlanZakl:
+		case ParametryFiltr.ZaklPlanLiti:
 			atr[0] = "Základni licí plán";atr[1] = "Základni licí plán pro týden: ";atr[2] = "./lici_plany";
 			break;
-		case TableToExcel.liciPlanPlanovaci:
+		case ParametryFiltr.PlanovaniLiti:
 			atr[0] = "Licí plán";atr[1] = "Licí plán pro týden: ";atr[2] = "./lici_plany";
 			break;
-		case TableToExcel.planExpedice:
+		case ParametryFiltr.PlanExpedice:
 			atr[0] = "Plán expedice";atr[1] = "Plán expedice ke dni: ";atr[2] = "./lici_plany";
 			break;
-		case TableToExcel.VYPIS_ZMETKU_MZDY:
-			atr[0] = "Výpis zmetkù za období";atr[1] = "Výpis zmetkù od ";atr[2] = "./vypisy";
-			break;
-		}
+			}
 		return atr;		
 	}
 	
@@ -348,7 +346,7 @@ public class TableToExcel {
 	 */
 	public static void vypisZmetkuZmdyToExcel(QueryTableModel tm, MainFrame hlavniOkno, String nadpisExt, String name) throws IOException, ParseException{
 		HSSFWorkbook wb = new HSSFWorkbook();
-		String [] atr = getAtributes(VYPIS_ZMETKU_MZDY);
+		String [] atr = getAtributes(ParametryFiltr.VypisZmetkuZaObdobi);
 		HSSFSheet sheet = wb.createSheet(atr[0]);
 		
 		//set header (nadpis v tisku)
