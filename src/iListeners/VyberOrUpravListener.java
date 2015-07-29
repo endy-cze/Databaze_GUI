@@ -407,12 +407,14 @@ public class VyberOrUpravListener implements ActionListener {
 		    	   System.out.println("parent "+ obnovDBSqlFile.getParent());
 		    	   
 		    	   // obnova DB
+		    	   
 		    	   //this.sql.obnovaDB(obnovDBSqlFile, seznamZakazekCSVFile);
+		    	   JOptionPane.showMessageDialog(hlavniOkno, "Obnova nebyla provedena");
 		       } else {
-		    	   JOptionPane.showMessageDialog(hlavniOkno, "Záloha nebyla provedena");
+		    	   JOptionPane.showMessageDialog(hlavniOkno, "Obnova nebyla provedena");
 		       }
 		    } else {
-		    	   JOptionPane.showMessageDialog(hlavniOkno, "Záloha nebyla provedena");
+		    	   JOptionPane.showMessageDialog(hlavniOkno, "Obnova nebyla provedena");
 		    }
 		    
 		   
