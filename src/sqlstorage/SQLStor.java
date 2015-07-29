@@ -2,16 +2,19 @@ package sqlstorage;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.sql.CallableStatement;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.concurrent.ExecutionException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
@@ -22,6 +25,7 @@ import app.ProgresBarFrame;
 import sablony.errorwin.ExceptionWin;
 import sablony.storage.DateStor;
 import storage.SkladOdkazu;
+import thread.ScriptRunner;
 /**
  * Objekt pro ukládání Connection a CallableStatements pro komunikaci s databází.
  * @author Havlicek
@@ -45,7 +49,6 @@ public class SQLStor {
 	private static final double maxCena = 1e9;
 	private static final int maxDelkaCislaFaktury = 19;
 	private ProgresBarFrame prgbar = new ProgresBarFrame();
-	private SimpleDateFormat sdf;
 	
 	/**
 	 * Statusy pro smazani fyzickeho kusu
@@ -96,7 +99,6 @@ public class SQLStor {
 		this.sklad = sklad;
 		this.conn = this.sklad.getConn();
 		this.hlavniOkno = sklad.getHlavniOkno();
-		this.sdf = sklad.getSdf();
 		prgbar.setVisible(false);
 		cst = new CallableStatement[sqlPrikazy.length][];
 		naposledyPouzito = new Date[sqlPrikazy.length][];
@@ -1918,6 +1920,61 @@ public class SQLStor {
 		
 		c.execute();
 		return c;
+	}
+	
+	public boolean obnovaDB(File obnovDBSqlFile, File seznamZakazekCSVFile) throws Exception{
+		// 1. overime že mame všechny soubory
+		String [] tables = {"zakaznici","vady","vinici", "seznam_modelu", "seznam_zakazek", "dilci_terminy", "fyzkusy", "zmetky_vady"};
+		
+		String parentDir = seznamZakazekCSVFile.getParent();
+		String date = getDateFromName(seznamZakazekCSVFile.getName());
+		if(date == null)throw new Exception("špatny název souboru");
+		for(int i = 0; i < tables.length; i++){
+			String path = parentDir + "\\"+ date +"_"+ tables[i];
+			File pom = new File(path);
+			if(!pom.isFile()){
+				JOptionPane.showMessageDialog(hlavniOkno, "Soubor "+path+" nebyl nalezen");
+				return false;
+			}
+		}
+		
+		// 2. nejprve spustíme skript pro smazání, resp vyprazdnìní DB
+		try{
+			ScriptRunner sr = new ScriptRunner(this.conn, true, true);		
+			sr.runScript(new BufferedReader(new FileReader(obnovDBSqlFile)));
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(hlavniOkno, "Nepodaøilo se smazat puvodní a vytvoøit novou databázi, následuje chyba proè");
+			ExceptionWin.showExceptionMessage(e);
+			return false;
+		}
+		// 3. nahrajeme data pomocí Load data infile
+		
+		
+		
+		String querry =
+				"LOAD DATA LOCAL INFILE 'C://1Ondrej_Havlicek//src_programy//Eclipse_prac_prostor//Databaze_GUI//zaloha_databaze//"
+				+ "%s_%s.csv' \n"
+				+ "INTO TABLE pomdb.%s \n"
+				+ "CHARACTER SET 'cp1250' \n"
+				+ "FIELDS TERMINATED BY ',' ENCLOSED BY '\"' \n"
+				+ "LINES TERMINATED BY '\\n' \n"
+				+ "IGNORE 1 LINES;";
+		querry = String.format(querry, "30_06_2015", "vinici", "vinici");
+
+		new File("./").isFile();
+		System.out.println(querry);
+		return false;
+	}
+	
+	private String getDateFromName(String name){
+		// vzor "30_06_2015_vinici"
+		Pattern pattern = Pattern.compile("(\\d{4}_\\d{2}_\\d{2})");
+		Matcher matcher = pattern.matcher(name);
+		if (matcher.find())
+		{
+		    return matcher.group();
+		}
+		return null;
 	}
 	
 	/**

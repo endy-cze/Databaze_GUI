@@ -377,23 +377,49 @@ public class VyberOrUpravListener implements ActionListener {
 			break;
 		case 1:
 			JOptionPane.showMessageDialog(hlavniOkno, "Vyberte soubor zalohy se jmenem \"<datum>_seznam_zakazek\", zbytek souborù musí být ve stejné složce");
-			
-			JFileChooser chooser = new JFileChooser(new File("./"));
+			File curDirectory = new File("./");
+			File obnovDBSqlFile = null, seznamZakazekCSVFile = null;
+			JFileChooser chooser = new JFileChooser(curDirectory);
 		    FileNameExtensionFilter filter = new FileNameExtensionFilter("Soubor CSV", "csv");
 		    chooser.setFileFilter(filter);
 		    chooser.setName("Kokos");
 		    chooser.setDialogTitle("Vyberte soubor seznam_zakazek.csv");
-		    new File("./");
 		    
 		    int returnVal = chooser.showOpenDialog(this.hlavniOkno);
 		    if(returnVal == JFileChooser.APPROVE_OPTION) {
 		       System.out.println("You chose to open this file: " +
 		            chooser.getSelectedFile().getName());
 		       System.out.println(chooser.getSelectedFile().getAbsolutePath());
+		       seznamZakazekCSVFile = chooser.getSelectedFile();
+		        // vybrat sql file pro strukturu databaze
+		       JOptionPane.showMessageDialog(hlavniOkno, "Vyberte soubor strukturaDB.sql");
+			
+		       filter = new FileNameExtensionFilter("Soubor SQL", "sql");
+		       chooser.setFileFilter(filter);
+		       chooser.setCurrentDirectory(curDirectory);
+		       returnVal = chooser.showOpenDialog(this.hlavniOkno);
+		       if(returnVal == JFileChooser.APPROVE_OPTION) {
+		    	   System.out.println("You chose to open this file: " +
+		    			   chooser.getSelectedFile().getName());
+		    	   System.out.println(chooser.getSelectedFile().getAbsolutePath());
+		    	   obnovDBSqlFile = chooser.getSelectedFile();
+		    	   
+		    	   System.out.println("parent "+ obnovDBSqlFile.getParent());
+		    	   
+		    	   // obnova DB
+		    	   //this.sql.obnovaDB(obnovDBSqlFile, seznamZakazekCSVFile);
+		       } else {
+		    	   JOptionPane.showMessageDialog(hlavniOkno, "Záloha nebyla provedena");
+		       }
+		    } else {
+		    	   JOptionPane.showMessageDialog(hlavniOkno, "Záloha nebyla provedena");
 		    }
+		    
+		   
 			break;
 		default: JOptionPane.showMessageDialog(hlavniOkno, "neco je spatne VyberorUpravListener index8()");	
 			break;
 		}
 	}
+	
 }
