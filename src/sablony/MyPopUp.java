@@ -115,6 +115,7 @@ public class MyPopUp extends JPopupMenu implements ActionListener  {
 			i++;
 		}
 		MyPopUp popupMenu = new MyPopUp("Vlastní materiály", vlMaterialy);
+
 		return popupMenu;
 	}
 	
@@ -132,6 +133,8 @@ public class MyPopUp extends JPopupMenu implements ActionListener  {
 			this.add(checkBoxItems[i]);
 			checkBoxItems[i].setSelected(true);
 			checkBoxItems[i].addActionListener(this);
+			
+			checkBoxItems[i].setContentAreaFilled(false);
 		}
 	}
 	

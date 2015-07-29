@@ -573,6 +573,7 @@ public class ParametryFiltr extends JPanel {
 		vyhledej.addMouseListener(lt);
 		prevodDoPdf.addActionListener(lt);
 		prevodDoPdf.addMouseListener(lt);
+		vlMaterialJbutton.addMouseListener(lt);
 	}
 	
 	/**
@@ -999,7 +1000,10 @@ public class ParametryFiltr extends JPanel {
 		panel.add(vlMaterialLabel, gbc_vlMaterialLabel);
 		
 		//vlMaterialJbutton = new JComboBox<String>();
-		vlMaterialJbutton = new JButton("Vyber materiály");
+		vlMaterialJbutton = new MyJButton("Vyber materiály", 13, 4, this.sklad);
+		vlMaterialJbutton.removeMouseListener(sklad.getMyJButonnListener());
+		vlMaterialJbutton.setPreferredSize(new Dimension(130, 22));
+		vlMaterialJbutton.setBorder(new LineBorder(barvy[15]));
 		vlMaterialJbutton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				seznamVlMater.show(vlMaterialJbutton, vlMaterialJbutton.getWidth(), 0);
