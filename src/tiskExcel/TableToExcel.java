@@ -300,11 +300,12 @@ public class TableToExcel {
 	 */
 	private static boolean [] detectDataFormat(QueryTableModel model){
 		boolean [] isNumber = null;
-		if(model.getRowCount() > 0){
+		if(model.getRowCount() >= 2){
 			isNumber = new boolean [model.getColumnCount()-1];
 			/**
 			 * Moc se tady nechapu ale doposud to funguje tak to nebudu menit
 			 */
+			// pokud ma model vice nez dve radky
 			boolean exit = false;
 			for (int m = 0; m < 2; m++) { // kontroluju prvni dve radky
 				for (int j = 0; j < model.getColumnCount() - 1; j++) { // mam totiž jeden sloupec navic aby se mi srovnali tabulky viz QuerytableModel
@@ -334,6 +335,11 @@ public class TableToExcel {
 						isNumber[j] = false;
 					}
 				}
+			}
+		} else {
+			isNumber = new boolean [model.getColumnCount()-1];
+			for(int i = 0; i < model.getColumnCount() - 1; i++){
+				isNumber[i] = false;
 			}
 		}
 		return isNumber;
