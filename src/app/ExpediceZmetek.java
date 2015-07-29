@@ -1144,6 +1144,13 @@ public class ExpediceZmetek extends JPanel implements ActionListener //, ChangeL
 				}
 			} else if (event.equalsIgnoreCase("OznacVycisteno")) {
 				for (int i = 0; i < selected.length; i++) {
+					if((String) this.tableFyzkusyEx.getValueAt(selected[i], 6) == null){ // neni zadan datum odliti
+						JOptionPane.showMessageDialog(hlavniOkno,"Zadejte datum odlití");
+						return;
+					} else if(((String) this.tableFyzkusyEx.getValueAt(selected[i], 6)).equalsIgnoreCase("")){
+						JOptionPane.showMessageDialog(hlavniOkno,"Zadejte datum odlití");
+						return;
+					}
 					this.tableFyzkusyEx.setValueAt("Ano", selected[i], 3);
 					if (((String) this.tableFyzkusyEx.getValueAt(selected[i], 4)).equalsIgnoreCase("Ne")) {
 						this.tableFyzkusyEx.setValueAt("Ano", selected[i], 4);
@@ -1188,7 +1195,14 @@ public class ExpediceZmetek extends JPanel implements ActionListener //, ChangeL
 
 			} else if (event.equalsIgnoreCase("OznacZmetek")) {
 				for (int i = 0; i < selected.length; i++) {
-					this.tableFyzkusyEx.setValueAt("Ano", selected[i], 3);
+					if((String) this.tableFyzkusyEx.getValueAt(selected[i], 6) == null){ // neni zadan datum odliti
+						JOptionPane.showMessageDialog(hlavniOkno,"Zadejte datum odlití");
+						return;
+					} else if(((String) this.tableFyzkusyEx.getValueAt(selected[i], 6)).equalsIgnoreCase("")){
+						JOptionPane.showMessageDialog(hlavniOkno,"Zadejte datum odlití");
+						return;
+					}
+					//this.tableFyzkusyEx.setValueAt("Ano", selected[i], 3);
 					this.tableFyzkusyEx.setValueAt("Ne", selected[i], 7);
 					if (((String) this.tableFyzkusyEx.getValueAt(selected[i], 5)).equalsIgnoreCase("Ne")) {
 						//this.tableFyzkusyEx.setValueAt(null, selected[i], 6);
@@ -1524,6 +1538,56 @@ public class ExpediceZmetek extends JPanel implements ActionListener //, ChangeL
 		int idKusu = Integer.parseInt((String)this.tableFyzkusyEx.getValueAt(i, 0));
 		sql.zadejCisloTavbyCisloFaktury(idKusu, cisloTavby, cisloFaktury);
 	}
+	
+	/*
+	private String odlitoDate = null;
+	private String vycistenoDate = null;
+	private String expedovanoDate = null;
+	private String zmetekDate = null;
+	private void initStavOdlitek(int row){
+		odlitoDate = (String) tableFyzkusyEx.getValueAt(row, 3);
+		vycistenoDate = (String) tableFyzkusyEx.getValueAt(row, 3);
+		expedovanoDate = (String) tableFyzkusyEx.getValueAt(row, 3);
+		zmetekDate = (String) tableFyzkusyEx.getValueAt(row, 3);
+		
+		tableFyzkusyEx.setValueAt("Ne", row, 3); // odlito
+		tableFyzkusyEx.setValueAt(null, row, 6); // datum odlito
+		tableFyzkusyEx.setValueAt("Ne", row, 4); // vycisteno
+		tableFyzkusyEx.setValueAt(null, row, 9); // datum vycisteno
+		tableFyzkusyEx.setValueAt("Ne", row, 7); // expedovano
+		tableFyzkusyEx.setValueAt(null, row, 14); // datum expedovano
+		tableFyzkusyEx.setValueAt("Ne", row, 5); // zmetek
+		tableFyzkusyEx.setValueAt(null, row, 15); // datum zmetek
+	}
+	private void zadejOdlitoCmd(){
+		
+	}
+	private void zadejOdlito(boolean odlito, String date, int row){
+		zadejHodnotu(odlito, date, row, 3, 6); // 3 - odlito, 6 datum odlito
+	}
+	
+	private void zadejVycisteno(boolean vycisteno, String date, int row){
+		zadejHodnotu(vycisteno, date, row, 4, 9); // 4 - vycistno, 9 datum vycisteno
+	}
+	private void zadejExpedovano(boolean expedovano, String date, int row){
+		zadejHodnotu(expedovano, date, row, 7, 14); // 7 - expedovano, 14 datum expedovano
+	}
+	
+	private void zadejHodnotu(boolean hodnota, String date, int row, int columnBool, int ColumnDate){
+		if(hodnota){
+			try{
+				sdf.parse(date); // oveøeni že to je regulerni datum
+			} catch(Exception e){
+				return;
+			}
+			tableFyzkusyEx.setValueAt("Ano", row, columnBool); // odlito
+			tableFyzkusyEx.setValueAt(date, row, ColumnDate); // datum odlito
+		} else {
+			tableFyzkusyEx.setValueAt("Ne", row, columnBool); // odlito
+			tableFyzkusyEx.setValueAt(null, row, ColumnDate); // datum odlito
+		}
+	}
+	*/
 		
 	
 }
