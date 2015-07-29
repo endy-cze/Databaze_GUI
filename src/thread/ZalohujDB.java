@@ -19,7 +19,7 @@ import sablony.errorwin.ExceptionWin;
 
 import com.opencsv.CSVWriter;
 
-public class ZalohujObnovDB extends SwingWorker<Integer, Void>{
+public class ZalohujDB extends SwingWorker<Integer, Void>{
 	
 	public static final int ZALOHUJ = 1;
 	public static final int OBNOV = 2;
@@ -35,7 +35,7 @@ public class ZalohujObnovDB extends SwingWorker<Integer, Void>{
 	private MainFrame hlavniOkno;
 	private ProgresBarFrame bar;
 	
-	public ZalohujObnovDB(SkladOdkazu sklad,int actionType){
+	public ZalohujDB(SkladOdkazu sklad,int actionType){
 		this.actionType = actionType;
 		this.sklad = sklad;
 		hlavniOkno = sklad.getHlavniOkno();
@@ -48,7 +48,7 @@ public class ZalohujObnovDB extends SwingWorker<Integer, Void>{
 	protected Integer doInBackground() throws Exception {
 		Statement stm = null;
 		SQLStor sqlStor = sklad.getSql();
-		SimpleDateFormat sdf = sklad.getSdf2();
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		Date dnes = new Date();
 		CSVWriter writer = null;
 		try {
@@ -119,13 +119,13 @@ public class ZalohujObnovDB extends SwingWorker<Integer, Void>{
 			System.out.println(i);
 			bar.setVisible(false);
 			
-			if(i == ZalohujObnovDB.ZALOHAOK){
+			if(i == ZalohujDB.ZALOHAOK){
 				JOptionPane.showMessageDialog(hlavniOkno, "Záloha vytvoøena. Nezapomeòte obèas složku 'zaloha_databaze' promazat!!! (myslím starší zálohy)");
-			} else if(i == ZalohujObnovDB.SPATNYACTIONTYPE){
+			} else if(i == ZalohujDB.SPATNYACTIONTYPE){
 				JOptionPane.showMessageDialog(hlavniOkno, "Špatny action type");
-			} else if(i == ZalohujObnovDB.ZADNYRESULTSET){
+			} else if(i == ZalohujDB.ZADNYRESULTSET){
 				JOptionPane.showMessageDialog(hlavniOkno, "Prazdny resultSet");
-			} else if(i == ZalohujObnovDB.SLOZNANEVYTVORENA){
+			} else if(i == ZalohujDB.SLOZNANEVYTVORENA){
 				JOptionPane.showMessageDialog(hlavniOkno, "Složka nevytvoøena");
 			}		
 		} catch (Exception e) {

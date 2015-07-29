@@ -23,7 +23,7 @@ import sablony.errorwin.ExceptionWin;
 import sablony.tabulka.ColorCellTable;
 import sqlstorage.SQLStor;
 import storage.SkladOdkazu;
-import thread.ZalohujObnovDB;
+import thread.ZalohujDB;
 
 /**
  * Listener pro Vyber nebo uprav v PromOknoNovyZakaznikAndSearch (ne ten button ve Filtru ale ten druhy)
@@ -372,7 +372,7 @@ public class VyberOrUpravListener implements ActionListener {
 			ProgresBarFrame bar = sklad.getBar();
 			bar.setZalohaDB();
 			bar.setVisible(true);
-			ZalohujObnovDB zaloha = new ZalohujObnovDB(this.sklad, ZalohujObnovDB.ZALOHUJ);
+			ZalohujDB zaloha = new ZalohujDB(this.sklad, ZalohujDB.ZALOHUJ);
 			zaloha.execute();
 			break;
 		case 1:

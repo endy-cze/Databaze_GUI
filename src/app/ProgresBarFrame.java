@@ -7,7 +7,7 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
-import thread.ZalohujObnovDB;
+import thread.ZalohujDB;
 
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
@@ -38,7 +38,7 @@ public class ProgresBarFrame extends JFrame implements ActionListener {
 	private JProgressBar apProgresBar;
 	private JProgressBar dbProgressBar;
 	
-	private ZalohujObnovDB threadToCancel;
+	private ZalohujDB threadToCancel;
 
 	/**
 	 * Launch the application.
@@ -172,7 +172,7 @@ public class ProgresBarFrame extends JFrame implements ActionListener {
 		return apProgresBar;
 	}
 	
-	public void setThreadToCancel(ZalohujObnovDB thread){
+	public void setThreadToCancel(ZalohujDB thread){
 		threadToCancel = thread;
 	}
 	
