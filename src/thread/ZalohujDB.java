@@ -48,7 +48,7 @@ public class ZalohujDB extends SwingWorker<Integer, Void>{
 	protected Integer doInBackground() throws Exception {
 		Statement stm = null;
 		SQLStor sqlStor = sklad.getSql();
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy_MM_dd");
 		Date dnes = new Date();
 		CSVWriter writer = null;
 		try {
