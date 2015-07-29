@@ -1922,13 +1922,21 @@ public class SQLStor {
 		return c;
 	}
 	
+	/**
+	 * Myslim že hotovo, ted už jen otestovat.
+	 * @param obnovDBSqlFile
+	 * @param seznamZakazekCSVFile
+	 * @return
+	 * @throws Exception
+	 */
 	public boolean obnovaDB(File obnovDBSqlFile, File seznamZakazekCSVFile) throws Exception{
 		// 1. overime že mame všechny soubory
 		String [] tables = {"zakaznici","vady","vinici", "seznam_modelu", "seznam_zakazek", "dilci_terminy", "fyzkusy", "zmetky_vady"};
-		
 		String parentDir = seznamZakazekCSVFile.getParent();
 		String date = getDateFromName(seznamZakazekCSVFile.getName());
-		if(date == null)throw new Exception("špatny název souboru");
+		
+		if(date == null) throw new Exception("špatny název souboru");
+		
 		for(int i = 0; i < tables.length; i++){
 			String path = parentDir + "\\"+ date +"_"+ tables[i];
 			File pom = new File(path);
@@ -1938,7 +1946,7 @@ public class SQLStor {
 			}
 		}
 		
-		// 2. nejprve spustíme skript pro smazání, resp vyprazdnìní DB
+		// 2. spustíme skript pro smazání, resp vyprazdnìní DB
 		try{
 			ScriptRunner sr = new ScriptRunner(this.conn, true, true);		
 			sr.runScript(new BufferedReader(new FileReader(obnovDBSqlFile)));
@@ -1948,22 +1956,24 @@ public class SQLStor {
 			return false;
 		}
 		// 3. nahrajeme data pomocí Load data infile
-		
-		
-		
-		String querry =
+		String format =
 				"LOAD DATA LOCAL INFILE 'C://1Ondrej_Havlicek//src_programy//Eclipse_prac_prostor//Databaze_GUI//zaloha_databaze//"
 				+ "%s_%s.csv' \n"
 				+ "INTO TABLE pomdb.%s \n"
 				+ "CHARACTER SET 'cp1250' \n"
 				+ "FIELDS TERMINATED BY ',' ENCLOSED BY '\"' \n"
-				+ "LINES TERMINATED BY '\\n' \n"
-				+ "IGNORE 1 LINES;";
-		querry = String.format(querry, "30_06_2015", "vinici", "vinici");
-
-		new File("./").isFile();
-		System.out.println(querry);
-		return false;
+				+ "LINES TERMINATED BY '\\n';";
+		String querry = null;
+		Statement st = this.conn.createStatement();
+		
+		// querry = String.format(format, "30_06_2015", "vinici", "vinici");
+		for(int i = 0; i < tables.length; i++){
+			querry = String.format(format, date, tables[i], tables[i]);
+			System.out.println(querry);
+			st.executeQuery(querry);
+		}
+		// done
+		return true;
 	}
 	
 	private String getDateFromName(String name){
