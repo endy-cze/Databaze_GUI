@@ -27,7 +27,6 @@ import javax.swing.BoxLayout;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.LayoutStyle.ComponentPlacement;
-import javax.swing.UIManager;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -448,9 +447,9 @@ public class MainFrame extends JFrame {
 		scrollPane.setBorder(new EmptyBorder(20, 0, 20, 20));
 		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		scrollPane.getVerticalScrollBar().setUnitIncrement(14);
+		scrollPane.getHorizontalScrollBar().setUnitIncrement(16);
 		//scrollPane.setViewportView(obalVedlejsihoOkna);
 		progresBar.setValue(50);
-		
 		
 		obalVedlejsihoOkna = new JPanel();
 		obalVedlejsihoOkna.setBorder(new EmptyBorder(0, 0, 20, 20));

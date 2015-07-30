@@ -54,6 +54,8 @@ public class MainActionMenuItemListener implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent arg0) {	
+		hlavniOkno.getScrollPane().getHorizontalScrollBar().setValue(0);
+		hlavniOkno.getScrollPane().getVerticalScrollBar().setValue(0);
 		try {
 			// hledani ktery popupmenu byl zmacknut (podle indexu)
 			boolean end = false;
