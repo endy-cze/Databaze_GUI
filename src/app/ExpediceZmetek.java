@@ -1354,21 +1354,21 @@ public class ExpediceZmetek extends JPanel implements ActionListener //, ChangeL
 				
 			} else if (event.equalsIgnoreCase("DokonciZadavani")) {
 				boolean[][] zmeneno = tableFyzkusyEx.getZmeneno();
-				boolean pomBol = false, isProhlizec = true;
+				boolean pomBol = false, needOnlyProhlizecPriv = true;
 				int upraveno = 0;
 				for (int i = 0; i < zmeneno.length; i++) {
 					pomBol = false;
-					isProhlizec = true;
+					needOnlyProhlizecPriv = true;
 					for (int j = 0; j < zmeneno[i].length; j++) {
 						if (zmeneno[i][j]) {
 							if(j != poziceCislaTavbyVTabulce || j != poziceCislaFakturyVTabulce){
-								isProhlizec = false;
+								needOnlyProhlizecPriv = false;
 							}
 							pomBol = true;
 						}
 					}
 					if (pomBol) { // radek je zmenen musí se aktualizovat
-						if(isProhlizec){ // zmeneno je jen cislo faktury nebo cislo tavby tzn j = 2 nebo j =8
+						if(needOnlyProhlizecPriv){ // zmeneno je jen cislo faktury nebo cislo tavby tzn j = 2 nebo j =8
 							endZadavaniCislaTavbyCislaFaktury(i);
 						} else {
 							endZadavaniOdlitku(i);
