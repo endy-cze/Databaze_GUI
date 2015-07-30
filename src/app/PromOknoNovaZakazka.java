@@ -105,6 +105,7 @@ public class PromOknoNovaZakazka extends JPanel implements ActionListener {
 	private JLabel lblPoetKus_1;
 	private JTextField pocetKusuDilciTermin;
 	private JLabel lblUpozornnCelkovCena;
+	private JScrollPane scrollPane_1;
 
 	public void addListeners(){
 		PridatZakazkuButtonListener list = new PridatZakazkuButtonListener(hlavniOkno, this);
@@ -348,9 +349,9 @@ public class PromOknoNovaZakazka extends JPanel implements ActionListener {
 		
 		setPreferredSize(new Dimension(1042, 762));
 		GridBagLayout gridBagLayout = new GridBagLayout();
-		gridBagLayout.columnWidths = new int[]{35, 44, 30, 30, 0, 30, 78, 0, 60, 20, 50, 70, 40, 0, 50, 40, 70, 0, 20, 0};
+		gridBagLayout.columnWidths = new int[]{35, 44, 30, 30, 0, 30, 78, 0, 60, 20, 50, 70, 20, 72, 0, 50, 40, 70, 0, 20, 0};
 		gridBagLayout.rowHeights = new int[]{34, 0, 30, 30, 0, 30, 0, 0, 0, 20, 0, 23, 30, 0, 0, 30, 30, 90, 30, 0, 0};
-		gridBagLayout.columnWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE};
+		gridBagLayout.columnWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE};
 		gridBagLayout.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
 		setLayout(gridBagLayout);
 		
@@ -408,7 +409,7 @@ public class PromOknoNovaZakazka extends JPanel implements ActionListener {
 		gbc_textCisloObjednavky.gridwidth = 2;
 		gbc_textCisloObjednavky.insets = new Insets(0, 0, 5, 5);
 		gbc_textCisloObjednavky.fill = GridBagConstraints.HORIZONTAL;
-		gbc_textCisloObjednavky.gridx = 15;
+		gbc_textCisloObjednavky.gridx = 16;
 		gbc_textCisloObjednavky.gridy = 2;
 		add(textCisloObjednavky, gbc_textCisloObjednavky);
 		textCisloObjednavky.setColumns(10);
@@ -458,7 +459,7 @@ public class PromOknoNovaZakazka extends JPanel implements ActionListener {
 		gbc_datumPrijetiZakazky.gridwidth = 2;
 		gbc_datumPrijetiZakazky.insets = new Insets(0, 0, 5, 5);
 		gbc_datumPrijetiZakazky.fill = GridBagConstraints.HORIZONTAL;
-		gbc_datumPrijetiZakazky.gridx = 15;
+		gbc_datumPrijetiZakazky.gridx = 16;
 		gbc_datumPrijetiZakazky.gridy = 3;
 		add(datumObjednavky, gbc_datumPrijetiZakazky);
 		
@@ -499,7 +500,7 @@ public class PromOknoNovaZakazka extends JPanel implements ActionListener {
 		
 		lblDatumExpedice = new JLabel("Term\u00EDn expedice:");
 		GridBagConstraints gbc_lblDatumExpedice = new GridBagConstraints();
-		gbc_lblDatumExpedice.gridwidth = 2;
+		gbc_lblDatumExpedice.gridwidth = 3;
 		gbc_lblDatumExpedice.anchor = GridBagConstraints.WEST;
 		gbc_lblDatumExpedice.insets = new Insets(0, 0, 5, 5);
 		gbc_lblDatumExpedice.gridx = 13;
@@ -511,7 +512,7 @@ public class PromOknoNovaZakazka extends JPanel implements ActionListener {
 		gbc_datumExpedice.gridwidth = 2;
 		gbc_datumExpedice.insets = new Insets(0, 0, 5, 5);
 		gbc_datumExpedice.fill = GridBagConstraints.BOTH;
-		gbc_datumExpedice.gridx = 15;
+		gbc_datumExpedice.gridx = 16;
 		gbc_datumExpedice.gridy = 6;
 		add(terminExpedice, gbc_datumExpedice);
 		
@@ -541,6 +542,7 @@ public class PromOknoNovaZakazka extends JPanel implements ActionListener {
 		
 		JLabel lblPaganrka = new JLabel("Pagan\u00FDrka:");
 		GridBagConstraints gbc_lblPaganrka = new GridBagConstraints();
+		gbc_lblPaganrka.gridwidth = 2;
 		gbc_lblPaganrka.anchor = GridBagConstraints.WEST;
 		gbc_lblPaganrka.insets = new Insets(0, 0, 5, 5);
 		gbc_lblPaganrka.gridx = 13;
@@ -552,7 +554,7 @@ public class PromOknoNovaZakazka extends JPanel implements ActionListener {
 		gbc_textPaganyrka.gridwidth = 2;
 		gbc_textPaganyrka.fill = GridBagConstraints.HORIZONTAL;
 		gbc_textPaganyrka.insets = new Insets(0, 0, 5, 5);
-		gbc_textPaganyrka.gridx = 15;
+		gbc_textPaganyrka.gridx = 16;
 		gbc_textPaganyrka.gridy = 7;
 		add(textPaganyrka, gbc_textPaganyrka);
 		textPaganyrka.setColumns(10);
@@ -615,7 +617,7 @@ public class PromOknoNovaZakazka extends JPanel implements ActionListener {
 		gbc_scrollPane.gridwidth = 5;
 		gbc_scrollPane.insets = new Insets(0, 0, 5, 5);
 		gbc_scrollPane.fill = GridBagConstraints.BOTH;
-		gbc_scrollPane.gridx = 12;
+		gbc_scrollPane.gridx = 13;
 		gbc_scrollPane.gridy = 8;
 		add(scrollPane, gbc_scrollPane);
 		
@@ -658,7 +660,7 @@ public class PromOknoNovaZakazka extends JPanel implements ActionListener {
 		gbc_uzavrenaCheck.anchor = GridBagConstraints.WEST;
 		gbc_uzavrenaCheck.gridwidth = 3;
 		gbc_uzavrenaCheck.insets = new Insets(0, 0, 5, 5);
-		gbc_uzavrenaCheck.gridx = 13;
+		gbc_uzavrenaCheck.gridx = 14;
 		gbc_uzavrenaCheck.gridy = 10;
 		add(uzavrenaCheck, gbc_uzavrenaCheck);
 		
@@ -678,7 +680,7 @@ public class PromOknoNovaZakazka extends JPanel implements ActionListener {
 		lblUpozornnCelkovCena = new JLabel("Upozorn\u011Bn\u00ED: Celkov\u00E1 cena za jeden kus p\u0159epo\u010Dten\u00E1  na \u010Desk\u00E9 koruny, nesm\u00ED p\u0159esahovat 1 000 000 000 (cca 1 miliarda) a celkov\u00E1 cena zak\u00E1zky by nem\u011Bla p\u0159esahovat 6 miliard. (aplikace nekontroluje)");
 		GridBagConstraints gbc_lblUpozornnCelkovCena = new GridBagConstraints();
 		gbc_lblUpozornnCelkovCena.anchor = GridBagConstraints.WEST;
-		gbc_lblUpozornnCelkovCena.gridwidth = 17;
+		gbc_lblUpozornnCelkovCena.gridwidth = 18;
 		gbc_lblUpozornnCelkovCena.insets = new Insets(0, 0, 5, 5);
 		gbc_lblUpozornnCelkovCena.gridx = 1;
 		gbc_lblUpozornnCelkovCena.gridy = 12;
@@ -687,7 +689,7 @@ public class PromOknoNovaZakazka extends JPanel implements ActionListener {
 		lblNewLabel_6 = new JLabel("Tabulka d\u00EDl\u010D\u00EDch term\u00EDn\u016F");
 		lblNewLabel_6.setFont(new Font("Tahoma", Font.BOLD, 11));
 		GridBagConstraints gbc_lblNewLabel_6 = new GridBagConstraints();
-		gbc_lblNewLabel_6.gridwidth = 3;
+		gbc_lblNewLabel_6.gridwidth = 4;
 		gbc_lblNewLabel_6.anchor = GridBagConstraints.WEST;
 		gbc_lblNewLabel_6.insets = new Insets(0, 0, 5, 5);
 		gbc_lblNewLabel_6.gridx = 10;
@@ -731,20 +733,23 @@ public class PromOknoNovaZakazka extends JPanel implements ActionListener {
 		gbc_pocetKusuDilciTermin.gridy = 15;
 		add(pocetKusuDilciTermin, gbc_pocetKusuDilciTermin);
 		pocetKusuDilciTermin.setColumns(10);
+		model = new DefaultListModel<DateStor>();
+		
+		scrollPane_1 = new JScrollPane();
+		GridBagConstraints gbc_scrollPane_1 = new GridBagConstraints();
+		gbc_scrollPane_1.gridheight = 3;
+		gbc_scrollPane_1.gridwidth = 3;
+		gbc_scrollPane_1.insets = new Insets(0, 0, 5, 5);
+		gbc_scrollPane_1.fill = GridBagConstraints.BOTH;
+		gbc_scrollPane_1.gridx = 10;
+		gbc_scrollPane_1.gridy = 15;
+		add(scrollPane_1, gbc_scrollPane_1);
 		
 		seznamDilcichTerminu = new JList<DateStor>();
+		scrollPane_1.setViewportView(seznamDilcichTerminu);
 		seznamDilcichTerminu.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		seznamDilcichTerminu.setBorder(new LineBorder(Color.LIGHT_GRAY));
-		model = new DefaultListModel<DateStor>();
 		seznamDilcichTerminu.setModel(model);
-		GridBagConstraints gbc_seznamDilcichTerminu = new GridBagConstraints();
-		gbc_seznamDilcichTerminu.gridwidth = 3;
-		gbc_seznamDilcichTerminu.gridheight = 3;
-		gbc_seznamDilcichTerminu.insets = new Insets(0, 0, 5, 5);
-		gbc_seznamDilcichTerminu.fill = GridBagConstraints.BOTH;
-		gbc_seznamDilcichTerminu.gridx = 10;
-		gbc_seznamDilcichTerminu.gridy = 15;
-		add(seznamDilcichTerminu, gbc_seznamDilcichTerminu);
 		GridBagConstraints gbc_smazTermin = new GridBagConstraints();
 		gbc_smazTermin.gridwidth = 3;
 		gbc_smazTermin.fill = GridBagConstraints.BOTH;

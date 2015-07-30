@@ -810,8 +810,13 @@ public class ExpediceZmetek extends JPanel implements ActionListener //, ChangeL
 		gbc_tabbedPane.gridy = 4;
 		add(tabbedPane, gbc_tabbedPane);
 		
-		list = new JList<DateStor>();
-		tabbedPane.addTab("Seznam dílèích termínù", null, list, null);
+		scrollPane_3 = new JScrollPane();
+		tabbedPane.addTab("New tab", null, scrollPane_3, null);
+		
+		list = new JList<DateStor>();	
+		scrollPane_3.setViewportView(list);
+		
+		//tabbedPane.addTab("Seznam dílèích termínù", null, list, null);
 		list.setFont(f);
 		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		list.setBorder(new LineBorder(new Color(192, 192, 192)));
@@ -832,6 +837,9 @@ public class ExpediceZmetek extends JPanel implements ActionListener //, ChangeL
                }
             }
          });
+		
+		
+		
 		
 		
 		scrollPane_2 = new JScrollPane();
@@ -1444,6 +1452,8 @@ public class ExpediceZmetek extends JPanel implements ActionListener //, ChangeL
 	private JTabbedPane tabbedPane;
 	private JScrollPane scrollPane_2;
 	private ColorCellTable stavZakazkyTable;
+	private JScrollPane scrollPane_3;
+	private JList list_1;
 	
 	private void endZadavaniOdlitku(int i) throws SQLException, ParseException{
 		int idKusu = Integer.parseInt((String)this.tableFyzkusyEx.getValueAt(i, 0));
