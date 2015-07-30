@@ -19,12 +19,13 @@ public class MyListModel extends DefaultListModel<DateStor> {
 		DateStor tmp = null;
 		Date datum;
 		int pocetKusu;
-		if(pocetSloupcu == 2){
+		boolean isCompleted;
+		if(pocetSloupcu == 3){
 			while(rs.next()){
 				datum = rs.getDate(1);
 				pocetKusu = rs.getInt(2);
-				tmp = new DateStor(datum, pocetKusu, sdf);
-				this.addElement(tmp);
+				isCompleted = rs.getBoolean(3);
+				this.addElement(new DateStor(datum, pocetKusu, sdf, isCompleted));			
 			}
 		} else {
 			throw new SQLException("Špatný ResultSet");

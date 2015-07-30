@@ -4,7 +4,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
+import java.io.InputStreamReader;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -66,7 +68,7 @@ public class SQLStor {
 				"{CALL pomdb.vyberFyzKusy(?,?)}", "{CALL pomdb.vyberZmetky(?,?,?,?,?,?,?,?)}"},	//select
 			{"{CALL pomdb.upravZakaznika(?,?)}", "{CALL pomdb.upravModel(?,?,?,?,?,?,?,?,?)}", "{CALL pomdb.upravZakazku(?,?,?,?,?,?,?,?,?,?,?,?,?)}"},  //update
 			{"{CALL pomdb.zadej_cislo_faktury_cislo_tavby_prohlizeci(?,?,?)}", "{CALL pomdb.zadejPlanovanyDatumLiti(?,?)}", "{CALL pomdb.zadejOdlitek(?,?,?,?,?,?,?,?,?,?,?)}",
-				"{CALL pomdb.zadejUdajeOZmetku(?,?,?,?)}", "{CALL pomdb.zadejDilciTerminy(?,?,?)}"}, // "{CALL pomdb.zadejDatumVycistenehoKusu(?,?,?)}"
+				"{CALL pomdb.zadejUdajeOZmetku(?,?,?,?)}", "{CALL pomdb.zadejDilciTerminy(?,?,?,?)}"}, // "{CALL pomdb.zadejDatumVycistenehoKusu(?,?,?)}"
 			{"{CALL pomdb.pridejVinika(?)}", "{CALL pomdb.pridejVadu(?)}", "{CALL pomdb.planovaniRozvrh(?,?)}", "{CALL pomdb.generujKusy(?)}",
 				"{CALL pomdb.planovaniRozvrhVycisteno(?,?)}", "{CALL pomdb.kapacitniPropocet(?,?)}", "{CALL pomdb.uzavriZakazku(?,?,?,?,?,?)}", "{CALL pomdb.obnovZakazku(?)}"},
 			{"{CALL pomdb.vypisOdlituVKgKcOdDo(?,?)}", "{CALL pomdb.vypisZpozdeneVyroby(?)}", "{CALL pomdb.vypisDleTerminuExpediceCisloTydne(?,?)}", "{CALL pomdb.vypisPolozekSOdhadHmot()}", "{CALL pomdb.vypisMzdySlevacu(?)}",
@@ -1469,7 +1471,7 @@ public class SQLStor {
 		c.execute();
 	}
 	
-	public void zadejDilciTermin(int idZakazky, Date datum, int kolik) throws SQLException{
+	public void zadejDilciTermin(int idZakazky, Date datum, int kolik, boolean isSplneno) throws SQLException{
 		if(idZakazky  < 0){
 			JOptionPane.showMessageDialog(hlavniOkno, "Id fyz. kusu je špatnì zapsaný");
 			return;
@@ -1492,6 +1494,7 @@ public class SQLStor {
 		java.sql.Date sqlDate = new java.sql.Date(datum.getTime());
 		c.setDate(2, sqlDate);  // dilèí termín 
 		c.setInt(3, kolik);
+		c.setBoolean(4, isSplneno);
 		c.execute();
 	}
 	
@@ -1931,6 +1934,7 @@ public class SQLStor {
 	 */
 	public boolean obnovaDB(File obnovDBSqlFile, File seznamZakazekCSVFile) throws Exception{
 		// 1. overime že mame všechny soubory
+		System.out.println(obnovDBSqlFile + " lol "+ seznamZakazekCSVFile);
 		String [] tables = {"zakaznici","vady","vinici", "seznam_modelu", "seznam_zakazek", "dilci_terminy", "fyzkusy", "zmetky_vady"};
 		String parentDir = seznamZakazekCSVFile.getParent();
 		String date = getDateFromName(seznamZakazekCSVFile.getName());
@@ -1938,7 +1942,7 @@ public class SQLStor {
 		if(date == null) throw new Exception("špatny název souboru");
 		
 		for(int i = 0; i < tables.length; i++){
-			String path = parentDir + "\\"+ date +"_"+ tables[i];
+			String path = parentDir + "\\"+ date +"_"+ tables[i] + ".csv";
 			File pom = new File(path);
 			if(!pom.isFile()){
 				JOptionPane.showMessageDialog(hlavniOkno, "Soubor "+path+" nebyl nalezen");
@@ -1948,8 +1952,8 @@ public class SQLStor {
 		
 		// 2. spustíme skript pro smazání, resp vyprazdnìní DB
 		try{
-			ScriptRunner sr = new ScriptRunner(this.conn, true, true);		
-			sr.runScript(new BufferedReader(new FileReader(obnovDBSqlFile)));
+			ScriptRunner sr = new ScriptRunner(this.conn, false, true);					
+			sr.runScript(new InputStreamReader(new FileInputStream(obnovDBSqlFile), "UTF-8"));
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(hlavniOkno, "Nepodaøilo se smazat puvodní a vytvoøit novou databázi, následuje chyba proè");
 			ExceptionWin.showExceptionMessage(e);

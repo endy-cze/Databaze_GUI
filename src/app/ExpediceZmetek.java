@@ -21,9 +21,11 @@ import javax.swing.DefaultListModel;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.JTextPane;
+import javax.swing.ListModel;
 import javax.swing.JScrollPane;
 import javax.swing.JButton;
 
+import sablony.MyCellrendererCheckBox;
 import sablony.MyJButton;
 import sablony.errorwin.ExceptionWin;
 import sablony.storage.DateStor;
@@ -43,6 +45,8 @@ import javax.swing.JTextField;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 
@@ -50,7 +54,6 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JList;
 import javax.swing.border.LineBorder;
 import javax.swing.JTabbedPane;
-import javax.swing.JTable;
 
 public class ExpediceZmetek extends JPanel implements ActionListener //, ChangeListener
 {
@@ -294,10 +297,12 @@ public class ExpediceZmetek extends JPanel implements ActionListener //, ChangeL
 		DefaultListModel<DateStor> mod = new DefaultListModel<DateStor>();
 		int pocetKusu = 0;
 		Date datum;
+		boolean isCompleted;
 		while(rs.next()){
 			datum = rs.getDate(1);
 			pocetKusu = rs.getInt(2);
-			mod.addElement(new DateStor(datum, pocetKusu, sdf));			
+			isCompleted = rs.getBoolean(3);
+			mod.addElement(new DateStor(datum, pocetKusu, sdf, isCompleted));			
 		}
 		return mod;
 	}
@@ -810,6 +815,24 @@ public class ExpediceZmetek extends JPanel implements ActionListener //, ChangeL
 		list.setFont(f);
 		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		list.setBorder(new LineBorder(new Color(192, 192, 192)));
+		list.setEnabled(true);
+		MyCellrendererCheckBox renderListener = new MyCellrendererCheckBox();
+		list.setCellRenderer(renderListener);
+		list. addMouseListener(new MouseAdapter()
+         {
+            public void mousePressed(MouseEvent e)
+            {            	
+               int index = list.locationToIndex(e.getPoint());
+               if (index != -1) {
+                  DateStor checkbox =
+                		  list.getModel().getElementAt(index);
+                  checkbox.setSelected(
+                                     !checkbox.isSelected());
+                  repaint();
+               }
+            }
+         });
+		
 		
 		scrollPane_2 = new JScrollPane();
 		tabbedPane.addTab("Stav zakázky", null, scrollPane_2, null);
@@ -1359,10 +1382,25 @@ public class ExpediceZmetek extends JPanel implements ActionListener //, ChangeL
 						upraveno++;
 					}
 				}
-				if(upraveno > 0){
-					JOptionPane.showMessageDialog(hlavniOkno,"Parametry fyzických kusù úspìšnì pøeneseny do databáze, upraveno: "+upraveno);
+				// dílèí termíny, pouze zmenìné
+				ListModel<DateStor> mod = list.getModel();
+				DateStor pom;
+				int zmenenoDatumu = 0;
+				for(int i = 0; i < mod.getSize(); i++){
+					pom = mod.getElementAt(i);
+					if(pom.isZmeneno()){
+						zmenenoDatumu++;
+						sql.zadejDilciTermin(Integer.parseInt(this.textIdZakazky.getText()), pom.getDate(), pom.getPocetKusu(), pom.isSelected());
+					}
+				}
+				if(upraveno > 0 && zmenenoDatumu > 0){
+					JOptionPane.showMessageDialog(hlavniOkno,"Parametry fyzických kusù a splnìných termínù úspìšnì pøeneseny do databáze, upraveno: "+upraveno);
+				} else if(upraveno > 0){
+					JOptionPane.showMessageDialog(hlavniOkno,"Parametry fyzických kusù úspìšnì pøeneseny do databáze, upraveno: "+upraveno);					
+				} else if(zmenenoDatumu > 0){
+					JOptionPane.showMessageDialog(hlavniOkno,"Splnìné termíny byly pøeneseny do databáze");					
 				} else {
-					JOptionPane.showMessageDialog(hlavniOkno,"Nebyly provedeny žádné zmìny v databázi");					
+					JOptionPane.showMessageDialog(hlavniOkno,"Nebyly provedeny žádné zmìny v databázi");
 				}
 			} else if (event.equalsIgnoreCase("UzavriZakazku")){
 				int id = Integer.parseInt(textIdZakazky.getText());

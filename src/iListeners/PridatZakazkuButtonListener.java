@@ -176,7 +176,7 @@ public class PridatZakazkuButtonListener implements ActionListener {
 		DateStor pom;
 		for(int i = 0;  i < mod.size(); i++){
 			pom = mod.get(i);
-			sql.zadejDilciTermin(id, pom.getDate(), pom.getPocetKusu());
+			sql.zadejDilciTermin(id, pom.getDate(), pom.getPocetKusu(), pom.isSelected());
 		}
 	}
 	
@@ -246,9 +246,8 @@ public class PridatZakazkuButtonListener implements ActionListener {
 		DateStor pom;
 		for(int i = 0;  i < mod.size(); i++){
 			pom = mod.get(i);
-			sql.zadejDilciTermin(id, pom.getDate(), pom.getPocetKusu());
+			sql.zadejDilciTermin(id, pom.getDate(), pom.getPocetKusu(), pom.isSelected());
 		}
-		
 	}
 	
 	public double myRound(double cislo, int pocetMist){

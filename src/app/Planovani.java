@@ -1487,10 +1487,12 @@ public class Planovani extends JPanel implements ActionListener, ListSelectionLi
 		DefaultListModel<DateStor> mod = new DefaultListModel<DateStor>();
 		int pocetKusu = 0;
 		Date datum;
+		boolean isCompleted;
 		while(rs.next()){
 			datum = rs.getDate(1);
 			pocetKusu = rs.getInt(2);
-			mod.addElement(new DateStor(datum, pocetKusu, sdf));			
+			isCompleted = rs.getBoolean(3);
+			mod.addElement(new DateStor(datum, pocetKusu, sdf, isCompleted));			
 		}
 		return mod;
 	}

@@ -257,10 +257,12 @@ public class PromOknoNovaZakazka extends JPanel implements ActionListener {
 		DefaultListModel<DateStor> mod = new DefaultListModel<DateStor>();
 		int pocetKusu = 0;
 		Date datum;
+		boolean isCompleted;
 		while(rs.next()){
 			datum = rs.getDate(1);
 			pocetKusu = rs.getInt(2);
-			mod.addElement(new DateStor(datum, pocetKusu, sdf));			
+			isCompleted = rs.getBoolean(3);
+			mod.addElement(new DateStor(datum, pocetKusu, sdf, isCompleted));			
 		}
 		return mod;
 	}
@@ -818,9 +820,7 @@ public class PromOknoNovaZakazka extends JPanel implements ActionListener {
 		return this.modelComboModel;
 	}
 
-	/**
-	 * Jeste to nefunguje musíš nak vymyslet, vsude kde je chyba to musit opravit
-	 */
+	
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		String comand = e.getActionCommand();
@@ -835,7 +835,7 @@ public class PromOknoNovaZakazka extends JPanel implements ActionListener {
 						return;
 					}
 					DateStor pom;
-					DateStor novyTermin = new DateStor(novyDilciTermin, pocetKusu, sdf);
+					DateStor novyTermin = new DateStor(novyDilciTermin, pocetKusu, sdf, false);
 					int i = 0;
 					for(i = 0; i < model.size(); i++){
 						pom = model.get(i);
@@ -863,7 +863,7 @@ public class PromOknoNovaZakazka extends JPanel implements ActionListener {
 						return;
 					}
 					DateStor pom = model.get(selected);
-					DateStor novyTermin = new DateStor(pom.getDate(), 0, sdf);
+					DateStor novyTermin = new DateStor(pom.getDate(), 0, sdf, false);
 
 					if (novyTermin.isEqualDate(pom)) {
 						model.remove(selected);

@@ -3,20 +3,27 @@ package sablony.storage;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class DateStor implements Comparable<DateStor>{
+import javax.swing.JCheckBox;
+
+@SuppressWarnings("serial")
+public class DateStor extends JCheckBox implements Comparable<DateStor>{
 	private SimpleDateFormat sdf = null;
 	private Date datum;
 	private int pocetKusu;
+	private boolean puvHodnotaCompleted;
 
-	public DateStor(Date datum, int pocetKusu, SimpleDateFormat sdf){
+	public DateStor(Date datum, int pocetKusu, SimpleDateFormat sdf, boolean isCompleted){
 		this.datum = datum;	
 		this.pocetKusu = pocetKusu;
 		this.sdf = sdf;
+		this.setSelected(isCompleted);
+		this.puvHodnotaCompleted = isCompleted;
+		this.setText(toString());
 	}
 	
 	public String toString(){
 		String date = null;
-		date = sdf.format(datum)+ " kusù: "+pocetKusu;
+		date = " "+sdf.format(datum)+ " kusù: "+pocetKusu;
 		return date;
 	}
 	
@@ -32,6 +39,14 @@ public class DateStor implements Comparable<DateStor>{
 		String tohle = sdf.format(this.datum);
 		String druhe = sdf.format(date.getDate());
 		return tohle.equalsIgnoreCase(druhe);
+	}
+	
+	public boolean isZmeneno(){
+		if(puvHodnotaCompleted != this.isSelected()){
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	@Override
