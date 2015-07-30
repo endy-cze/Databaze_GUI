@@ -11,19 +11,24 @@ import javax.swing.UIDefaults;
 import sablony.storage.DateStor;
 
 public class MyCellrendererCheckBox implements ListCellRenderer<DateStor> {
-	Color c;
+	private Color c;
+	private Color back;
+	
 	public MyCellrendererCheckBox(){
 		UIDefaults defaults = javax.swing.UIManager.getDefaults();
-		c = defaults.getColor("List.selectionBackground");
+		back = defaults.getColor("List.selectionBackground");
+		c = defaults.getColor("List.selectionForeground");
 	}
 	@Override
     public Component getListCellRendererComponent(JList<? extends DateStor> list, DateStor value, int index,
 			boolean isSelected, boolean cellHasFocus){
 		DateStor checkbox = value;
 		if(cellHasFocus){
-			checkbox.setBackground(c);
+			checkbox.setBackground(back);
+			checkbox.setForeground(c);
 		} else {
 			checkbox.setBackground(Color.WHITE);
+			checkbox.setForeground(Color.BLACK);
 		} 
       return checkbox;
     }

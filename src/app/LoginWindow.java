@@ -31,6 +31,7 @@ import java.awt.event.KeyListener;
 import java.awt.Toolkit;
 
 import javax.swing.JTextField;
+import javax.swing.LayoutStyle.ComponentPlacement;
 
 /**
  * Licence:
@@ -158,9 +159,11 @@ public class LoginWindow extends JFrame implements KeyListener {
 		JLabel lblIpAdresaServeru = new JLabel("IP adresa serveru: "+ipServeru);
 		
 		JLabel lblOndejHavlek = new JLabel("Vytvo\u0159il: Ond\u0159ej Havl\u00ED\u010Dek");
+		
+		JLabel verze = new JLabel("Verze: 1.0");
 		GroupLayout gl_contentPane = new GroupLayout(contentPane);
 		gl_contentPane.setHorizontalGroup(
-			gl_contentPane.createParallelGroup(Alignment.LEADING)
+			gl_contentPane.createParallelGroup(Alignment.TRAILING)
 				.addGroup(gl_contentPane.createSequentialGroup()
 					.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
 						.addGroup(gl_contentPane.createSequentialGroup()
@@ -178,10 +181,12 @@ public class LoginWindow extends JFrame implements KeyListener {
 										.addComponent(account, GroupLayout.PREFERRED_SIZE, 137, GroupLayout.PREFERRED_SIZE)
 										.addComponent(passwordField, GroupLayout.DEFAULT_SIZE, 86, Short.MAX_VALUE)))))
 						.addComponent(lblIpAdresaServeru))
-					.addContainerGap(70, Short.MAX_VALUE))
-				.addGroup(Alignment.TRAILING, gl_contentPane.createSequentialGroup()
-					.addContainerGap(234, Short.MAX_VALUE)
-					.addComponent(lblOndejHavlek)
+					.addContainerGap(72, Short.MAX_VALUE))
+				.addGroup(gl_contentPane.createSequentialGroup()
+					.addContainerGap(198, Short.MAX_VALUE)
+					.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
+						.addComponent(verze)
+						.addComponent(lblOndejHavlek))
 					.addContainerGap())
 		);
 		gl_contentPane.setVerticalGroup(
@@ -202,7 +207,9 @@ public class LoginWindow extends JFrame implements KeyListener {
 						.addComponent(passwordField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
 					.addGap(28)
 					.addComponent(prihlasButton)
-					.addGap(43)
+					.addGap(18)
+					.addComponent(verze)
+					.addPreferredGap(ComponentPlacement.UNRELATED)
 					.addComponent(lblOndejHavlek)
 					.addContainerGap())
 		);
