@@ -1925,6 +1925,10 @@ public class SQLStor {
 		return c;
 	}
 	
+	public static final int obnovaUspech = 0;
+	public static final int obnovaMyWindowWaring = 1;
+	public static final int obnovaErrorWin = 2;
+	
 	/**
 	 * Myslim že hotovo, ted už jen otestovat.
 	 * @param obnovDBSqlFile
@@ -1932,7 +1936,7 @@ public class SQLStor {
 	 * @return
 	 * @throws Exception
 	 */
-	public boolean obnovaDB(File obnovDBSqlFile, File seznamZakazekCSVFile) throws Exception{
+	public int obnovaDB(File obnovDBSqlFile, File seznamZakazekCSVFile) throws Exception{
 		// 1. overime že mame všechny soubory
 		System.out.println(obnovDBSqlFile + " lol "+ seznamZakazekCSVFile);
 		String [] tables = {"zakaznici","vady","vinici", "seznam_modelu", "seznam_zakazek", "dilci_terminy", "fyzkusy", "zmetky_vady"};
@@ -1946,18 +1950,23 @@ public class SQLStor {
 			File pom = new File(path);
 			if(!pom.isFile()){
 				JOptionPane.showMessageDialog(hlavniOkno, "Soubor "+path+" nebyl nalezen");
-				return false;
+				return obnovaMyWindowWaring;
 			}
 		}
 		
 		// 2. spustíme skript pro smazání, resp vyprazdnìní DB
 		try{
-			ScriptRunner sr = new ScriptRunner(this.conn, false, true);					
+			ScriptRunner sr = new ScriptRunner(this.conn, false, true);	
+			sr.setLogWriter(null);
 			sr.runScript(new InputStreamReader(new FileInputStream(obnovDBSqlFile), "UTF-8"));
 		} catch (Exception e) {
-			JOptionPane.showMessageDialog(hlavniOkno, "Nepodaøilo se smazat puvodní a vytvoøit novou databázi, následuje chyba proè");
-			ExceptionWin.showExceptionMessage(e);
-			return false;
+			if(e.getLocalizedMessage().startsWith("Access denied for user")){
+				JOptionPane.showMessageDialog(hlavniOkno, "Na tuto operaci nemate pravomoce");
+				return obnovaMyWindowWaring;
+			} else {
+				ExceptionWin.showExceptionMessage(e);
+				return obnovaErrorWin;
+			}
 		}
 		// 3. nahrajeme data pomocí Load data infile
 		String format =
@@ -1973,11 +1982,11 @@ public class SQLStor {
 		// querry = String.format(format, "30_06_2015", "vinici", "vinici");
 		for(int i = 0; i < tables.length; i++){
 			querry = String.format(format, date, tables[i], tables[i]);
-			System.out.println(querry);
+			//System.out.println(querry);
 			st.executeQuery(querry);
 		}
 		// done
-		return true;
+		return obnovaUspech;
 	}
 	
 	private String getDateFromName(String name){

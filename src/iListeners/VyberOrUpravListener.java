@@ -407,8 +407,10 @@ public class VyberOrUpravListener implements ActionListener {
 		    	   
 		    	   // obnova DB
 		    	   
-		    	   this.sql.obnovaDB(obnovDBSqlFile, seznamZakazekCSVFile);
-		    	   JOptionPane.showMessageDialog(hlavniOkno, "lool Obnova byla provedena");
+		    	   int pom = this.sql.obnovaDB(obnovDBSqlFile, seznamZakazekCSVFile);
+		    	   if(pom == SQLStor.obnovaUspech){
+		    		   JOptionPane.showMessageDialog(hlavniOkno, "lool Obnova byla provedena");
+		    	   } 
 		       } else {
 		    	   JOptionPane.showMessageDialog(hlavniOkno, "Obnova nebyla provedena");
 		       }
