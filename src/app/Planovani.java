@@ -32,6 +32,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.TableModel;
 
+import sablony.MyCellrendererCheckBox;
 import sablony.MyJButton;
 import sablony.MyJDateChooser;
 import sablony.errorwin.ExceptionWin;
@@ -136,11 +137,12 @@ public class Planovani extends JPanel implements ActionListener, ListSelectionLi
 	private JLabel lblPesnCena;
 	private JLabel textLblPresnaCena;
 	private JLabel lblCzk;
-	private JList list;
+	private JList<DateStor> list;
 	private JTabbedPane tabbedPane;
 	private JScrollPane scrollPane_2;
 	private JTable stavZakazkyTable;
 	private JButton smazatFyzKusy;
+	private JScrollPane scrollPane_3;
 	
 	public void setPlanovaniAndSmaz(String [] parametryZakazky, ResultSet fyzKusyZakazky, int idZakazky) throws Exception{
 		setPlanovani(parametryZakazky, fyzKusyZakazky, idZakazky);
@@ -478,10 +480,19 @@ public class Planovani extends JPanel implements ActionListener, ListSelectionLi
 		gbc_tabbedPane.gridy = 4;
 		add(tabbedPane, gbc_tabbedPane);
 		
+		scrollPane_3 = new JScrollPane();
+		tabbedPane.addTab("Dílèí termíny", null, scrollPane_3, null);
+		
+		//JScrollPane na zaobalení
 		list = new JList<DateStor>();
-		tabbedPane.addTab("Seznam dílèích termínù", null, list, null);
+		scrollPane_3.setViewportView(list);
+		
+		//tabbedPane.addTab("Seznam dílèích termínù", null, list, null);
 		list.setBorder(new LineBorder(new Color(0, 0, 0), 1, true));
 		list.setFont(f);
+		//my Renderer
+		MyCellrendererCheckBox renderListener = new MyCellrendererCheckBox();
+		list.setCellRenderer(renderListener);
 		
 		scrollPane_2 = new JScrollPane();
 		tabbedPane.addTab("Stav zakázky", null, scrollPane_2, null);

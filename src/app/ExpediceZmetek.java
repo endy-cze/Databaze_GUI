@@ -811,7 +811,7 @@ public class ExpediceZmetek extends JPanel implements ActionListener //, ChangeL
 		add(tabbedPane, gbc_tabbedPane);
 		
 		scrollPane_3 = new JScrollPane();
-		tabbedPane.addTab("New tab", null, scrollPane_3, null);
+		tabbedPane.addTab("Dílèí termíny", null, scrollPane_3, null);
 		
 		list = new JList<DateStor>();	
 		scrollPane_3.setViewportView(list);

@@ -160,7 +160,7 @@ public class LoginWindow extends JFrame implements KeyListener {
 		
 		JLabel lblOndejHavlek = new JLabel("Vytvo\u0159il: Ond\u0159ej Havl\u00ED\u010Dek");
 		
-		JLabel verze = new JLabel("Verze: 1.0");
+		JLabel verze = new JLabel("Verze: 1.1");
 		GroupLayout gl_contentPane = new GroupLayout(contentPane);
 		gl_contentPane.setHorizontalGroup(
 			gl_contentPane.createParallelGroup(Alignment.TRAILING)
