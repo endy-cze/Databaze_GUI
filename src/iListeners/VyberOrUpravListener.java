@@ -363,10 +363,9 @@ public class VyberOrUpravListener implements ActionListener {
 	/**
 	 * Záloha, obnova databáze
 	 * @param j index, ktery popup menu se dìla (obnova nebo zaloha, vìtšinou zaloha)
-	 * @throws ExecutionException 
-	 * @throws InterruptedException 
+	 * @throws Exception 
 	 */
-	private void index8(int j) throws InterruptedException, ExecutionException {
+	private void index8(int j) throws Exception {
 		switch(j){
 		case 0:
 			ProgresBarFrame bar = sklad.getBar();
@@ -408,8 +407,8 @@ public class VyberOrUpravListener implements ActionListener {
 		    	   
 		    	   // obnova DB
 		    	   
-		    	   //this.sql.obnovaDB(obnovDBSqlFile, seznamZakazekCSVFile);
-		    	   JOptionPane.showMessageDialog(hlavniOkno, "Obnova nebyla provedena");
+		    	   this.sql.obnovaDB(obnovDBSqlFile, seznamZakazekCSVFile);
+		    	   JOptionPane.showMessageDialog(hlavniOkno, "lool Obnova byla provedena");
 		       } else {
 		    	   JOptionPane.showMessageDialog(hlavniOkno, "Obnova nebyla provedena");
 		       }

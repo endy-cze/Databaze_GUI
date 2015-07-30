@@ -2,18 +2,26 @@ package sConect;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Arrays;
 
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.JProgressBar;
 import javax.swing.SwingWorker;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import app.MainFrame;
 import app.ProgresBarFrame;
 import sablony.errorwin.ExceptionWin;
+import thread.ObnovDB;
+import thread.ScriptRunner;
 
 /**
  * Tøída pro vytváøení spojení mezi databází. Pomocí této tøídy získáme tøídu java.sql.Connection pro komnikaci s databází
@@ -29,6 +37,8 @@ public class CreateConectionToMySQL implements ActionListener {
 	private ProgresBarFrame prgbarFrame;
 	private Task t;
 	private static final String cancelZprava = "java.util.concurrent.CancellationException";
+	
+	private int returnVal = -100;
 	
 	/**
 	 * Konstruktor, vyplní se pouze údaje potøebné k pøipojení.
@@ -125,14 +135,33 @@ public class CreateConectionToMySQL implements ActionListener {
         		hlavniOkno = new MainFrame(conn, userName, prgbarFrame.getApProgresBar());
         	} catch (SQLException e){
         		prgbarFrame.setVisible(false);
+        		prgbarFrame.setZalohaDB();
 				//ExceptionWin.showExceptionMessage(e);
-    			JOptionPane.showMessageDialog(loginWindow, "Objevila se chyba pøi vytváøení GUI, CreateConection -doInBackground()");
-        	
+    			JOptionPane.showMessageDialog(loginWindow, "Objevila se chyba pøi vytváøení GUI, CreateConection -doInBackground(), pokud chcete obnovit databázi vyberte soubor strukturaDB.sql");
+    			File curDirectory = new File("./");
+    			File obnovDBSqlFile = null;
+    			JFileChooser chooser = new JFileChooser(curDirectory);
+    		    FileNameExtensionFilter filter = new FileNameExtensionFilter("Soubor SQL", "sql");
+    		    chooser.setFileFilter(filter);
+    		    chooser.setDialogTitle("Vyberte soubor strukturaDB.sql");
+    		    returnVal = chooser.showOpenDialog(loginWindow);
+    		    if(returnVal == JFileChooser.APPROVE_OPTION) {
+    		    	prgbarFrame.setVisible(true);
+    		    	obnovaStrukturyDB(conn, chooser.getSelectedFile());
+    		    }
         	}
         	
-        	prgbarFrame.setHotovo();
+        	if(returnVal != 0){
+        		prgbarFrame.setHotovo();
+        	}
+        	
         	return hlavniOkno;
         }
+        private void obnovaStrukturyDB(Connection conn, File obnovDBSqlFile){
+        	prgbarFrame.setVisible(true);
+        	ObnovDB obnov = new ObnovDB(loginWindow, prgbarFrame, conn, obnovDBSqlFile);
+        	obnov.execute();
+    	}
        
 
         /*
@@ -140,8 +169,11 @@ public class CreateConectionToMySQL implements ActionListener {
          */
         @Override
         public void done() {
-        	prgbarFrame.setVisible(false);
-        	prgbarFrame.dispose();
+        	if(returnVal != 0 ){
+        		prgbarFrame.setVisible(false);
+        		prgbarFrame.dispose();
+        	}
+        	
         	
         	MainFrame okno = null;
         	try {
