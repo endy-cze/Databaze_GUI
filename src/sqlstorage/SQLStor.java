@@ -1761,7 +1761,6 @@ public class SQLStor {
 		c.setInt(1, idVady);
 		c.setString(2, vada);
 		c.execute();
-		JOptionPane.showMessageDialog(hlavniOkno, "Vada byla úspìšnì pøidána do databáze!");
 	}
 	
 	/**

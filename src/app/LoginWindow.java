@@ -54,8 +54,8 @@ public class LoginWindow extends JFrame implements KeyListener {
 	/**
 	 * Ip adresa poèítaèe, na kterém se vyskytuje server, na který se budeme pøipojovat.
 	 */
-	private static final String ipServeru = "10.190.33.1";
-	//private static final String ipServeru = "localhost";
+	//private static final String ipServeru = "10.190.33.1";
+	private static final String ipServeru = "localhost";
 	private static final String url = "jdbc:mysql://"+ipServeru+":3306/";
 	/**
 	 * JButton prihlašení
