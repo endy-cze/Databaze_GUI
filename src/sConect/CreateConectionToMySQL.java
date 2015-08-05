@@ -7,6 +7,7 @@ import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
 
@@ -17,6 +18,7 @@ import javax.swing.JProgressBar;
 import javax.swing.SwingWorker;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import app.LoginWindow;
 import app.MainFrame;
 import app.ProgresBarFrame;
 import sablony.errorwin.ExceptionWin;
@@ -130,9 +132,15 @@ public class CreateConectionToMySQL implements ActionListener {
         	}
         	//vytvarim aplikaci
         	prgbarFrame.setVytvarimAplikaci();
+        	
         	MainFrame hlavniOkno = null;
         	try{
-        		hlavniOkno = new MainFrame(conn, userName, prgbarFrame.getApProgresBar());
+        		if(isNewestVersionGUI(conn.prepareCall("{CALL pomdb.verze()}").executeQuery())){
+        			hlavniOkno = new MainFrame(conn, userName, prgbarFrame.getApProgresBar());
+        		} else {
+        			prgbarFrame.setVisible(false);
+        			JOptionPane.showMessageDialog(loginWindow, "Nemáte nejnovìjší verzi aplikace Databáze Strašice, nelze spustit.");
+        		}
         	} catch (SQLException e){
         		prgbarFrame.setVisible(false);
         		prgbarFrame.setZalohaDB();
@@ -206,5 +214,15 @@ public class CreateConectionToMySQL implements ActionListener {
 			}
 		}
 		
+	}
+	
+	private boolean isNewestVersionGUI(ResultSet rs) throws SQLException{
+		if(rs.first()){
+			String verze = rs.getString(1);
+			if(verze.equals(LoginWindow.verzeGUI)){
+				return true;
+			}
+		}
+		return false;
 	}
 }

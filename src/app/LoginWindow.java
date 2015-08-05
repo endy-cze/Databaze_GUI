@@ -44,17 +44,18 @@ import javax.swing.LayoutStyle.ComponentPlacement;
  * @author Ondøej Havlíèek
  *
  */
+@SuppressWarnings("serial")
 public class LoginWindow extends JFrame implements KeyListener {
 	
 	/**
 	 * Verze
 	 */
-	private static final long serialVersionUID = 1L;
+	public static final String verzeGUI = "1.1";
 	/**
 	 * Ip adresa poèítaèe, na kterém se vyskytuje server, na který se budeme pøipojovat.
 	 */
-	//private static final String ipServeru = "10.190.33.1";
-	private static final String ipServeru = "localhost";
+	private static final String ipServeru = "10.190.33.1";
+	//private static final String ipServeru = "localhost";
 	private static final String url = "jdbc:mysql://"+ipServeru+":3306/";
 	/**
 	 * JButton prihlašení
@@ -160,7 +161,7 @@ public class LoginWindow extends JFrame implements KeyListener {
 		
 		JLabel lblOndejHavlek = new JLabel("Vytvo\u0159il: Ond\u0159ej Havl\u00ED\u010Dek");
 		
-		JLabel verze = new JLabel("Verze: 1.1");
+		JLabel verze = new JLabel("Verze: " + LoginWindow.verzeGUI);
 		GroupLayout gl_contentPane = new GroupLayout(contentPane);
 		gl_contentPane.setHorizontalGroup(
 			gl_contentPane.createParallelGroup(Alignment.TRAILING)
