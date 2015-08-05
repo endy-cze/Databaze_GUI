@@ -254,7 +254,7 @@ public class TableToExcel {
 			atr[0] = "Výpis odlitkù v kg-kè za období";atr[1] = "Výpis odlitkù v kg-kè od " ;atr[2] = "./vypisy";
 			break;
 		case ParametryFiltr.VypisOdlitychKusuOdDo:
-			atr[0] = "Výpis vyrobených kusù za období";atr[1] = atr[0];atr[2] = "./vypisy";
+			atr[0] = "Výpis odlitých kusù za období";atr[1] = "Výpis odlitých kusù od ";atr[2] = "./vypisy";
 			break;
 		case ParametryFiltr.VypisPolozekSOdhadHmot:
 			atr[0] = "Výpis položek s odhadovanou hmotností";atr[1] = "Položky s odhadovou hmotností ke dni ";atr[2] = "./vypisy";

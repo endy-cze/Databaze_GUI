@@ -180,7 +180,7 @@ public class ParametryFiltr extends JPanel {
 			FILTR_HLEDEJ_VADY, FILTR_CISLO_TYDNE_CISLO_ROKU_FORMOVNA_PDF, FILTR_CISLO_TYDNE_CISLO_ROKU_FORMOVNA_PDF,
 			FILTR_CISLO_TYDNE_CISLO_ROKU_FORMOVNA, FILTR_PRAZDNY_PDF,
 			 FILTR_HLEDEJZAKAZKY_BEZ_UZAVRENO_PDF, FILTR_DATUM_OD_PDF, FILTR_DATUM_OD_DO_PDF, FILTR_DATUM_OD_PDF,
-			FILTR_DATUM_OD_DO_PDF, FILTR_VYPIS_ODLITYCH_VYROBENYCH_KUSU, FILTR_PRAZDNY_PDF,
+			FILTR_DATUM_OD_DO_PDF, FILTR_VYPIS_ODLITYCH_VYROBENYCH_KUSU_PDF, FILTR_PRAZDNY_PDF,
 			FILTR_POUZE_CISLO_TYDNE_CISLO_ROKU, FILTR_DATUM_OD_DO_PDF, FILTR_DATUM_OD,
 			FILTR_PRAZDNY_PDF, FILTR_PRAZDNY_PDF, FILTR_DATUM_OD_DO_PDF, FILTR_DATUM_OD_DO_PDF};
 	
@@ -231,7 +231,7 @@ public class ParametryFiltr extends JPanel {
 	private static final int FILTR_DATUM_OD_PDF = 12;
 	private static final int FILTR_DATUM_OD_DO_PDF = 13;
 	private static final int FILTR_PRAZDNY_PDF = 14;
-	private static final int FILTR_VYPIS_ODLITYCH_VYROBENYCH_KUSU = 15;
+	private static final int FILTR_VYPIS_ODLITYCH_VYROBENYCH_KUSU_PDF = 15;
 	private static final int FILTR_CISLO_TYDNE_CISLO_ROKU_FORMOVNA = 16;
 	private static final int FILTR_CISLO_TYDNE_CISLO_ROKU_FORMOVNA_PDF = 17;
 	
@@ -267,8 +267,8 @@ public class ParametryFiltr extends JPanel {
 		}
 		// nastavim action comandy pro "vyhledej" a "prevodDoPdf" JButtony
 		this.setActionComands(actionCommand, vyhledej, prevodDoPdf);
-		// poskládám componenty podle stavu
-		poskladejComponenty(stav);
+		// poskládám a upravím componenty podle stavu
+		poskladejAUpravComponenty(stav);
 		// uprav texty na komponentech
 		upravTexty(cisloAkce);
 		// zobrazím všechny komponenty podle stavu
@@ -284,9 +284,11 @@ public class ParametryFiltr extends JPanel {
 	 * V podstatì tahle metoda jen pøesouvá Jbutton vyhledej.
 	 * @param stav
 	 */
-	private void poskladejComponenty(int stav){
+	private void poskladejAUpravComponenty(int stav){
 		GridBagLayout layout = null;
 		GridBagConstraints gbc = null;
+		// defaultnì je comboBoxFormovna2 pouze {T,M,S}
+		comboBoxFormovna2.setModel(seznamFormoven);
 		switch(stav){
 		case FILTR_HLEDEJ_ZAKAZNIKY:
 			pomMetoda2();
@@ -335,7 +337,8 @@ public class ParametryFiltr extends JPanel {
 		case FILTR_PRAZDNY_PDF:
 			pomMetoda();
 			break;
-		case FILTR_VYPIS_ODLITYCH_VYROBENYCH_KUSU: // budou sice dva komponenty v jedne bunce ale nikdy nebudou visible oba dva najednou
+		case FILTR_VYPIS_ODLITYCH_VYROBENYCH_KUSU_PDF: // budou sice dva komponenty v jedne bunce ale nikdy nebudou visible oba dva najednou
+			comboBoxFormovna2.setModel(seznamFormovenAPrazdny); // jediny vypis zatim, ktery muže vybírat i prázdné pole fomovny
 			layout = (GridBagLayout) panel.getLayout();
 			gbc = null;
 			
@@ -457,11 +460,12 @@ public class ParametryFiltr extends JPanel {
 		case FILTR_PRAZDNY_PDF:
 			prevodDoPdf.setVisible(true);
 			break;
-		case FILTR_VYPIS_ODLITYCH_VYROBENYCH_KUSU:
+		case FILTR_VYPIS_ODLITYCH_VYROBENYCH_KUSU_PDF:
 			dateOdLabel.setVisible(true);
 			odDatum.setVisible(true);
 			dateDoLabel.setVisible(true);
 			doDatum.setVisible(true);
+			prevodDoPdf.setVisible(true);
 	
 			vlMaterialJbutton.setVisible(true);
 			vlMaterialLabel.setVisible(true);

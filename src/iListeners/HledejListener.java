@@ -492,7 +492,8 @@ public class HledejListener implements ActionListener, MouseListener {
 			}
 		} else {
 			TableModel mod = table.getModel();
-			//TableToExcel.exportToExcel(hlavniOkno, mod, "Stav_neuzavrenych_zakazek", cisloVypisu);
+			String datumy = sdf.format(lastUsedDate1)+" do "+ sdf.format(lastUsedDate2);
+			TableToExcel.exportToExcelNaSirku(hlavniOkno, mod, datumy, (cisloVypisu+1)+". "+"Odlite_kusy_za_obdobi", cisloVypisu);
 		}
 		
 	}
@@ -636,6 +637,8 @@ public class HledejListener implements ActionListener, MouseListener {
 			this.lastUsedFormovna = "Støední formovna";
 		} else if(formovna.equalsIgnoreCase("M")){
 			this.lastUsedFormovna = "Malá formovna";
+		} else if(formovna.equalsIgnoreCase("")){
+			this.lastUsedFormovna = "Všechny formovny";
 		} else {
 			this.lastUsedFormovna = "chyba";
 		}
