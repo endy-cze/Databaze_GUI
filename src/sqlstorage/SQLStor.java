@@ -75,7 +75,7 @@ public class SQLStor {
 			{"{CALL pomdb.vypisOdlituVKgKcOdDo(?,?)}", "{CALL pomdb.vypisZpozdeneVyroby(?)}", "{CALL pomdb.vypisDleTerminuExpediceCisloTydne(?,?)}", "{CALL pomdb.vypisPolozekSOdhadHmot()}", "{CALL pomdb.vypisMzdySlevacu(?)}",
 				"{CALL pomdb.vypisOdlitychKusuOdDo(?,?,?,?)}", "{CALL pomdb.vypisVycistenychKusuOdDo(?,?)}", "{CALL pomdb.vypisRozpracovaneVyroby()}", "{CALL pomdb.vypisExpedovanychKusuOdDo(?,?)}", "{CALL pomdb.vypisKusuNaSkladu()}",
 				"{CALL pomdb.vypisStavNeuzavrenychZakazek(?,?,?,?,?,?,?)}", "{CALL pomdb.vypisDenniOdlitychKusu(?)}", "{CALL pomdb.vypisZmetky(?,?)}", "{CALL pomdb.vypisVinikyVKgKc(?,?)}",
-				"{CALL pomdb.vypisStavNeuzavrenychZakazek_short(?,?,?,?,?,?,?)}", "{CALL pomdb.vypisOdlitychKusuOdDoRegEx(?,?,?,?)}"},
+				"{CALL pomdb.vypisStavNeuzavrenychZakazek_short(?,?,?,?,?,?,?)}", "{CALL pomdb.vypisOdlitychKusuOdDoRegEx(?,?,?,?)}", "{CALL pomdb.vypisMzdySlevacu2(?,?)}"},
 			{"{CALL pomdb.liciPlanZakl(?,?,?)}", "{CALL pomdb.liciPlanPlanovaci(?,?,?)}", "{CALL pomdb.vyberDilciTerminy(?)}", "{CALL pomdb.vyberDilciTerminySeJmeny(?)}", 
 				"{CALL pomdb.plan_expedice()}"},
 			{"{CALL pomdb.smaz_fyz_kus(?,?)}"},
@@ -1190,6 +1190,37 @@ public class SQLStor {
 		c = cst[i][j];
 		java.sql.Date pomDate = new java.sql.Date (datum.getTime());
 		c.setDate("datum", pomDate);
+		c.execute();
+		return c;
+	}
+	
+	/**
+	 * Vypis mzdy slevacu od-do
+	 * @param datumOd
+	 * @param datumDo
+	 * @return
+	 * @throws SQLException
+	 */
+	public Statement vypisMzdySlevacu2(Date datumOd, Date datumDo) throws SQLException{
+		if(datumOd == null){
+			JOptionPane.showMessageDialog(hlavniOkno, "Datum nesmí být prázdné");
+			return null;
+		}
+		if(datumDo == null){
+			JOptionPane.showMessageDialog(hlavniOkno, "Datum nesmí být prázdné");
+			return null;
+		}
+		int i = 5, j = 16;
+		if(cst[i][j] == null){
+			cst[i][j] = conn.prepareCall(sqlPrikazy[i][j]);
+			naposledyPouzito[i][j] = new Date();
+		}
+		c = cst[i][j];
+		java.sql.Date pomDate = null;
+		pomDate = new java.sql.Date (datumOd.getTime());
+		c.setDate("datum_od", pomDate);
+		pomDate = new java.sql.Date (datumDo.getTime());
+		c.setDate("datum_do", pomDate);
 		c.execute();
 		return c;
 	}

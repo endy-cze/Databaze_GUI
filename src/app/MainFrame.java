@@ -179,7 +179,7 @@ public class MainFrame extends JFrame {
 		i = 4;
 		String [] jmena4 = {
 				"Výpis stavu neuzavøených zakázek", "Výpis odlitých kusù ke dni", "V\u00FDpis vy\u010Di\u0161t\u011Bn\u00FDch kus\u016F za obdob\u00ED",
-				"Mzdy sl\u00E9va\u010D\u016F ke dni", "V\u00FDpis odlitk\u016F v kg/k\u010D za obdob\u00ED", "V\u00FDpis odlit\u00FDch (vyroben\u00FDch) kus\u016F za obdob\u00ED", 
+				"Mzdy sl\u00E9va\u010D\u016F ke dni", "V\u00FDpis odlitk\u016F v kg/k\u010D za obdob\u00ED - bez zmetkù", "V\u00FDpis odlit\u00FDch kus\u016F za obdob\u00ED - dle materiálu", 
 				"V\u00FDpis polo\u017Eek s odhadovanou hmotnosti", "V\u00FDpis zakázek s term\u00EDnem expedice v daném týdnu",
 				 "V\u00FDpis expedice zboží za obdob\u00ED", "V\u00FDpis zpo\u017Ed\u011Bné v\u00FDroby ke dni",
 				 "Inventura rozpracovan\u00E9 v\u00FDroby", "V\u00FDpis skladu ke dne\u0161n\u00EDmu dni", "Výpis zmetkù za období",
