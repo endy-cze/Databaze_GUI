@@ -151,6 +151,9 @@ public class VyberOrUpravListener implements ActionListener {
 			case 5:
 				index5(j);
 				break;
+			case 6: // uprava viniku a vad
+				index6(j);
+				break;
 			case 7:
 				index7(j);
 				break;
@@ -325,6 +328,47 @@ public class VyberOrUpravListener implements ActionListener {
 			tmp4.setUpravZakazku(parametry);
 			break;
 		default: System.out.println("neco je sptne VyberorUpravListener");	
+			break;
+		}
+	}
+	
+	/**
+	 * Spustí se pøi upravach viniku a vad
+	 * @param j
+	 * @throws Exception
+	 */
+	private void index6(int j) throws Exception {
+		String columnName = table.getColumnName(0);
+		switch(j){
+		case 2:
+			if(columnName.equalsIgnoreCase("ID viníka") || columnName.equalsIgnoreCase("Id_vinika")){
+				hlavniOkno.setWindow(0);
+				tmp = (PromOknoNovyZakaznikAndSearch) promOkna[0];
+				String jmenoVinika = (String) this.table.getValueAt(table.getSelectedRow(), 1);
+				String idVinika = (String) this.table.getValueAt(table.getSelectedRow(), 0);
+				tmp.setUpravVinika(idVinika, jmenoVinika);
+			} else {
+				JOptionPane.showMessageDialog(hlavniOkno, "Špatná tabulka");
+				return;
+			}
+			break;
+		case 3:
+			if(columnName.equalsIgnoreCase("ID vady") || columnName.equalsIgnoreCase("idvady")){
+				hlavniOkno.setWindow(0);
+				tmp = (PromOknoNovyZakaznikAndSearch) promOkna[0];
+				String jmenoVady = (String) this.table.getValueAt(table.getSelectedRow(), 1);
+				String idVady = (String) this.table.getValueAt(table.getSelectedRow(), 0);
+				tmp.setUpravVadu(idVady, jmenoVady);
+			} else {
+				JOptionPane.showMessageDialog(hlavniOkno, "Špatná tabulka");
+				return;
+			}
+			break;
+		case 1:
+			break;
+		case 0:
+			break;
+		default: System.out.println("neco je sptne VyberorUpravListener index6()");	
 			break;
 		}
 	}

@@ -106,7 +106,7 @@ public class PromOknoNovyZakaznikAndSearch extends JPanel {
 		if(i == 1 || i == 4 || i == 3 && j != 0){ // 1 = planovani, 4 = vypisy, 3 lici plany zakladni a planovaci
 			setVisibleProhlizeny();
 		}else {
-			if(i == 0 && j == 0 || i == 6){ // pouze pro pridani noveho Zakaznika, vinika nebo vady
+			if(i == 0 && j == 0 || (i == 6 && j == 0 || i == 6 && j == 1)){ // pouze pro pridani noveho Zakaznika, vinika nebo vady
 				setVisiblePridej();
 			}else{
 				setVisibleVyhledej();
@@ -255,6 +255,18 @@ public class PromOknoNovyZakaznikAndSearch extends JPanel {
 		this.setVyhledejZakaznika();
 		vyberUprav.setText("Upravit z\u00E1kazn\u00EDka");
 	}
+	
+	public void setVyhledejUpravVinika(){
+		this.setVyhledejZakaznika();
+		panelFiltr.setParametryFiltr(ParametryFiltr.HledejViniky);
+		vyberUprav.setText("Upravit vinika");
+	}
+	
+	public void setVyhledejUpravVadu(){
+		this.setVyhledejZakaznika();
+		panelFiltr.setParametryFiltr(ParametryFiltr.HledejVady);
+		vyberUprav.setText("Upravit vadu");
+	}
 
 	public void setVyhledejUpravModel(){
 		this.setVyhledejModel();
@@ -275,6 +287,35 @@ public class PromOknoNovyZakaznikAndSearch extends JPanel {
 		idZakaznikaText.setText(idZakaznika);
 		idZakaznikaText.setVisible(true);
 		idZakaznika_1.setVisible(true);
+		idZakaznika_1.setText("ID z\u00E1kazn\u00EDka:");
+		
+	}
+	
+	public void setUpravVinika(String idVinika,String jmeno){
+		this.setPridejZakaznika();
+		setVisiblePridej();
+		this.noveJmenoZakaznikaTextField.setText(jmeno);
+		pridatZakaznika.setText("Uprav viníka");
+		pridatZakaznika.setActionCommand("UpravVinikaAction");
+		idZakaznikaText.setText(idVinika);
+		idZakaznikaText.setVisible(true);
+		idZakaznika_1.setVisible(true);
+		idZakaznika_1.setText("ID viníka");
+		panelFiltr.setParametryFiltr(ParametryFiltr.HledejViniky);
+	}
+	
+	public void setUpravVadu(String idVady,String jmeno){
+		this.setPridejZakaznika();
+		setVisiblePridej();
+		this.noveJmenoZakaznikaTextField.setText(jmeno);
+		pridatZakaznika.setText("Uprav vadu");
+		pridatZakaznika.setActionCommand("UpravVaduAction");
+		idZakaznikaText.setText(idVady);
+		idZakaznikaText.setVisible(true);
+		idZakaznika_1.setVisible(true);
+		idZakaznika_1.setText("ID vady");
+		panelFiltr.setParametryFiltr(ParametryFiltr.HledejVady);
+
 	}
 	
 	public void setUpravCisloTavby(){

@@ -301,6 +301,12 @@ public class MainActionMenuItemListener implements ActionListener {
 		case 1:
 			searchOkno.setPridejVadu();
 			break;
+		case 2:
+			searchOkno.setVyhledejUpravVinika();
+			break;
+		case 3:
+			searchOkno.setVyhledejUpravVadu();
+			break;
 		default: JOptionPane.showMessageDialog(hlavniOkno, "Nìco je špatnì v MainActionMenuItemListener, index6()");	
 			break;
 		}

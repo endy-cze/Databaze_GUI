@@ -70,7 +70,8 @@ public class SQLStor {
 			{"{CALL pomdb.zadej_cislo_faktury_cislo_tavby_prohlizeci(?,?,?)}", "{CALL pomdb.zadejPlanovanyDatumLiti(?,?)}", "{CALL pomdb.zadejOdlitek(?,?,?,?,?,?,?,?,?,?,?)}",
 				"{CALL pomdb.zadejUdajeOZmetku(?,?,?,?)}", "{CALL pomdb.zadejDilciTerminy(?,?,?,?)}"}, // "{CALL pomdb.zadejDatumVycistenehoKusu(?,?,?)}"
 			{"{CALL pomdb.pridejVinika(?)}", "{CALL pomdb.pridejVadu(?)}", "{CALL pomdb.planovaniRozvrh(?,?)}", "{CALL pomdb.generujKusy(?)}",
-				"{CALL pomdb.planovaniRozvrhVycisteno(?,?)}", "{CALL pomdb.kapacitniPropocet(?,?)}", "{CALL pomdb.uzavriZakazku(?,?,?,?,?,?)}", "{CALL pomdb.obnovZakazku(?)}"},
+				"{CALL pomdb.planovaniRozvrhVycisteno(?,?)}", "{CALL pomdb.kapacitniPropocet(?,?)}", "{CALL pomdb.uzavriZakazku(?,?,?,?,?,?)}",
+				"{CALL pomdb.obnovZakazku(?)}", "{CALL pomdb.uprav_vinika(?,?)}", "{CALL pomdb.uprav_vadu(?,?)}"},
 			{"{CALL pomdb.vypisOdlituVKgKcOdDo(?,?)}", "{CALL pomdb.vypisZpozdeneVyroby(?)}", "{CALL pomdb.vypisDleTerminuExpediceCisloTydne(?,?)}", "{CALL pomdb.vypisPolozekSOdhadHmot()}", "{CALL pomdb.vypisMzdySlevacu(?)}",
 				"{CALL pomdb.vypisOdlitychKusuOdDo(?,?,?,?)}", "{CALL pomdb.vypisVycistenychKusuOdDo(?,?)}", "{CALL pomdb.vypisRozpracovaneVyroby()}", "{CALL pomdb.vypisExpedovanychKusuOdDo(?,?)}", "{CALL pomdb.vypisKusuNaSkladu()}",
 				"{CALL pomdb.vypisStavNeuzavrenychZakazek(?,?,?,?,?,?,?)}", "{CALL pomdb.vypisDenniOdlitychKusu(?)}", "{CALL pomdb.vypisZmetky(?,?)}", "{CALL pomdb.vypisVinikyVKgKc(?,?)}",
@@ -1648,7 +1649,7 @@ public class SQLStor {
 			JOptionPane.showMessageDialog(hlavniOkno, "Vinik je moc dlouhý nebo je prázdný");
 			return;
 		}
-		sklad.setVadyVinici(new String [2][]);
+		sklad.setVadyVinici(new String [2][]); // vinici se automaticky aktualizuou pro zadavani zmetku/odlitku
 		int i = 4, j = 0;
 		if(cst[i][j] == null){
 			cst[i][j] = conn.prepareCall(sqlPrikazy[i][j]);
@@ -1656,8 +1657,31 @@ public class SQLStor {
 		}
 		c = cst[i][j];
 		c.setString(1, vinik);
-		c.execute(); 
-		JOptionPane.showMessageDialog(hlavniOkno, "Viník byl úspìšnì pøidán do databáze!");
+		c.execute();
+	}
+	
+	public void upravVinika(int idVinika, String vinik) throws SQLException{
+		if(vinik == null){
+			JOptionPane.showMessageDialog(hlavniOkno, "Vinik je prazdny");
+			return;
+		}else if(vinik.length() > maxDelkaVinika || vinik.equalsIgnoreCase("")){
+			JOptionPane.showMessageDialog(hlavniOkno, "Vinik je moc dlouhý nebo je prázdný");
+			return;
+		}
+		if(idVinika <= 0){
+			JOptionPane.showMessageDialog(hlavniOkno, "Id viníka je spatnì");
+			return;
+		}
+		sklad.setVadyVinici(new String [2][]); // vinici se automaticky aktualizuou pro zadavani zmetku/odlitku
+		int i = 4, j = 8;
+		if(cst[i][j] == null){
+			cst[i][j] = conn.prepareCall(sqlPrikazy[i][j]);
+			naposledyPouzito[i][j] = new Date();
+		}
+		c = cst[i][j];
+		c.setInt(1, idVinika);
+		c.setString(2, vinik);
+		c.execute();
 	}
 	
 	/**
@@ -1673,7 +1697,7 @@ public class SQLStor {
 			JOptionPane.showMessageDialog(hlavniOkno, "Vada je moc dlouhá nebo je prázdná");
 			return;
 		}
-		sklad.setVadyVinici(new String [2][]);
+		sklad.setVadyVinici(new String [2][]); // vady se automaticky aktualizuou pro zadavani zmetku/odlitku
 		int i = 4, j = 1;
 		if(cst[i][j] == null){
 			cst[i][j] = conn.prepareCall(sqlPrikazy[i][j]);
@@ -1681,6 +1705,30 @@ public class SQLStor {
 		}
 		c = cst[i][j];	
 		c.setString(1, vada);
+		c.execute();
+	}
+	
+	public void upravVadu(int idVady, String vada) throws SQLException{
+		if(vada == null){
+			JOptionPane.showMessageDialog(hlavniOkno, "Vada je prázdná");
+			return;
+		}else if(vada.length() > maxDelkaVady|| vada.equalsIgnoreCase("")){
+			JOptionPane.showMessageDialog(hlavniOkno, "Vada je moc dlouhá nebo je prázdná");
+			return;
+		}
+		if(idVady <= 0){
+			JOptionPane.showMessageDialog(hlavniOkno, "Id vady je spatnì");
+			return;
+		}
+		sklad.setVadyVinici(new String [2][]); // vady se automaticky aktualizuou pro zadavani zmetku/odlitku
+		int i = 4, j = 9;
+		if(cst[i][j] == null){
+			cst[i][j] = conn.prepareCall(sqlPrikazy[i][j]);
+			naposledyPouzito[i][j] = new Date();
+		}
+		c = cst[i][j];	
+		c.setInt(1, idVady);
+		c.setString(2, vada);
 		c.execute();
 		JOptionPane.showMessageDialog(hlavniOkno, "Vada byla úspìšnì pøidána do databáze!");
 	}

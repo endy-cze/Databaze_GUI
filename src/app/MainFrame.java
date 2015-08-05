@@ -191,7 +191,7 @@ public class MainFrame extends JFrame {
 		sidePopupMenulist[i] = new MyPopUp(jmena5, sidePopupMenuItems, i, sklad);
 		
 		i = 6;
-		String [] jmena6 = {"Pøidat viníky", "Pøidat druhy vad"};
+		String [] jmena6 = {"Pøidat viníky", "Pøidat druhy vad", "Upravit viníka", "Upravit vadu"};
 		sidePopupMenulist[i] = new MyPopUp(jmena6, sidePopupMenuItems, i, sklad);
 		
 		i = 7;

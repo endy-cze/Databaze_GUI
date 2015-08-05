@@ -17,7 +17,7 @@ import storage.SkladOdkazu;
 
 
 /**
- * Listener pro pridavani noveho zakaznika a modelu
+ * Listener pro pridavani noveho zakaznika a modelu, uprava modelu a zakaznika, pridavani a uprava Vad a Viniku
  * @author Havlicek
  *
  */
@@ -160,9 +160,10 @@ public class PridejZakaznikaList implements ActionListener {
 			}
 			
 		} else if(com.equalsIgnoreCase("PridatVinikaAction")){
-			String novaVada = sklad.getNoveJmenoZakaznikaTextField().getText();
+			String novaVinik = sklad.getNoveJmenoZakaznikaTextField().getText();
 			try {
-				sql.pridejVinika(novaVada);
+				sql.pridejVinika(novaVinik);
+				JOptionPane.showMessageDialog(sklad.getHlavniOkno(), "Viník byl úspìšnì pøidán do databáze!");
 			} catch (SQLException e) {
 				String pom = "Duplicate entry";
 				if (e.getMessage().startsWith(pom)) {
@@ -177,6 +178,7 @@ public class PridejZakaznikaList implements ActionListener {
 			String novaVada = sklad.getNoveJmenoZakaznikaTextField().getText();
 			try {
 				sql.pridejVadu(novaVada);
+				JOptionPane.showMessageDialog(sklad.getHlavniOkno(), "Vada byla úspìšnì pøidána do databáze!");
 			} catch (SQLException e) {
 				String pom = "Duplicate entry";
 				if (e.getMessage().startsWith(pom)) {
@@ -184,6 +186,38 @@ public class PridejZakaznikaList implements ActionListener {
 				} else if(e.getLocalizedMessage().startsWith(acesDenied)){
 					JOptionPane.showMessageDialog(sklad.getHlavniOkno(), "Na tuto operaci nemáte pravomoce");
 				} else {
+					ExceptionWin.showExceptionMessage(e);
+				}
+			}
+		} else if(com.equalsIgnoreCase("UpravVinikaAction")){
+			int idVinika = Integer.parseInt(sklad.getIdZakaznikaText().getText());
+			String noveJmeno = sklad.getNoveJmenoZakaznikaTextField().getText();
+			try {
+				sql.upravVinika(idVinika, noveJmeno);
+				JOptionPane.showMessageDialog(sklad.getHlavniOkno(),"Viník byl upraven");
+			} catch (SQLException e) {
+				String pom = "Duplicate entry";
+				if (e.getMessage().startsWith(pom)) {
+					JOptionPane.showMessageDialog(sklad.getHlavniOkno(), "Tento zákazník již v databázi existuje");
+				} else if(e.getLocalizedMessage().startsWith(acesDenied)){
+					JOptionPane.showMessageDialog(sklad.getHlavniOkno(), "Na tuto operaci nemáte pravomoce");
+				}else {
+					ExceptionWin.showExceptionMessage(e);
+				}
+			}
+		} else if(com.equalsIgnoreCase("UpravVaduAction")){
+			int idVady = Integer.parseInt(sklad.getIdZakaznikaText().getText());
+			String noveJmeno = sklad.getNoveJmenoZakaznikaTextField().getText();
+			try {
+				sql.upravVadu(idVady, noveJmeno);
+				JOptionPane.showMessageDialog(sklad.getHlavniOkno(),"Vada byla upravena");
+			} catch (SQLException e) {
+				String pom = "Duplicate entry";
+				if (e.getMessage().startsWith(pom)) {
+					JOptionPane.showMessageDialog(sklad.getHlavniOkno(), "Tento zákazník již v databázi existuje");
+				} else if(e.getLocalizedMessage().startsWith(acesDenied)){
+					JOptionPane.showMessageDialog(sklad.getHlavniOkno(), "Na tuto operaci nemáte pravomoce");
+				}else {
 					ExceptionWin.showExceptionMessage(e);
 				}
 			}
