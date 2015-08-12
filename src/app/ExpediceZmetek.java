@@ -141,6 +141,30 @@ public class ExpediceZmetek extends JPanel implements ActionListener //, ChangeL
 	private JLabel lblVada;
 	private JLabel lblZadatTavbu;
 	
+	private JLabel lblNewLabel_2;
+	private JLabel textKurz;
+	private JButton btnExpedovno;
+	private JLabel pocetNeplanZmetku;
+	private JButton aktualizovatBut;
+	private JButton generovatNoveKusy;
+	private JButton btnUzavtZakzku;
+	private JLabel lblTermnExpedice_1;
+	private JLabel terminExpedice;
+	private JLabel lblUzaveno;
+	private JLabel uzavreno;
+	private JDateChooser dateOdliti;
+	private JDateChooser dateExpedice;
+	private JList<DateStor> list;
+	private JButton zadejCisloTavby;
+	private JTextField textCisloFaktury;
+	private JButton zadatCisloFaktury;
+	private JLabel lblsloFaktury;
+	private JDateChooser dateZadaniZmetku;
+	private JTabbedPane tabbedPane;
+	private JScrollPane scrollPane_2;
+	private ColorCellTable stavZakazkyTable;
+	private JScrollPane scrollPane_3;
+	
 	/**
 	 * Pro cteni tabulky zakazek
 	 */
@@ -158,7 +182,10 @@ public class ExpediceZmetek extends JPanel implements ActionListener //, ChangeL
 
 
 	/**
-	 * 
+	 * <p>Metoda, která si podle idZakazky vyhledá v databázi, všechny fyzické kusy, dílèí termíny a stav
+	 * zakázky (odlito, vyèištìno,...) a pak to zobrazí do tabulek. </p>
+	 * <p>Nastaví všude aktuální hodnoty a nastaví JScrollPane hlavního okna na výšku aby se to tam vešlo.</p>
+	 * <p>Dále nastaví i listener pro</p>
 	 * @param parametryZakazky
 	 * @param idZakazky
 	 * @throws Exception
@@ -177,9 +204,9 @@ public class ExpediceZmetek extends JPanel implements ActionListener //, ChangeL
 		QueryTableModel tm = new QueryTableModel(stavZakazky);
 		stavZakazkyTable.setModel(tm);
 		
-		this.doplnUdaje.removeMouseListener(sklad.getMyJButonnListener());
+		this.doplnUdaje.removeMouseListener(sklad.getMyJButonnListener()); // smaze listener aby se pøi pøejetí nemìnila barva
 		pocetNeplanZmetku.setText(Integer.toString(pocetNeplanZmet));
-		for(int i = 0; i < nastavRezimPole[0].length; i++){
+		for(int i = 0; i < nastavRezimPole[0].length; i++){ // možná by to šlo napsat do dvou for cyklu
 			nastavRezimPole[0][i].setVisible(true);
 		}
 		for(int i = 0; i < nastavRezimPole[1].length; i++){
@@ -293,6 +320,13 @@ public class ExpediceZmetek extends JPanel implements ActionListener //, ChangeL
 		hlavniOkno.getScrollPane().repaint();
 	}
 	
+	/**
+	 * Vytvoøí model <code>DefaultListModel(DateStor)</code> z resultSetu z databaze.
+	 * Je to seznam dílèích termínù s udaji jestli je již termín splnìný, kolik kusu dodat a kdy
+	 * @param rs
+	 * @return
+	 * @throws SQLException
+	 */
 	private DefaultListModel<DateStor> createListModel(ResultSet rs) throws SQLException{
 		DefaultListModel<DateStor> mod = new DefaultListModel<DateStor>();
 		int pocetKusu = 0;
@@ -307,7 +341,10 @@ public class ExpediceZmetek extends JPanel implements ActionListener //, ChangeL
 		return mod;
 	}
 	
-	public void initLabels(){
+	/**
+	 * Pouze vytvoøí kontejnery (pole) a poskládá do nich všechny popisky (JLabel, apod) a nastaví jim font.
+	 */
+	private void initLabels(){
 		this.textLabels = new JLabel [21];
 		textLabels[0] = textIdZakazky;
 		textLabels[1] = textJmenoZakaznika;
@@ -372,7 +409,7 @@ public class ExpediceZmetek extends JPanel implements ActionListener //, ChangeL
 	}
 
 	/**
-	 * 
+	 * Vytvoøí okno rozšiøující JPanel a rovnou poskládá komponenty podle potøeby, jak jsem nastavil.
 	 * @param hlavniOkno
 	 */
 	public ExpediceZmetek(MainFrame hlavniOkno) {
@@ -883,6 +920,7 @@ public class ExpediceZmetek extends JPanel implements ActionListener //, ChangeL
 		gbc_datumVycisteni.gridx = 6;
 		gbc_datumVycisteni.gridy = 12;
 		add(datumVycisteni, gbc_datumVycisteni);
+		
 		btnExpedovno = new MyJButton("Expedov\u00E1no",16 ,1, sklad);
 		btnExpedovno.addActionListener(this);
 		btnExpedovno.setActionCommand("IsExpedovano");
@@ -1129,7 +1167,11 @@ public class ExpediceZmetek extends JPanel implements ActionListener //, ChangeL
 	}
 
 	
-	
+	/**
+	 * <p>Listener tlaèítek: oznacOdlito, oznacVycisteno, btnExpedovno, oznacZmetek, doplnUdaje, zadejCisloTavby, zadatCisloFaktury,
+	 * dokonciZadavani, aktualizovatBut, generovatNoveKusy, btnUzavtZakzku. </p>
+	 * <p>Tato tlaèítka jsou vytvoøeny v této tøídì a jsou umístìny v tomto JPanelu.</p>
+	 */
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
 		try {
@@ -1429,32 +1471,13 @@ public class ExpediceZmetek extends JPanel implements ActionListener //, ChangeL
 			}
 		}
 	}
-
-	private JLabel lblNewLabel_2;
-	private JLabel textKurz;
-	private JButton btnExpedovno;
-	private JLabel pocetNeplanZmetku;
-	private JButton aktualizovatBut;
-	private JButton generovatNoveKusy;
-	private JButton btnUzavtZakzku;
-	private JLabel lblTermnExpedice_1;
-	private JLabel terminExpedice;
-	private JLabel lblUzaveno;
-	private JLabel uzavreno;
-	private JDateChooser dateOdliti;
-	private JDateChooser dateExpedice;
-	private JList<DateStor> list;
-	private JButton zadejCisloTavby;
-	private JTextField textCisloFaktury;
-	private JButton zadatCisloFaktury;
-	private JLabel lblsloFaktury;
-	private JDateChooser dateZadaniZmetku;
-	private JTabbedPane tabbedPane;
-	private JScrollPane scrollPane_2;
-	private ColorCellTable stavZakazkyTable;
-	private JScrollPane scrollPane_3;
-	private JList list_1;
 	
+	/**
+	 * Zadej odlitek
+	 * @param i øada ve které je zadávaný odlitek
+	 * @throws SQLException
+	 * @throws ParseException
+	 */
 	private void endZadavaniOdlitku(int i) throws SQLException, ParseException{
 		int idKusu = Integer.parseInt((String)this.tableFyzkusyEx.getValueAt(i, 0));
 		boolean isOdlito;

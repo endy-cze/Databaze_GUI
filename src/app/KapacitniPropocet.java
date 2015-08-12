@@ -48,7 +48,8 @@ public class KapacitniPropocet extends JDialog {
 	private static final String acesDenied = "execute command denied to user";
 
 	/**
-	 * Create the dialog.
+	 * Vytvoøí okno (Dialog) pro zobrazení kapacitního propoètu. Pøi použití metody setTable() se spustí swingworker
+	 * a vyšle dotaz do databaze a zobrazí mezitím ProgressBar.
 	 */
 	public KapacitniPropocet(SkladOdkazu sklad) {
 		sql = sklad.getSql();
@@ -90,13 +91,16 @@ public class KapacitniPropocet extends JDialog {
 			}
 		}
 	}
-	
+	/**
+	 * Zobrazí skryje progress Bar v oknì
+	 * @param t
+	 */
 	public void setVitsibleProgressBar(boolean t){
 		this.panel.setVisible(t);
 	}
 	
 	/**
-	 * 
+	 * Spustí swingworker a a zobrazí progressBar. a vyšle dotaz do databaze.
 	 * @param cisloTydne
 	 * @param rok
 	 * @param f
