@@ -84,7 +84,12 @@ public class LoginWindow extends JFrame implements KeyListener {
 					UIManager.setLookAndFeel("com.jgoodies.looks.windows.WindowsLookAndFeel");
 			    } 
 			    catch(Exception e){
-			    	ExceptionWin.showExceptionMessage(e);
+			    	String mes = e.getMessage();
+			    	if(mes.contains("not supported on this platform")){
+			    		// chyba na linuxech
+			    	} else {
+			    		ExceptionWin.showExceptionMessage(e);
+			    	}
 			    }
 				try {
 					LoginWindow frame = new LoginWindow();

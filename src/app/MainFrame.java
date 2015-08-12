@@ -410,9 +410,9 @@ public class MainFrame extends JFrame {
 		sideMenu.setBackground(barvy[8]);
 		FlowLayout flowLayout = (FlowLayout) sideMenu.getLayout();
 		flowLayout.setVgap(20);
-		sideMenu.setMinimumSize(new Dimension(210, 10));
-		sideMenu.setPreferredSize(new Dimension(210, 10));
-		sideMenu.setMaximumSize(new Dimension(210, 32767));
+		sideMenu.setMinimumSize(new Dimension(220, 10));
+		sideMenu.setPreferredSize(new Dimension(220, 10));
+		sideMenu.setMaximumSize(new Dimension(220, 32767));
 		telo.add(sideMenu);
 		
 		

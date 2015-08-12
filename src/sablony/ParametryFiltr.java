@@ -832,7 +832,7 @@ public class ParametryFiltr extends JPanel {
 		pole[16] = checkVcetneUzavZak;
 		showZakazkyComponents[14] = checkVcetneUzavZak;
 		checkVcetneUzavZak.setBorder(null);
-		checkVcetneUzavZak.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		checkVcetneUzavZak.setFont(fonty[4]);
 		checkVcetneUzavZak.setForeground(barvy[11]);
 		checkVcetneUzavZak.setBackground(barvy[0]);
 		GridBagConstraints gbc_checkVcetneUzavZak = new GridBagConstraints();

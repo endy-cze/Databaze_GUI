@@ -29,6 +29,9 @@ public class MyJButton extends JButton {
 		this.setForeground(barvy[popredi]);
 		this.setContentAreaFilled(false);
 		this.setPreferredSize(new Dimension(170, 30));
+		if(pozadi == 10 && popredi == 1){
+			this.setPreferredSize(new Dimension(190, 30));
+		}
 		this.setOpaque(true);
 		this.setBorder(new MatteBorder(1, 1, 1, 1, barvy[6]));
 		//this.setBorder(new EtchedBorder(EtchedBorder.LOWERED, barvy[6], null));
