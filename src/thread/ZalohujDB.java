@@ -74,6 +74,13 @@ public class ZalohujDB extends SwingWorker<Integer, Void>{
 					} else {
 						// System.out.println("Directory is not created");
 					}
+					folder = folder+"/" + sdf.format(dnes);
+					f = new File(folder);
+					if (f.mkdir()) {
+						// System.out.println("Directory Created");
+					} else {
+						// System.out.println("Directory is not created");
+					}
 				} catch (Exception e) {
 					return SLOZNANEVYTVORENA;
 				}
