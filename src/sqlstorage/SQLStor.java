@@ -2,10 +2,8 @@ package sqlstorage;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileReader;
 import java.io.InputStreamReader;
 import java.sql.CallableStatement;
 import java.sql.Connection;
@@ -72,10 +70,10 @@ public class SQLStor {
 			{"{CALL pomdb.pridejVinika(?)}", "{CALL pomdb.pridejVadu(?)}", "{CALL pomdb.planovaniRozvrh(?,?)}", "{CALL pomdb.generujKusy(?)}",
 				"{CALL pomdb.planovaniRozvrhVycisteno(?,?)}", "{CALL pomdb.kapacitniPropocet(?,?)}", "{CALL pomdb.uzavriZakazku(?,?,?,?,?,?)}",
 				"{CALL pomdb.obnovZakazku(?)}", "{CALL pomdb.uprav_vinika(?,?)}", "{CALL pomdb.uprav_vadu(?,?)}"},
-			{"{CALL pomdb.vypisOdlituVKgKcOdDo(?,?)}", "{CALL pomdb.vypisZpozdeneVyroby(?)}", "{CALL pomdb.vypisDleTerminuExpediceCisloTydne(?,?)}", "{CALL pomdb.vypisPolozekSOdhadHmot()}", "{CALL pomdb.vypisMzdySlevacu(?)}",
+			{"{CALL pomdb.vypisOdlituVKgKcOdDo(?,?)}", "{CALL pomdb.vypisZpozdeneVyroby(?)}", "{CALL pomdb.vypisDleTerminuExpediceCisloTydne(?,?)}", "{CALL pomdb.vypisPolozekSOdhadHmot()}", "{CALL pomdb.vypisMzdySlevacu(?,?)}",
 				"{CALL pomdb.vypisOdlitychKusuOdDo(?,?,?,?)}", "{CALL pomdb.vypisVycistenychKusuOdDo(?,?)}", "{CALL pomdb.vypisRozpracovaneVyroby()}", "{CALL pomdb.vypisExpedovanychKusuOdDo(?,?)}", "{CALL pomdb.vypisKusuNaSkladu()}",
 				"{CALL pomdb.vypisStavNeuzavrenychZakazek(?,?,?,?,?,?,?)}", "{CALL pomdb.vypisDenniOdlitychKusu(?)}", "{CALL pomdb.vypisZmetky(?,?)}", "{CALL pomdb.vypisVinikyVKgKc(?,?)}",
-				"{CALL pomdb.vypisStavNeuzavrenychZakazek_short(?,?,?,?,?,?,?)}", "{CALL pomdb.vypisOdlitychKusuOdDoRegEx(?,?,?,?)}", "{CALL pomdb.vypisMzdySlevacu2(?,?)}"},
+				"{CALL pomdb.vypisStavNeuzavrenychZakazek_short(?,?,?,?,?,?,?)}", "{CALL pomdb.vypisOdlitychKusuOdDoRegEx(?,?,?,?)}"},
 			{"{CALL pomdb.liciPlanZakl(?,?,?)}", "{CALL pomdb.liciPlanPlanovaci(?,?,?)}", "{CALL pomdb.vyberDilciTerminy(?)}", "{CALL pomdb.vyberDilciTerminySeJmeny(?)}", 
 				"{CALL pomdb.plan_expedice()}"},
 			{"{CALL pomdb.smaz_fyz_kus(?,?)}"},
@@ -1172,36 +1170,13 @@ public class SQLStor {
 	}
 	
 	/**
-	 * Vypise mzdy (norma_slevac) podle datumu liti a seète je
-	 * @param datum ktery den chcete vypis
-	 * @return
-	 * @throws SQLException 
-	 */
-	public Statement vypisMzdySlevacu(Date datum) throws SQLException{
-		if(datum == null){
-			JOptionPane.showMessageDialog(hlavniOkno, "Datum nesmí být prázdné");
-			return null;
-		}
-		int i = 5, j = 4;
-		if(cst[i][j] == null){
-			cst[i][j] = conn.prepareCall(sqlPrikazy[i][j]);
-			naposledyPouzito[i][j] = new Date();
-		}
-		c = cst[i][j];
-		java.sql.Date pomDate = new java.sql.Date (datum.getTime());
-		c.setDate("datum", pomDate);
-		c.execute();
-		return c;
-	}
-	
-	/**
 	 * Vypis mzdy slevacu od-do
 	 * @param datumOd
 	 * @param datumDo
 	 * @return
 	 * @throws SQLException
 	 */
-	public Statement vypisMzdySlevacu2(Date datumOd, Date datumDo) throws SQLException{
+	public Statement vypisMzdySlevacu(Date datumOd, Date datumDo) throws SQLException{
 		if(datumOd == null){
 			JOptionPane.showMessageDialog(hlavniOkno, "Datum nesmí být prázdné");
 			return null;
@@ -1210,7 +1185,7 @@ public class SQLStor {
 			JOptionPane.showMessageDialog(hlavniOkno, "Datum nesmí být prázdné");
 			return null;
 		}
-		int i = 5, j = 16;
+		int i = 5, j = 4;
 		if(cst[i][j] == null){
 			cst[i][j] = conn.prepareCall(sqlPrikazy[i][j]);
 			naposledyPouzito[i][j] = new Date();
@@ -1221,46 +1196,6 @@ public class SQLStor {
 		c.setDate("datum_od", pomDate);
 		pomDate = new java.sql.Date (datumDo.getTime());
 		c.setDate("datum_do", pomDate);
-		c.execute();
-		return c;
-	}
-	
-	/**
-	 * Vypise vsechny kusy co nejsou zmetky, nejsou v uzavrene zakazce a maji odlito = true v danem terminu 
-	 * @param od
-	 * @param do_
-	 * @param formovna
-	 * @param vlastni_material
-	 * @return
-	 * @throws SQLException
-	 */
-	public Statement vypisOdlitychKusuOdDo(Date od, Date do_, String formovna, String vlastni_material) throws SQLException{
-		if(od == null){
-			JOptionPane.showMessageDialog(hlavniOkno, "Datum od nesmí být prázdné");
-			return null;
-		}
-		if(do_ == null){
-			JOptionPane.showMessageDialog(hlavniOkno, "Datum do nesmí být prázdné");
-			return null;
-		}
-		if(formovna == null){
-			formovna = "";
-		}
-		if(vlastni_material == null){
-			vlastni_material = "";
-		}
-		int i = 5, j = 5;
-		if(cst[i][j] == null){
-			cst[i][j] = conn.prepareCall(sqlPrikazy[i][j]);
-			naposledyPouzito[i][j] = new Date();
-		}
-		c = cst[i][j];
-		java.sql.Date pomDate = new java.sql.Date (od.getTime());
-		c.setDate("od", pomDate);
-		pomDate = new java.sql.Date (do_.getTime());
-		c.setDate("do_", pomDate);
-		c.setString("formovna", formovna);
-		c.setString("vlastni_material", vlastni_material);
 		c.execute();
 		return c;
 	}
@@ -1290,7 +1225,7 @@ public class SQLStor {
 			JOptionPane.showMessageDialog(hlavniOkno, "Vlastni materialy nesmí být prazdné :P");
 			return null;
 		}
-		int i = 5, j = 15;
+		int i = 5, j = 5;
 		if(cst[i][j] == null){
 			cst[i][j] = conn.prepareCall(sqlPrikazy[i][j]);
 			naposledyPouzito[i][j] = new Date();

@@ -203,7 +203,7 @@ public class HledejListener implements ActionListener, MouseListener {
 				this.vypisVycistenychKusuOdDo(isVypis, i);
 				break;
 			case ParametryFiltr.MzdySlevacu:
-				this.vypisMzdySlevacu2(isVypis, i);
+				this.vypisMzdySlevacu(isVypis, i);
 				break;
 			case ParametryFiltr.VypisOdlitkuVKgKc:
 				this.vypisTiskOdlitkuVKgKc(isVypis, i);
@@ -454,27 +454,12 @@ public class HledejListener implements ActionListener, MouseListener {
 			TableToExcel.exportToExcelNaVysku(hlavniOkno, mod, sdf.format(datumPoslVolaniMetody), (cisloVypisu+1)+". "+"Polozky_s_odhadovou_hmotnosti", cisloVypisu);
 		}
 	}
-	private void vypisMzdySlevacu(boolean isVypis, int cisloVypisu) throws Exception{
-		if (isVypis) {
-			Date datum = get1Date();
-			Statement st = sql.vypisMzdySlevacu(datum);
-			if (st != null) {
-				QueryTableModel tm = new QueryTableModel(st);
-				table.setModel(tm);
-				columAdjuster.adjustColumns();
-				//st.close(); kvuli optimalizaci
-			}
-		} else {
-			TableModel mod = table.getModel();
-			TableToExcel.exportToExcelNaVysku(hlavniOkno, mod, sdf.format(lastUsedDate1), (cisloVypisu+1)+". "+"Mzdy_slevacu", cisloVypisu);
-		}	
-	}
 	
-	private void vypisMzdySlevacu2(boolean isVypis, int cisloVypisu) throws Exception{
+	private void vypisMzdySlevacu(boolean isVypis, int cisloVypisu) throws Exception{
 		if (isVypis) {
 			Date datumOd = get1Date();
 			Date datumDo = get2Date();
-			Statement st = sql.vypisMzdySlevacu2(datumOd, datumDo);
+			Statement st = sql.vypisMzdySlevacu(datumOd, datumDo);
 			if (st != null) {
 				QueryTableModel tm = new QueryTableModel(st);
 				table.setModel(tm);
