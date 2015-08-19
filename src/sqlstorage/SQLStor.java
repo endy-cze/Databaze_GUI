@@ -68,7 +68,7 @@ public class SQLStor {
 			{"{CALL pomdb.zadej_cislo_faktury_cislo_tavby_prohlizeci(?,?,?)}", "{CALL pomdb.zadejPlanovanyDatumLiti(?,?)}", "{CALL pomdb.zadejOdlitek(?,?,?,?,?,?,?,?,?,?,?)}",
 				"{CALL pomdb.zadejUdajeOZmetku(?,?,?,?)}", "{CALL pomdb.zadejDilciTerminy(?,?,?,?)}"}, // "{CALL pomdb.zadejDatumVycistenehoKusu(?,?,?)}"
 			{"{CALL pomdb.pridejVinika(?)}", "{CALL pomdb.pridejVadu(?)}", "{CALL pomdb.planovaniRozvrh(?,?)}", "{CALL pomdb.generujKusy(?)}",
-				"{CALL pomdb.planovaniRozvrhVycisteno(?,?)}", "{CALL pomdb.kapacitniPropocet(?,?)}", "{CALL pomdb.uzavriZakazku(?,?,?,?,?,?)}",
+				"{CALL pomdb.planovaniRozvrhVycisteno(?,?)}", "{CALL pomdb.kapacitniPropocet(?,?)}", "{CALL pomdb.uzavriZakazku(?,?,?,?,?,?,?,?)}",
 				"{CALL pomdb.obnovZakazku(?)}", "{CALL pomdb.uprav_vinika(?,?)}", "{CALL pomdb.uprav_vadu(?,?)}"},
 			{"{CALL pomdb.vypisOdlituVKgKcOdDo(?,?)}", "{CALL pomdb.vypisZpozdeneVyroby(?)}", "{CALL pomdb.vypisDleTerminuExpediceCisloTydne(?,?)}", "{CALL pomdb.vypisPolozekSOdhadHmot()}", "{CALL pomdb.vypisMzdySlevacu(?,?)}",
 				"{CALL pomdb.vypisOdlitychKusuOdDo(?,?,?,?)}", "{CALL pomdb.vypisVycistenychKusuOdDo(?,?)}", "{CALL pomdb.vypisRozpracovaneVyroby()}", "{CALL pomdb.vypisExpedovanychKusuOdDo(?,?)}", "{CALL pomdb.vypisKusuNaSkladu()}",
@@ -1848,26 +1848,31 @@ public class SQLStor {
 		c.registerOutParameter(4, java.sql.Types.INTEGER);
 		c.registerOutParameter(5, java.sql.Types.INTEGER);
 		c.registerOutParameter(6, java.sql.Types.INTEGER);
+		c.registerOutParameter(7, java.sql.Types.INTEGER);
 		
 		ResultSet rs = c.executeQuery();
 		
-		int pocetOdlitych, pocetVycistenych, pocetExpedovanych, pocetNeodlitych, pocetZmetkuBezVady;
+		int pocetOdlitych, pocetVycistenych, pocetExpedovanych, pocetNeodlitych, pocetZmetkuBezVady, pocetNedokoncenychDilcichTerminu, objednanoKs;
 		pocetOdlitych = c.getInt(2);
 		pocetVycistenych = c.getInt(3);
 		pocetExpedovanych = c.getInt(4);
 		pocetNeodlitych = c.getInt(5);
 		pocetZmetkuBezVady = c.getInt(6);
-		JOptionPane.showMessageDialog(hlavniOkno, "Poèet odlitých: "+pocetOdlitych+ " Poèet vyèištìných: "+pocetVycistenych+
-				" Poèet expedovaných: "+pocetExpedovanych+" Poèet neodlitých: "+pocetNeodlitych + " Poèet kusù bez uvedené vady: "+pocetZmetkuBezVady);
+		pocetNedokoncenychDilcichTerminu = c.getInt(7);
+		objednanoKs = c.getInt(8);
+		JOptionPane.showMessageDialog(hlavniOkno, "Objednáno: "+objednanoKs+" Poèet odlitých: "+pocetOdlitych+ " Poèet vyèištìných: "+pocetVycistenych+
+				" Poèet expedovaných: "+pocetExpedovanych+" Poèet neodlitých: "+pocetNeodlitych + 
+				" Poèet kusù bez uvedené vady: "+pocetZmetkuBezVady + " Poèet nedokonèených dílèích termínù: "+ pocetNedokoncenychDilcichTerminu);
 		
 		boolean uspech = false;
 		if(rs.first()){
 			uspech = rs.getBoolean(1);
-			rs.close();
 		}
 		rs.close();
 		if(uspech){
 			JOptionPane.showMessageDialog(hlavniOkno, "Zakázka byla úspìšnì uzavøena");
+		} else {
+			JOptionPane.showMessageDialog(hlavniOkno, "Zakázka nebyla uzavøena");
 		}
 		return uspech;
 	}
