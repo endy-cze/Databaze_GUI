@@ -430,9 +430,6 @@ public class VyberOrUpravListener implements ActionListener {
 		    
 		    int returnVal = chooser.showOpenDialog(this.hlavniOkno);
 		    if(returnVal == JFileChooser.APPROVE_OPTION) {
-		       System.out.println("You chose to open this file: " +
-		            chooser.getSelectedFile().getName());
-		       System.out.println(chooser.getSelectedFile().getAbsolutePath());
 		       seznamZakazekCSVFile = chooser.getSelectedFile();
 		        // vybrat sql file pro strukturu databaze
 		       JOptionPane.showMessageDialog(hlavniOkno, "Vyberte soubor strukturaDB.sql");
@@ -440,11 +437,9 @@ public class VyberOrUpravListener implements ActionListener {
 		       filter = new FileNameExtensionFilter("Soubor SQL", "sql");
 		       chooser.setFileFilter(filter);
 		       chooser.setCurrentDirectory(curDirectory);
+		       chooser.setDialogTitle("Vyberte soubor strukturaDB.sql");
 		       returnVal = chooser.showOpenDialog(this.hlavniOkno);
 		       if(returnVal == JFileChooser.APPROVE_OPTION) {
-		    	   System.out.println("You chose to open this file: " +
-		    			   chooser.getSelectedFile().getName());
-		    	   System.out.println(chooser.getSelectedFile().getAbsolutePath());
 		    	   obnovDBSqlFile = chooser.getSelectedFile();
 		    	   
 		    	   System.out.println("parent "+ obnovDBSqlFile.getParent());
@@ -453,7 +448,7 @@ public class VyberOrUpravListener implements ActionListener {
 		    	   
 		    	   int pom = this.sql.obnovaDB(obnovDBSqlFile, seznamZakazekCSVFile);
 		    	   if(pom == SQLStor.obnovaUspech){
-		    		   JOptionPane.showMessageDialog(hlavniOkno, "lool Obnova byla provedena");
+		    		   JOptionPane.showMessageDialog(hlavniOkno, "Obnova byla provedena");
 		    	   } 
 		       } else {
 		    	   JOptionPane.showMessageDialog(hlavniOkno, "Obnova nebyla provedena");

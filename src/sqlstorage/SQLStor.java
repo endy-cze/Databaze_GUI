@@ -1988,12 +1988,13 @@ public class SQLStor {
 		}
 		// 3. nahrajeme data pomocí Load data infile
 		String format =
-				"LOAD DATA LOCAL INFILE 'C://1Ondrej_Havlicek//src_programy//Eclipse_prac_prostor//Databaze_GUI//zaloha_databaze//"
+				"LOAD DATA LOCAL INFILE '"+ seznamZakazekCSVFile.getParent().replace("\\", "\\\\")+ "\\\\"
 				+ "%s_%s.csv' \n"
 				+ "INTO TABLE pomdb.%s \n"
 				+ "CHARACTER SET 'cp1250' \n"
 				+ "FIELDS TERMINATED BY ',' ENCLOSED BY '\"' \n"
 				+ "LINES TERMINATED BY '\\n';";
+		System.out.println(format);
 		String querry = null;
 		Statement st = this.conn.createStatement();
 		
