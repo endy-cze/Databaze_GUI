@@ -86,7 +86,6 @@ public class PlanovaniLitiToExcelTisk {
 
 		sheet.getPrintSetup().setLandscape(false);
 		
-		
 		//number of pages
 		Footer footer = sheet.getFooter();
 		footer.setRight("Strana " + HeaderFooter.page() + " z " + HeaderFooter.numPages());
@@ -105,11 +104,15 @@ public class PlanovaniLitiToExcelTisk {
 		HSSFFont font = wb.createFont();
 		font.setFontHeightInPoints((short) 12);
 		
+		//vyska bunek
+		sheet.setDefaultRowHeightInPoints((short) 15);
+		
 		HSSFCellStyle obycBorder = wb.createCellStyle();
 		obycBorder.setBorderBottom(CellStyle.BORDER_THIN);
 		obycBorder.setBorderLeft(CellStyle.BORDER_THIN);
 		obycBorder.setBorderRight(CellStyle.BORDER_THIN);
 		obycBorder.setBorderTop(CellStyle.BORDER_THIN);
+		obycBorder.setVerticalAlignment(CellStyle.VERTICAL_CENTER); // zarovnat na vysku na stred
 		obycBorder.setFont(font);
 		
 		// styl bunky s dvojitou hranici dole a 12 pismem
@@ -118,6 +121,7 @@ public class PlanovaniLitiToExcelTisk {
 		style.setBorderLeft(CellStyle.BORDER_THIN);
 		style.setBorderRight(CellStyle.BORDER_THIN);
 		style.setBorderTop(CellStyle.BORDER_DOUBLE);
+		style.setVerticalAlignment(CellStyle.VERTICAL_CENTER); // zarovnat na vysku na stred
 		style.setFont(font);
 		
 /*		
@@ -203,6 +207,8 @@ public class PlanovaniLitiToExcelTisk {
 			// ,HSSFCellStyle obycBorderGeneralAlign, HSSFCellStyle stylBunkySDvojitouHraniciGeneralAlign) throws Exception{
 		Row row = null;
 		Cell cell = null;
+		// vyska radky
+		int heightInPoints = 22;
 		
 		int colCount = 0;
 		for(int i = 0; i < sirkyBunek[0].length; i++){
@@ -214,6 +220,7 @@ public class PlanovaniLitiToExcelTisk {
 		
 		for(int j = 0; j < sirkyBunek.length; j++){
 			row = sheet.createRow(j);
+			row.setHeightInPoints(heightInPoints);
 			int sloupec = 0;
 			for(int i = 0; i < sirkyBunek[j].length; i++){
 				for (int m = 0; m < sirkyBunek[j][i]; m++){
@@ -242,6 +249,7 @@ public class PlanovaniLitiToExcelTisk {
 			int sloupecModeluData = 0;
 			for(int j = 0; j < sirkyBunek.length; j++){
 				row = sheet.createRow(rowIndex + 2);
+				row.setHeightInPoints(heightInPoints);
 				int sloupec = 0;
 				cisBunky = 0;
 				for(int i = 0; i < sirkyBunek[j].length; i++){

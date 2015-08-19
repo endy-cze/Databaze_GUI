@@ -236,10 +236,10 @@ public class HledejListener implements ActionListener, MouseListener {
 				this.vypisVinikyVKgKc(isVypis, i);
 				break;
 			case ParametryFiltr.ZaklPlanLiti:
-				zaklLiciPlan(isVypis, TableToExcel.liciPlanZakl);
+				zaklLiciPlan(isVypis, i);
 				break;
 			case ParametryFiltr.PlanovaniLiti:
-				liciPlan(isVypis, TableToExcel.liciPlanPlanovaci);
+				liciPlan(isVypis, i);
 				break;
 			default: JOptionPane.showMessageDialog(hlavniOkno, "Špatný vypis Hledejlistener vypis()");
 				break;
