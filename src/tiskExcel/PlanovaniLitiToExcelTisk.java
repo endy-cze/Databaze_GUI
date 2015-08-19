@@ -84,7 +84,7 @@ public class PlanovaniLitiToExcelTisk {
 		
 		sheet.getPrintSetup().setPaperSize(PrintSetup.A4_PAPERSIZE);
 
-		sheet.getPrintSetup().setLandscape(false);
+		sheet.getPrintSetup().setLandscape(true); // na sirku
 		
 		//number of pages
 		Footer footer = sheet.getFooter();
@@ -120,7 +120,7 @@ public class PlanovaniLitiToExcelTisk {
 		style.setBorderBottom(CellStyle.BORDER_THIN);
 		style.setBorderLeft(CellStyle.BORDER_THIN);
 		style.setBorderRight(CellStyle.BORDER_THIN);
-		style.setBorderTop(CellStyle.BORDER_DOUBLE);
+		style.setBorderTop(CellStyle.BORDER_THICK);
 		style.setVerticalAlignment(CellStyle.VERTICAL_CENTER); // zarovnat na vysku na stred
 		style.setFont(font);
 		
@@ -208,7 +208,7 @@ public class PlanovaniLitiToExcelTisk {
 		Row row = null;
 		Cell cell = null;
 		// vyska radky
-		int heightInPoints = 22;
+		int heightInPoints = 26;
 		
 		int colCount = 0;
 		for(int i = 0; i < sirkyBunek[0].length; i++){
@@ -288,13 +288,10 @@ public class PlanovaniLitiToExcelTisk {
 		
 		
 		
-		for(int i = 0; i < colCount ; i++){
-			sheet.autoSizeColumn(i,true);
-		}
-		
 		
 		// overeni že se vše vejde
 		// zmerim si delku  použite stranky
+		/*
 		int paperWidth = 0;
 		for(int i = 0; i < colCount ; i++){
 			paperWidth += sheet.getColumnWidth(i);
@@ -306,10 +303,10 @@ public class PlanovaniLitiToExcelTisk {
 			sheet.setColumnWidth(terminLitiColumnIndex, widthTerminLiti);
 		}
 		// mozna nastavim i sirku odlito a odlito - zm, to je vetsinou jen jedno cislo
-		/*
-		if (widthInChars > paperSizeInChars){
-			sheet.setColumnWidth(objednanoColumnIndex, widthObjednano);
-		}*/
+		
+		//if (widthInChars > paperSizeInChars){
+		//	sheet.setColumnWidth(objednanoColumnIndex, widthObjednano);
+		//}
 		
 		// nastaveni sirky materialu
 		if (widthInChars > paperSizeInChars){
@@ -319,6 +316,7 @@ public class PlanovaniLitiToExcelTisk {
 			int width = Math.max(maxWidthMaterial, sheet.getColumnWidth(maxWidtColumnIndex) - rozdilDoOptimalityInChars * 256);
 			sheet.setColumnWidth(maxWidtColumnIndex, width);	
 		}
+		*/
 		
 		// nastaveni sirky datumu to je vždy stejny
 		
