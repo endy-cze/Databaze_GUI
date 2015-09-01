@@ -131,7 +131,7 @@ public class QueryTableModel extends AbstractTableModel {
 		// to our
 		// query, but we aren't, so we can do this.
 		DecimalFormatSymbols sym = new DecimalFormatSymbols(Locale.ENGLISH);
-		DecimalFormat formatNumber = new DecimalFormat("###.###", sym);
+		DecimalFormat formatNumber = new DecimalFormat("##0.###", sym);
 
 		String pom;
 		java.sql.Date datum;
