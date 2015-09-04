@@ -202,7 +202,9 @@ public class QueryTableModel extends AbstractTableModel {
 		ResultSetMetaData meta = rs.getMetaData();
 		colCount = meta.getColumnCount() + 1;
 		headers = new String[colCount];
+		tridySloupcu = new Class<?>[colCount];
 		for (int h = 1; h <= colCount; h++) {
+			tridySloupcu[h - 1] = String.class;
 			if (colCount - 1 >= h) {
 				headers[h - 1] = meta.getColumnLabel(h);
 			} else {
