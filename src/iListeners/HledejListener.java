@@ -364,7 +364,7 @@ public class HledejListener implements ActionListener, MouseListener {
 		//export do Excelu
 		else {
 			TableModel mod = table.getModel();
-			TableToExcel.exportToExcelNaVysku(hlavniOkno, mod, sdf.format(datumPoslVolaniMetody), (cisloVypisu+1)+". "+"Stav_neuzavrenych_zakazek", cisloVypisu);
+			TableToExcel.exportToExcelNaVysku(hlavniOkno, mod, sdf.format(datumPoslVolaniMetody), (cisloVypisu+1 - ParametryFiltr.VypisStavNeuzavrenychZakazek)+". "+"Stav_neuzavrenych_zakazek", cisloVypisu);
 		}
 	}
 	private void denniVypisOdlitku(boolean isVypis, int cisloVypisu) throws Exception{
@@ -380,7 +380,7 @@ public class HledejListener implements ActionListener, MouseListener {
 			}
 		} else {
 			TableModel mod = table.getModel();
-			TableToExcel.exportToExcelNaVysku(hlavniOkno, mod, sdf.format(lastUsedDate1), (cisloVypisu+1)+". "+"Vypis_odlitku_ke_dni", cisloVypisu);
+			TableToExcel.exportToExcelNaVysku(hlavniOkno, mod, sdf.format(lastUsedDate1), (cisloVypisu+1- ParametryFiltr.VypisStavNeuzavrenychZakazek)+". "+"Vypis_odlitku_ke_dni", cisloVypisu);
 		}
 	}
 	/**
@@ -401,7 +401,7 @@ public class HledejListener implements ActionListener, MouseListener {
 		} else {
 			TableModel mod = table.getModel();
 			String datumy = sdf.format(lastUsedDate1)+" do "+ sdf.format(lastUsedDate2);
-			TableToExcel.exportToExcelNaVysku(hlavniOkno, mod, datumy, (cisloVypisu+1)+". "+"Odlitky_kg_kc_za_obdobi", cisloVypisu);
+			TableToExcel.exportToExcelNaVysku(hlavniOkno, mod, datumy, (cisloVypisu+1- ParametryFiltr.VypisStavNeuzavrenychZakazek)+". "+"Odlitky_kg_kc_za_obdobi", cisloVypisu);
 		}
 	}
 	
@@ -451,7 +451,7 @@ public class HledejListener implements ActionListener, MouseListener {
 			}
 		} else {
 			TableModel mod = table.getModel();
-			TableToExcel.exportToExcelNaVysku(hlavniOkno, mod, sdf.format(datumPoslVolaniMetody), (cisloVypisu+1)+". "+"Polozky_s_odhadovou_hmotnosti", cisloVypisu);
+			TableToExcel.exportToExcelNaVysku(hlavniOkno, mod, sdf.format(datumPoslVolaniMetody), (cisloVypisu+1- ParametryFiltr.VypisStavNeuzavrenychZakazek)+". "+"Polozky_s_odhadovou_hmotnosti", cisloVypisu);
 		}
 	}
 	
@@ -468,7 +468,7 @@ public class HledejListener implements ActionListener, MouseListener {
 			}
 		} else {
 			TableModel mod = table.getModel();
-			TableToExcel.exportToExcelNaVysku(hlavniOkno, mod, sdf.format(lastUsedDate1), (cisloVypisu+1)+". "+"Mzdy_slevacu", cisloVypisu);
+			TableToExcel.exportToExcelNaVysku(hlavniOkno, mod, sdf.format(lastUsedDate1), (cisloVypisu+1- ParametryFiltr.VypisStavNeuzavrenychZakazek)+". "+"Mzdy_slevacu", cisloVypisu);
 		}	
 	}
 	
@@ -495,7 +495,7 @@ public class HledejListener implements ActionListener, MouseListener {
 		} else {
 			TableModel mod = table.getModel();
 			String datumy = sdf.format(lastUsedDate1)+" do "+ sdf.format(lastUsedDate2);
-			TableToExcel.exportToExcelNaSirku(hlavniOkno, mod, datumy, (cisloVypisu+1)+". "+"Odlite_kusy_za_obdobi", cisloVypisu);
+			TableToExcel.exportToExcelNaSirku(hlavniOkno, mod, datumy, (cisloVypisu+1- ParametryFiltr.VypisStavNeuzavrenychZakazek)+". "+"Odlite_kusy_za_obdobi", cisloVypisu);
 		}
 		
 	}
@@ -512,7 +512,7 @@ public class HledejListener implements ActionListener, MouseListener {
 		}  else {
 			TableModel mod = table.getModel();
 			String datumy = sdf.format(lastUsedDate1)+" do "+ sdf.format(lastUsedDate2);
-			TableToExcel.exportToExcelNaSirku(hlavniOkno, mod, datumy, (cisloVypisu+1)+". "+"Vycistene_kusy_za_obdobi", cisloVypisu);
+			TableToExcel.exportToExcelNaSirku(hlavniOkno, mod, datumy, (cisloVypisu+1- ParametryFiltr.VypisStavNeuzavrenychZakazek)+". "+"Vycistene_kusy_za_obdobi", cisloVypisu);
 		}
 	}
 	private void inventuraRozpracVyroby(boolean isVypis, int cisloVypisu) throws Exception{
@@ -527,7 +527,7 @@ public class HledejListener implements ActionListener, MouseListener {
 			}
 		} else {
 			TableModel mod = table.getModel();
-			TableToExcel.exportToExcelNaVysku(hlavniOkno, mod, sdf.format(datumPoslVolaniMetody), (cisloVypisu+1)+". "+"Inventura_rozpracovane_vyroby", cisloVypisu);
+			TableToExcel.exportToExcelNaVysku(hlavniOkno, mod, sdf.format(datumPoslVolaniMetody), (cisloVypisu+1- ParametryFiltr.VypisStavNeuzavrenychZakazek)+". "+"Inventura_rozpracovane_vyroby", cisloVypisu);
 		}
 	}
 
@@ -544,7 +544,7 @@ public class HledejListener implements ActionListener, MouseListener {
 		} else {
 			TableModel mod = table.getModel();
 			String datumy = sdf.format(lastUsedDate1)+" do "+ sdf.format(lastUsedDate2);
-			TableToExcel.exportToExcelNaSirku(hlavniOkno, mod, datumy, (cisloVypisu+1)+". "+"Expedovane_kusy_za_obdobi", cisloVypisu);
+			TableToExcel.exportToExcelNaSirku(hlavniOkno, mod, datumy, (cisloVypisu+1- ParametryFiltr.VypisStavNeuzavrenychZakazek)+". "+"Expedovane_kusy_za_obdobi", cisloVypisu);
 		}
 	}
 	
@@ -560,7 +560,7 @@ public class HledejListener implements ActionListener, MouseListener {
 			}
 		}  else {
 			TableModel mod = table.getModel();
-			TableToExcel.exportToExcelNaSirku(hlavniOkno, mod, sdf.format(datumPoslVolaniMetody),(cisloVypisu+1)+". "+ "Vypis_skladu", cisloVypisu);
+			TableToExcel.exportToExcelNaSirku(hlavniOkno, mod, sdf.format(datumPoslVolaniMetody),(cisloVypisu+1- ParametryFiltr.VypisStavNeuzavrenychZakazek)+". "+ "Vypis_skladu", cisloVypisu);
 		}
 	}
 	
@@ -577,7 +577,7 @@ public class HledejListener implements ActionListener, MouseListener {
 		}  else {
 			QueryTableModel mod = (QueryTableModel) table.getModel();
 			String datumy = sdf.format(lastUsedDate1)+" do "+ sdf.format(lastUsedDate2);
-			TableToExcel.vypisZmetkuZmdyToExcel(mod, hlavniOkno, datumy, (cisloVypisu+1)+". "+"Vypis_zmetky_mzdy");
+			TableToExcel.vypisZmetkuZmdyToExcel(mod, hlavniOkno, datumy, (cisloVypisu+1- ParametryFiltr.VypisStavNeuzavrenychZakazek)+". "+"Vypis_zmetky_mzdy");
 		}
 	}
 	
@@ -594,7 +594,7 @@ public class HledejListener implements ActionListener, MouseListener {
 		}  else {
 			TableModel model = table.getModel();
 			String datumy = sdf.format(lastUsedDate1)+" do "+ sdf.format(lastUsedDate2);
-			TableToExcel.exportToExcelNaSirku(hlavniOkno, model, datumy, (cisloVypisu+1)+". "+"Vypis_viniku_v_kg-kc", cisloVypisu);
+			TableToExcel.exportToExcelNaSirku(hlavniOkno, model, datumy, (cisloVypisu+1- ParametryFiltr.VypisStavNeuzavrenychZakazek)+". "+"Vypis_viniku_v_kg-kc", cisloVypisu);
 		}
 	}
 	

@@ -55,7 +55,7 @@ public class TableToExcel {
 	
 	private JFrame hlavniOkno;
 	private static String [] columnNamesIsString = {"Èíslo modelu", "Cislo_modelu","Jméno zákazníka","Èíslo objednávky",
-			"Jméno modelu", "Materiál", "Vlastní materiál"};
+			"Jméno modelu", "Materiál", "Vlastní materiál", "Cislo_tavby", "Èíslo tavby"};
 	
 	private SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
 	
@@ -330,6 +330,7 @@ public class TableToExcel {
 					String tmp = model.getValueAt(m, j);
 					if (tmp != null) {
 						exit = false;
+						String colName = model.getColumnName(j);
 						for(int i = 0; i < columnNamesIsString.length;i++){ // zda sloupec neni nahodou povinny String a ne cislo
 							if(columnNamesIsString[i].equalsIgnoreCase(model.getColumnName(j))){
 								isNumber[j] = STRINGDATA;
