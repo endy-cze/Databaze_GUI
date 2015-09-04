@@ -93,6 +93,7 @@ public class ColorCellTable extends JTable{
 		// nastaveni Renderu - cell rendere
 		this.cellRenderer = new MyRenderer(tm, zmeneno, isPlanovani);
 		this.setDefaultRenderer(Object.class, cellRenderer);
+		this.setDefaultRenderer(Double.class, cellRenderer);
 		// nastaveni Vzhledu hlavicky
 		this.getTableHeader().setDefaultRenderer(new DefaultHeaderRenderer());
 		

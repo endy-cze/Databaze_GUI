@@ -68,9 +68,9 @@ public class QueryTableModel extends AbstractTableModel {
 	}
 	
 	public Class<?> getColumnClass(int columnIndex){
-		/*if(this.tridySloupcu != null){
+		if(this.tridySloupcu != null){
 			return tridySloupcu[columnIndex];
-		}*/
+		}
 		return String.class.getClass();
 	}
 	public String getColumnName(int i) {
@@ -111,6 +111,7 @@ public class QueryTableModel extends AbstractTableModel {
 		headers = new String[colCount];
 		tridySloupcu = new Class<?>[colCount];
 		for (int h = 1; h <= colCount; h++) {
+			tridySloupcu[h - 1] = String.class;
 			if (colCount - 1 >= h) {
 				// headers[h - 1] = meta.getColumnName(h);
 				headers[h - 1] = meta.getColumnLabel(h);
@@ -160,7 +161,9 @@ public class QueryTableModel extends AbstractTableModel {
 						// record[i] = datum;
 					} else if (meta.getColumnTypeName(i + 1).startsWith("DECIMAL")) {
 						double x = rs.getDouble(i + 1);
+						formatNumber.setMinimumFractionDigits(meta.getScale(i + 1));
 						record[i] = formatNumber.format(x);
+						tridySloupcu[i] = Double.class;
 						// record[i] = x;
 					} /*
 					 * else if (meta.getColumnTypeName(i + 1).startsWith("INT"))
@@ -207,7 +210,7 @@ public class QueryTableModel extends AbstractTableModel {
 			}
 		}
 		DecimalFormatSymbols sym = new DecimalFormatSymbols(Locale.ENGLISH);
-		DecimalFormat formatNumber = new DecimalFormat("###.###", sym);
+		DecimalFormat formatNumber = new DecimalFormat("##0.###", sym);
 		do {
 			rs = stmt.getResultSet();
 			meta = rs.getMetaData();
@@ -241,7 +244,9 @@ public class QueryTableModel extends AbstractTableModel {
 							record[i] = pom;
 						} else if (meta.getColumnTypeName(i + 1).startsWith("DECIMAL")) {
 							double x = rs.getDouble(i + 1);
+							formatNumber.setMinimumFractionDigits(meta.getScale(i + 1));
 							record[i] = formatNumber.format(x);
+							tridySloupcu[i] = Double.class;
 						} else {
 							// pro zbytek
 							pom = rs.getString(i + 1);
