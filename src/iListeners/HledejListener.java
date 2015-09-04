@@ -468,7 +468,8 @@ public class HledejListener implements ActionListener, MouseListener {
 			}
 		} else {
 			TableModel mod = table.getModel();
-			TableToExcel.exportToExcelNaVysku(hlavniOkno, mod, sdf.format(lastUsedDate1), (cisloVypisu+1- ParametryFiltr.VypisStavNeuzavrenychZakazek)+". "+"Mzdy_slevacu", cisloVypisu);
+			String datumy = sdf.format(lastUsedDate1)+" do "+ sdf.format(lastUsedDate2);
+			TableToExcel.exportToExcelNaVysku(hlavniOkno, mod, datumy, (cisloVypisu+1- ParametryFiltr.VypisStavNeuzavrenychZakazek)+". "+"Mzdy_slevacu", cisloVypisu);
 		}	
 	}
 	

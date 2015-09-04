@@ -201,10 +201,9 @@ public class TableToExcel {
 			
 		cell = row.createCell(0);
 		cell.setCellValue(model.getColumnName(0));
-			// naveni fontu
-		if (cisloExportu != liciPlanPlanovaci){ // Jedina vyjimka je liciPlanPlanovaci tomu zustane pismo velkosti 10, jem moc velky
-			cell.getCellStyle().setFont(font);
-		}
+		// naveni fontu
+		cell.getCellStyle().setFont(font);
+		
 		for(int i = 1; i < model.getColumnCount() -1 ; i++){ //mam totiž jeden sloupec navic aby se mi srovnali tabulky viz QuerytableModel
 			cell = row.createCell(i);
 			cell.setCellValue(model.getColumnName(i));
@@ -266,7 +265,7 @@ public class TableToExcel {
 			atr[0] = "Výpis vyèištìných kusù za období";atr[1] = "Vyèištìné kusy od ";atr[2] = "./vypisy";
 			break;
 		case ParametryFiltr.MzdySlevacu:
-			atr[0] = "Mzdy slévaèù";atr[1] = "Mzdy slévaèù ke dni ";atr[2] = "./vypisy";
+			atr[0] = "Mzdy slévaèù";atr[1] = "Mzdy slévaèù od ";atr[2] = "./vypisy";
 			break;
 		case ParametryFiltr.VypisOdlitkuVKgKc:
 			atr[0] = "Výpis odlitkù v kg-kè za období";atr[1] = "Výpis odlitkù v kg-kè od " ;atr[2] = "./vypisy";
@@ -354,15 +353,12 @@ public class TableToExcel {
 						// test zda to je datum
 						try {
 							sdf.parse(tmp);
-							if(m == 0){
-								isNumber[j] = DATEDATA; // ten and je jen pro nazornost // druhy radek tabulky
-							}else {
-								isNumber[j] = isNumber[j]; // prvni radek
-							}
+							isNumber[j] = DATEDATA; // staci pouze aby jeden z techto dvou radku byl datum
 						} catch(ParseException  e){
-							isNumber[j] = STRINGDATA;
+							if(m == 0)isNumber[j] = STRINGDATA;
 						}
 					} else {
+						if(isNumber[j] != DATEDATA)
 							isNumber[j] = STRINGDATA;
 					}
 				}

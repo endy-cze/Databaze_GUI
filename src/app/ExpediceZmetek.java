@@ -377,6 +377,7 @@ public class ExpediceZmetek extends JPanel implements ActionListener //, ChangeL
 			textLabels[i].setFont(f);
 		}
 		this.textPaganyrka.setFont(f);
+		textPoznamka.setFont(f);
 		
 		for(int i = 0; i < popisLabels.length; i++){
 			popisLabels[i].setFont(f);
