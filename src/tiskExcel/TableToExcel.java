@@ -34,21 +34,13 @@ import sablony.ParametryFiltr;
 import sablony.tabulka.QueryTableModel;
 
 /**
- * Tøída pro export Table model do .xls souboru (Excel soubor). Návrh øešení problému:
- * 1. vytvoøit metodu se switchem, která podle èísla vypisu navratí název sheetu, nadpis, cestu kde uložit vèetnì jména
- * 2. vytvoøit metodu která nám vrátí kolik která bunka má šíøku a kolik øádek jsou nadpisy. 
- * 	 možná jen boolean jestli je to nutné, protože jediny kdo potøebuje víc øádkù
- *   je Licí plán - planovací - nezapomen doplnit poznamku do sloupce
- * 3. vytvoøit metodu která vloží data do xls souboru  (insertData(.))
- * Rozložení stránek (okraje stranky) budou pro všechny výpisy stejné
+ * Tøída pro export Table model do .xls souboru (Excel soubor).
+ * Rozložení stránek (okraje stranky) budou pro všechny výpisy stejné, kromì vypisZmetku. Ten ma specialni sablonu.
+ * Tøída se snaží detekovat jaky data type obsahuji sloupce a podle toho je pa ukladada.
  * @author Havlicek
  *
  */
 public class TableToExcel {
-	public static final int liciPlanZakl = 21;
-	public static final int liciPlanPlanovaci = 22;
-	public static final int planExpedice = 23;
-	
 	public static final int NUMERICDATA = 89;
 	public static final int STRINGDATA = 90;
 	public static final int DATEDATA = 91;
@@ -140,12 +132,9 @@ public class TableToExcel {
 		sheet.setMargin(Sheet.HeaderMargin, 0.1);
 		sheet.setMargin(Sheet.FooterMargin, 0.3);
 		
-		// font pro bunky		
+		// fonty a formaty pro bunky		
 		HSSFFont font = wb.createFont();
 		font.setFontHeightInPoints((short) 12);
-		//HSSFCellStyle style = wb.createCellStyle();
-		//style.setBorderTop(CellStyle.BORDER_DOUBLE);
-		//style.setFont(font);
 		HSSFCellStyle dateStyle = wb.createCellStyle();
 		dateStyle.setFont(font);
 		DataFormat poiDateFormat = wb.createDataFormat();
@@ -373,7 +362,7 @@ public class TableToExcel {
 	}
 	
 	/**
-	 * Metoda pro vytvoreni specialniho vypisu zmetku pro sefa. Vymyslet sablonu. ;)
+	 * Metoda pro vytvoreni specialniho vypisu zmetku pro sefa.
 	 * @throws IOException 
 	 * @throws ParseException 
 	 */
@@ -406,7 +395,7 @@ public class TableToExcel {
 		sheet.setMargin(Sheet.FooterMargin, 0.3);
 		
 		/**
-		 * Pokud zmením velikost pisma (14) tak musím
+		 * Pokud zmením velikost pisma (14 nebo 13?) tak musím
 		 * zmìnit i èíslo ZMETKUNASTRANKU a POCETRADEKNASTRANKU podle toho.
 		 */
 		HSSFFont font = wb.createFont();
