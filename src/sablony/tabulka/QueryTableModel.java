@@ -141,6 +141,7 @@ public class QueryTableModel extends AbstractTableModel {
 							record[i] = "neni boolean " + pom;
 							// record[i] = false;
 						}
+						tridySloupcu[i] = Boolean.class;
 					} else if (meta.getColumnTypeName(i + 1).equalsIgnoreCase("DATE")) {
 						datum = rs.getDate(i + 1);
 						pom = null;
@@ -148,20 +149,17 @@ public class QueryTableModel extends AbstractTableModel {
 							pom = sdf.format(datum);
 						}
 						record[i] = pom; 
-						
+						tridySloupcu[i] = java.util.Date.class;
 					} else if (meta.getColumnTypeName(i + 1).startsWith("DECIMAL")) {
 						double x = rs.getDouble(i + 1);
 						formatNumber.setMinimumFractionDigits(meta.getScale(i + 1));
 						record[i] = formatNumber.format(x);
 						tridySloupcu[i] = Double.class;
 						// record[i] = x;
-					} /*
-					 * else if (meta.getColumnTypeName(i + 1).startsWith("INT"))
-					 * { // navic if() když menim Collum type class double x =
-					 * rs.getDouble(i + 1); //record[i] =
-					 * formatNumber.format(x); record[i] = x; }
-					 */
-					else {
+					} else if (meta.getColumnTypeName(i + 1).contains("INT")) {
+						record[i] = rs.getString(i + 1);
+						tridySloupcu[i] = Integer.class;
+					} else {
 						// pro zbytek
 						pom = rs.getString(i + 1);
 						record[i] = pom;
@@ -227,6 +225,7 @@ public class QueryTableModel extends AbstractTableModel {
 								record[i] = "Ano";
 							else
 								record[i] = "neni boolean " + pom;
+							tridySloupcu[i] = Boolean.class;
 						} else if (meta.getColumnTypeName(i + 1).equalsIgnoreCase("DATE")) {
 							datum = rs.getDate(i + 1);
 							pom = null;
@@ -234,11 +233,15 @@ public class QueryTableModel extends AbstractTableModel {
 								pom = sdf.format(datum);
 							}
 							record[i] = pom;
+							tridySloupcu[i] = java.util.Date.class;
 						} else if (meta.getColumnTypeName(i + 1).startsWith("DECIMAL")) {
 							double x = rs.getDouble(i + 1);
 							formatNumber.setMinimumFractionDigits(meta.getScale(i + 1));
 							record[i] = formatNumber.format(x);
 							tridySloupcu[i] = Double.class;
+						} else if (meta.getColumnTypeName(i + 1).contains("INT")) {
+							record[i] = rs.getString(i + 1);
+							tridySloupcu[i] = Integer.class;
 						} else {
 							// pro zbytek
 							pom = rs.getString(i + 1);

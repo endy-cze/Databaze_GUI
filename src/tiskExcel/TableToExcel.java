@@ -305,12 +305,27 @@ public class TableToExcel {
 	 * @return int field with n-1 columns of the table with values of data type
 	 */
 	private static int [] detectDataFormat(QueryTableModel model, SimpleDateFormat sdf){
-		int [] isNumber = null;
+		int [] isNumber = new int [model.getColumnCount() - 1];
+		for(int i = 0; i < model.getColumnCount() - 1; i++){
+			Class<?> pom = model.getColumnClass(i);
+			if(pom.getName().equals(String.class.getName())){
+				isNumber[i] = STRINGDATA;
+			} else if(pom.getName().equals(Integer.class.getName())){
+				isNumber[i] = NUMERICDATA;
+			} else if(pom.getName().equals(Double.class.getName())){
+				isNumber[i] = NUMERICDATA;
+			} else if(pom.getName().equals(java.util.Date.class.getName())){
+				isNumber[i] = DATEDATA;
+			} else if(pom.getName().equals(Boolean.class.getName())){
+				isNumber[i] = STRINGDATA;
+			} else {
+				isNumber[i] = STRINGDATA;
+			}
+		}
+		
+		/*
 		if(model.getRowCount() >= 2){
 			isNumber = new int [model.getColumnCount()-1];
-			/**
-			 * Moc se tady nechapu ale doposud to funguje tak to nebudu menit
-			 */
 			// pokud ma model vice nez dve radky
 			boolean exit = false;
 			for (int m = 0; m < 2; m++) { // kontroluju prvni dve radky
@@ -358,6 +373,7 @@ public class TableToExcel {
 				isNumber[i] = STRINGDATA;
 			}
 		}
+		*/
 		return isNumber;
 	}
 	

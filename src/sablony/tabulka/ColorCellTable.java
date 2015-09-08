@@ -6,11 +6,6 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Rectangle;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyListener;
-import java.util.Calendar;
 
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
@@ -18,7 +13,6 @@ import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableModel;
 
 import storage.SkladOdkazu;
@@ -93,7 +87,11 @@ public class ColorCellTable extends JTable{
 		// nastaveni Renderu - cell rendere
 		this.cellRenderer = new MyRenderer(tm, zmeneno, isPlanovani);
 		this.setDefaultRenderer(Object.class, cellRenderer);
+		this.setDefaultRenderer(String.class, cellRenderer);
+		this.setDefaultRenderer(Integer.class, cellRenderer);
+		this.setDefaultRenderer(Boolean.class, cellRenderer);
 		this.setDefaultRenderer(Double.class, cellRenderer);
+		this.setDefaultRenderer(java.util.Date.class, cellRenderer);
 		// nastaveni Vzhledu hlavicky
 		this.getTableHeader().setDefaultRenderer(new DefaultHeaderRenderer());
 		
@@ -274,6 +272,8 @@ public class ColorCellTable extends JTable{
 					// nahrazeni desetinne tecky carkou
 					((JLabel) renderer).setText(strB.toString().replace('.', ','));
 				}
+			} else if(pom.getName().equals(Integer.class.getName())) {
+				((JLabel) renderer).setHorizontalAlignment(JLabel.RIGHT);
 			} else {
 				((JLabel) renderer).setHorizontalAlignment(JLabel.LEFT);
 			}
