@@ -250,30 +250,43 @@ public class ColorCellTable extends JTable{
 				((JLabel) renderer).setHorizontalAlignment(JLabel.RIGHT);
 				((JLabel) renderer).setFont(decimalFont);
 				String v = (String) value;
-				if (v.contains(".")) {
-					StringBuilder strB = new StringBuilder(v);
-					int i;
-					// nahrazeni desetinnych nul mezerou
-					for (i = strB.length() - 1; 0 < i; i--) {
-						if (strB.charAt(i) == '0' && strB.charAt(i-1) != '.') {
-							strB.replace(i, i + 1, " ");
-						} else {
-							break;
+				if(v != null){
+					if (v.contains(".")) {
+						StringBuilder strB = new StringBuilder(v);
+						int i;
+						// nahrazeni desetinnych nul mezerou
+						for (i = strB.length() - 1; 0 < i; i--) {
+							if (strB.charAt(i) == '0' && strB.charAt(i-1) != '.') {
+								strB.replace(i, i + 1, " ");
+							} else {
+								break;
+							}
 						}
-					}
-					// vyhledani pozice desetinne tecky
-					for (i = strB.length() - 1; 0 < i; i--) {
-						if (strB.charAt(i) == '.') {
-							break;
+						// vyhledani pozice desetinne tecky
+						for (i = strB.length() - 1; 0 < i; i--) {
+							if (strB.charAt(i) == '.') {
+								break;
+							}
 						}
+						//vlozeni mezer za nasobky 1000
+						while(i > 3){strB.insert(i - 3, ' '); i -= 3;}
+						// nahrazeni desetinne tecky carkou
+						((JLabel) renderer).setText(strB.toString().replace('.', ','));
 					}
-					//vlozeni mezer za nasobky 1000
-					while(i > 3){strB.insert(i - 3, ' '); i -= 3;}
-					// nahrazeni desetinne tecky carkou
-					((JLabel) renderer).setText(strB.toString().replace('.', ','));
 				}
+				
 			} else if(pom.getName().equals(Integer.class.getName())) {
 				((JLabel) renderer).setHorizontalAlignment(JLabel.RIGHT);
+				String v = (String) value;
+				if(v != null){
+					if(v.length() > 3){
+						StringBuilder strB = new StringBuilder(v);
+						int i = v.length();
+						while(i > 3){strB.insert(i - 3, ' '); i -= 3;}
+						((JLabel) renderer).setText(strB.toString());
+					}
+				}
+				
 			} else {
 				((JLabel) renderer).setHorizontalAlignment(JLabel.LEFT);
 			}
