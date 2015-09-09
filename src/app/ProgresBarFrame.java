@@ -146,6 +146,7 @@ public class ProgresBarFrame extends JFrame implements ActionListener {
 		lblNewJgoodiesLabel.setVisible(false);
 		dbHotovo.setVisible(false);
 		apHotovo.setVisible(false);
+		dbProgressBar.setIndeterminate(true);
 	}
 	
 	public void setVytvarimAplikaci(){
