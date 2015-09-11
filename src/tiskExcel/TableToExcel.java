@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Locale;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -19,37 +20,36 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.usermodel.HeaderFooter;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.DataFormat;
 import org.apache.poi.ss.usermodel.Footer;
 import org.apache.poi.ss.usermodel.Header;
 import org.apache.poi.ss.usermodel.PrintSetup;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.ss.util.DateFormatConverter;
 
 import app.MainFrame;
 import sablony.ParametryFiltr;
 import sablony.tabulka.QueryTableModel;
 
 /**
- * Tøída pro export Table model do .xls souboru (Excel soubor). Návrh øešení problému:
- * 1. vytvoøit metodu se switchem, která podle èísla vypisu navratí název sheetu, nadpis, cestu kde uložit vèetnì jména
- * 2. vytvoøit metodu která nám vrátí kolik která bunka má šíøku a kolik øádek jsou nadpisy. 
- * 	 možná jen boolean jestli je to nutné, protože jediny kdo potøebuje víc øádkù
- *   je Licí plán - planovací - nezapomen doplnit poznamku do sloupce
- * 3. vytvoøit metodu která vloží data do xls souboru  (insertData(.))
- * Rozložení stránek (okraje stranky) budou pro všechny výpisy stejné
+ * Tøída pro export Table model do .xls souboru (Excel soubor).
+ * Rozložení stránek (okraje stranky) budou pro všechny výpisy stejné, kromì vypisZmetku. Ten ma specialni sablonu.
+ * Tøída se snaží detekovat jaky data type obsahuji sloupce a podle toho je pa ukladada.
  * @author Havlicek
  *
  */
 public class TableToExcel {
-	public static final int liciPlanZakl = 21;
-	public static final int liciPlanPlanovaci = 22;
-	public static final int planExpedice = 23;
-	public static final int VYPIS_ZMETKU_MZDY = 30;
+	public static final int NUMERICDATA = 89;
+	public static final int STRINGDATA = 90;
+	public static final int DATEDATA = 91;
 	
 	private JFrame hlavniOkno;
-	private static String [] columnNamesNotInt = {"Èíslo modelu", "Cislo_modelu","Jméno zákazníka","Èíslo objednávky",
-			"Jméno modelu", "Materiál", "Vlastní materiál"};
+	private static String [] columnNamesIsString = {"Èíslo modelu", "Cislo_modelu","Jméno zákazníka","Èíslo objednávky",
+			"Jméno modelu", "Materiál", "Vlastní materiál", "Cislo_tavby", "Èíslo tavby"};
+	
+	private SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
 	
 	/**
 	 * Vytvoøí .xls soubor do pøedem dané složky s jednoøádkovou hlavièkou.
@@ -92,6 +92,7 @@ public class TableToExcel {
 	 */
 	public TableToExcel(JFrame hlavniOkno, TableModel model,String nadpisExt, String name, int cisloExportu, boolean isNaVysku) throws Exception{
 		this.hlavniOkno = hlavniOkno;
+
 		this.export((QueryTableModel) model, nadpisExt, name, cisloExportu, isNaVysku);
 	}
 	
@@ -131,14 +132,18 @@ public class TableToExcel {
 		sheet.setMargin(Sheet.HeaderMargin, 0.1);
 		sheet.setMargin(Sheet.FooterMargin, 0.3);
 		
-		// font pro bunky		
+		// fonty a formaty pro bunky		
 		HSSFFont font = wb.createFont();
 		font.setFontHeightInPoints((short) 12);
-		//HSSFCellStyle style = wb.createCellStyle();
-		//style.setBorderTop(CellStyle.BORDER_DOUBLE);
-		//style.setFont(font);
+		HSSFCellStyle dateStyle = wb.createCellStyle();
+		dateStyle.setFont(font);
+		DataFormat poiDateFormat = wb.createDataFormat();
+	    String excelFormatPattern = DateFormatConverter.convert(new Locale("Cz", "cs"), "d.M.yyyy");
+		short dateFormat = poiDateFormat.getFormat(excelFormatPattern);
+		dateStyle.setDataFormat(dateFormat);
+		
 		//insert data
-		this.insertData(model, sheet, cisloExportu, font);
+		this.insertData(model, sheet, cisloExportu, font, dateStyle);
 		//set First row as header at all printed pages
 		sheet.setRepeatingRows(CellRangeAddress.valueOf("1:1"));	
 		
@@ -177,7 +182,7 @@ public class TableToExcel {
 	 * @param font font ktery použijeme v bunkach
 	 * @throws Exception
 	 */
-	private void insertData(QueryTableModel model, HSSFSheet sheet, int cisloExportu, HSSFFont font) throws Exception{
+	private void insertData(QueryTableModel model, HSSFSheet sheet, int cisloExportu, HSSFFont font, HSSFCellStyle dateStyle) throws Exception{
 		Row row = sheet.createRow(0);
 		Cell cell = null;
 		
@@ -185,32 +190,33 @@ public class TableToExcel {
 			
 		cell = row.createCell(0);
 		cell.setCellValue(model.getColumnName(0));
-			// naveni fontu
-		if (cisloExportu != liciPlanPlanovaci){ // Jedina vyjimka je liciPlanPlanovaci tomu zustane pismo velkosti 10, jem moc velky
-			cell.getCellStyle().setFont(font);
-		}
+		// naveni fontu
+		cell.getCellStyle().setFont(font);
+		
 		for(int i = 1; i < model.getColumnCount() -1 ; i++){ //mam totiž jeden sloupec navic aby se mi srovnali tabulky viz QuerytableModel
 			cell = row.createCell(i);
 			cell.setCellValue(model.getColumnName(i));
 		}
 		//detect data format
-		boolean [] isNumber = detectDataFormat(model); 
+		int [] isNumber = detectDataFormat(model, sdf); 
 		//insert data 
 		for(int i = 1; i <= model.getRowCount(); i++){
 			row = sheet.createRow(i);
 			for(int j = 0; j < model.getColumnCount() -1 ; j++){ //mam totiž jeden sloupec navic aby se mi srovnali tabulky viz QuerytableModel
 				cell = row.createCell(j);
-				
 				try {
-					if (isNumber[j]) {
+					if (isNumber[j] == NUMERICDATA) {
 						if (model.getValueAt(i - 1, j).length() > 0) {
 							cell.setCellValue(Double.parseDouble((model.getValueAt(i - 1, j))));
 						}
+					} else if (isNumber[j] == DATEDATA) {
+						cell.setCellValue(sdf.parse(model.getValueAt(i - 1, j)));
+						cell.setCellStyle(dateStyle);
 					} else {
 						cell.setCellValue(model.getValueAt(i - 1, j));
 					}
-				} catch (NumberFormatException | NullPointerException ex ) {
-					isNumber[j] = false;
+				} catch (NumberFormatException | NullPointerException | ParseException ex ) {
+					//isNumber[j] = STRINGDATA;
 					cell.setCellValue(model.getValueAt(i - 1, j));
 				}
 			}
@@ -248,7 +254,7 @@ public class TableToExcel {
 			atr[0] = "Výpis vyèištìných kusù za období";atr[1] = "Vyèištìné kusy od ";atr[2] = "./vypisy";
 			break;
 		case ParametryFiltr.MzdySlevacu:
-			atr[0] = "Mzdy slévaèù";atr[1] = "Mzdy slévaèù ke dni ";atr[2] = "./vypisy";
+			atr[0] = "Mzdy slévaèù";atr[1] = "Mzdy slévaèù od ";atr[2] = "./vypisy";
 			break;
 		case ParametryFiltr.VypisOdlitkuVKgKc:
 			atr[0] = "Výpis odlitkù v kg-kè za období";atr[1] = "Výpis odlitkù v kg-kè od " ;atr[2] = "./vypisy";
@@ -296,57 +302,83 @@ public class TableToExcel {
 	/**
 	 * Detects whether column is a number or not based on column name or column value.
 	 * @param model Table with values a column names
-	 * @return boolean field with n-1 columns of the table with true or false values
+	 * @return int field with n-1 columns of the table with values of data type
 	 */
-	private static boolean [] detectDataFormat(QueryTableModel model){
-		boolean [] isNumber = null;
+	private static int [] detectDataFormat(QueryTableModel model, SimpleDateFormat sdf){
+		int [] isNumber = new int [model.getColumnCount() - 1];
+		for(int i = 0; i < model.getColumnCount() - 1; i++){
+			Class<?> pom = model.getColumnClass(i);
+			if(pom.getName().equals(String.class.getName())){
+				isNumber[i] = STRINGDATA;
+			} else if(pom.getName().equals(Integer.class.getName())){
+				isNumber[i] = NUMERICDATA;
+			} else if(pom.getName().equals(Double.class.getName())){
+				isNumber[i] = NUMERICDATA;
+			} else if(pom.getName().equals(java.util.Date.class.getName())){
+				isNumber[i] = DATEDATA;
+			} else if(pom.getName().equals(Boolean.class.getName())){
+				isNumber[i] = STRINGDATA;
+			} else {
+				isNumber[i] = STRINGDATA;
+			}
+		}
+		
+		/*
 		if(model.getRowCount() >= 2){
-			isNumber = new boolean [model.getColumnCount()-1];
-			/**
-			 * Moc se tady nechapu ale doposud to funguje tak to nebudu menit
-			 */
+			isNumber = new int [model.getColumnCount()-1];
 			// pokud ma model vice nez dve radky
 			boolean exit = false;
 			for (int m = 0; m < 2; m++) { // kontroluju prvni dve radky
 				for (int j = 0; j < model.getColumnCount() - 1; j++) { // mam totiž jeden sloupec navic aby se mi srovnali tabulky viz QuerytableModel
 					String tmp = model.getValueAt(m, j);
-					try {
-						if (tmp != null) {
-							exit = false;
-							for(int i = 0; i < columnNamesNotInt.length;i++){ // zda sloupec neni nahodou povinny String a ne cislo
-								if(columnNamesNotInt[i].equalsIgnoreCase(model.getColumnName(j))){
-									isNumber[j] = false;
-									exit = true;
-									break;
-								}
+					if (tmp != null) {
+						exit = false;
+						String colName = model.getColumnName(j);
+						for(int i = 0; i < columnNamesIsString.length;i++){ // zda sloupec neni nahodou povinny String a ne cislo
+							if(columnNamesIsString[i].equalsIgnoreCase(model.getColumnName(j))){
+								isNumber[j] = STRINGDATA;
+								exit = true;
+								break;
 							}
-							if(exit){continue;}
-							
-							Double.parseDouble((tmp));
-							if(m > 0){
-								isNumber[j] = isNumber[j] && true; // ten and je jen pro nazornost // druhy radek tabulky
-							}else {
-								isNumber[j] = true; // prvni radek
-							}
-						} else {
-							isNumber[j] = false;
 						}
-					} catch (NumberFormatException nfe) {
-						isNumber[j] = false;
+						if(exit){continue;}
+						// test zda to je cislo
+						try {
+							Double.parseDouble((tmp));
+							if(m == 0){
+								isNumber[j] = NUMERICDATA; // ten and je jen pro nazornost // druhy radek tabulky
+							}else {
+								isNumber[j] = isNumber[j]; // prvni radek
+							}
+							continue;						
+						} catch (NumberFormatException nfe) {
+							// nothin
+						}
+						// test zda to je datum
+						try {
+							sdf.parse(tmp);
+							isNumber[j] = DATEDATA; // staci pouze aby jeden z techto dvou radku byl datum
+						} catch(ParseException  e){
+							if(m == 0)isNumber[j] = STRINGDATA;
+						}
+					} else {
+						if(isNumber[j] != DATEDATA)
+							isNumber[j] = STRINGDATA;
 					}
 				}
 			}
 		} else {
-			isNumber = new boolean [model.getColumnCount()-1];
+			isNumber = new int [model.getColumnCount()-1];
 			for(int i = 0; i < model.getColumnCount() - 1; i++){
-				isNumber[i] = false;
+				isNumber[i] = STRINGDATA;
 			}
 		}
+		*/
 		return isNumber;
 	}
 	
 	/**
-	 * Metoda pro vytvoreni specialniho vypisu zmetku pro sefa. Vymyslet sablonu. ;)
+	 * Metoda pro vytvoreni specialniho vypisu zmetku pro sefa.
 	 * @throws IOException 
 	 * @throws ParseException 
 	 */
@@ -379,7 +411,7 @@ public class TableToExcel {
 		sheet.setMargin(Sheet.FooterMargin, 0.3);
 		
 		/**
-		 * Pokud zmením velikost pisma (14) tak musím
+		 * Pokud zmením velikost pisma (14 nebo 13?) tak musím
 		 * zmìnit i èíslo ZMETKUNASTRANKU a POCETRADEKNASTRANKU podle toho.
 		 */
 		HSSFFont font = wb.createFont();
@@ -387,9 +419,15 @@ public class TableToExcel {
 		HSSFCellStyle style = wb.createCellStyle();
 		style.setBorderTop(CellStyle.BORDER_DOUBLE);
 		style.setFont(font);
+		HSSFCellStyle dateStyle = wb.createCellStyle();
+		dateStyle.setFont(font);
+		DataFormat poiDateFormat = wb.createDataFormat();
+	    String excelFormatPattern = DateFormatConverter.convert(new Locale("Cz", "cs"), "d.M.yyyy");
+		short dateFormat = poiDateFormat.getFormat(excelFormatPattern);
+		dateStyle.setDataFormat(dateFormat);
 		
 		//insert data
-		insertDataToVypisZmetkyMzdy(tm, sheet, font, style);
+		insertDataToVypisZmetkyMzdy(tm, sheet, font, style, dateStyle);
 		
 		// Write it into the output to a file
 		
@@ -418,7 +456,7 @@ public class TableToExcel {
 		
 	}
 	
-	private static void insertDataToVypisZmetkyMzdy(QueryTableModel model, HSSFSheet sheet, HSSFFont font, HSSFCellStyle style) throws ParseException{
+	private static void insertDataToVypisZmetkyMzdy(QueryTableModel model, HSSFSheet sheet, HSSFFont font, HSSFCellStyle style, HSSFCellStyle dateStyle) throws ParseException{
 		SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
 		int indexOfBeginRow = 0;
 		for(int i = 0; i < model.getRowCount(); i++){
@@ -426,7 +464,7 @@ public class TableToExcel {
 				int s = indexOfBeginRow % POCETRADEKNASTRANKU;
 				indexOfBeginRow += POCETRADEKNASTRANKU - s;
 			}
-			indexOfBeginRow = insertZmetekDoExcelu(model.getRow(i), sheet, indexOfBeginRow, sdf, font, style);
+			indexOfBeginRow = insertZmetekDoExcelu(model.getRow(i), sheet, indexOfBeginRow, sdf, font, style, dateStyle);
 		}
 	}
 	
@@ -448,9 +486,6 @@ public class TableToExcel {
 	public static final int CENAZAKUS = 12;
 	public static final int CENACELKEM = 13;
 	
-	public static final int STRINGDATA = 0;
-	public static final int NUMERICDATA = 1;
-	public static final int DATEDATA = 2;
 	
 	public static final int ZMETKUNASTRANKU = 4;
 	public static final int POCETRADEKNASTRANKU = 47;
@@ -460,35 +495,35 @@ public class TableToExcel {
 	 * @throws ParseException 
 	 */
 	public static int insertZmetekDoExcelu(String [] data, HSSFSheet sheet, int indexOfBeginRow, SimpleDateFormat sdf,
-			HSSFFont f, HSSFCellStyle style) throws ParseException{
+			HSSFFont f, HSSFCellStyle style, HSSFCellStyle dateStyle) throws ParseException{
 		// nastaveni tloustky bunky
 		//cell.getCellStyle().setBorderBottom(border);
 		
 		Cell cell = null;
 		Row row = null;
 		row = sheet.createRow(indexOfBeginRow);		
-		addRowValuesVypisZmetekMzdy(row, "Zákazník", data[JMENOZAKAZNIKA], STRINGDATA, null, null, STRINGDATA, sdf, f);
+		addRowValuesVypisZmetekMzdy(row, "Zákazník", data[JMENOZAKAZNIKA], STRINGDATA, null, null, STRINGDATA, sdf, f, dateStyle);
 		indexOfBeginRow++;
 		row = sheet.createRow(indexOfBeginRow);
-		addRowValuesVypisZmetekMzdy(row, "Název", data[JMENOMODELU], STRINGDATA, "È. modelu", data[CISLOMODELU], STRINGDATA, sdf, f);
+		addRowValuesVypisZmetekMzdy(row, "Název", data[JMENOMODELU], STRINGDATA, "È. modelu", data[CISLOMODELU], STRINGDATA, sdf, f, dateStyle);
 		indexOfBeginRow++;
 		row = sheet.createRow(indexOfBeginRow);
-		addRowValuesVypisZmetekMzdy(row, "Viník", data[JMENOVINIKA], STRINGDATA, "Druh vady", data[VADA], STRINGDATA, sdf, f);
+		addRowValuesVypisZmetekMzdy(row, "Viník", data[JMENOVINIKA], STRINGDATA, "Druh vady", data[VADA], STRINGDATA, sdf, f, dateStyle);
 		indexOfBeginRow++;
 		row = sheet.createRow(indexOfBeginRow);
-		addRowValuesVypisZmetekMzdy(row, "Datum", data[DATUMZMETKU], DATEDATA, "Kusù", data[KS], NUMERICDATA, sdf, f);
+		addRowValuesVypisZmetekMzdy(row, "Datum", data[DATUMZMETKU], DATEDATA, "Kusù", data[KS], NUMERICDATA, sdf, f, dateStyle);
 		indexOfBeginRow++;
 		row = sheet.createRow(indexOfBeginRow);
-		addRowValuesVypisZmetekMzdy(row, "Mzda za kus", data[NORMA], NUMERICDATA, "Mzda celkem", data[NORMACELKEM], NUMERICDATA, sdf, f);
+		addRowValuesVypisZmetekMzdy(row, "Mzda za kus", data[NORMA], NUMERICDATA, "Mzda celkem", data[NORMACELKEM], NUMERICDATA, sdf, f, dateStyle);
 		indexOfBeginRow++;
 		row = sheet.createRow(indexOfBeginRow);
-		addRowValuesVypisZmetekMzdy(row, "Hmotnost ks", data[HMOTNOSTNAKUS], NUMERICDATA, "Hmotnost celkem", data[HMOTNOSTCELKEM], NUMERICDATA, sdf, f);
+		addRowValuesVypisZmetekMzdy(row, "Hmotnost ks", data[HMOTNOSTNAKUS], NUMERICDATA, "Hmotnost celkem", data[HMOTNOSTCELKEM], NUMERICDATA, sdf, f, dateStyle);
 		indexOfBeginRow++;
 		row = sheet.createRow(indexOfBeginRow);
-		addRowValuesVypisZmetekMzdy(row, "P. cena", data[CENAZAKUS], NUMERICDATA, "Cena celkem", data[CENACELKEM], NUMERICDATA, sdf, f);
+		addRowValuesVypisZmetekMzdy(row, "P. cena", data[CENAZAKUS], NUMERICDATA, "Cena celkem", data[CENACELKEM], NUMERICDATA, sdf, f, dateStyle);
 		indexOfBeginRow++;
 		row = sheet.createRow(indexOfBeginRow);
-		addRowValuesVypisZmetekMzdy(row, "Materiál", data[VLASTNIMATERIAL], STRINGDATA, null, null, STRINGDATA, sdf, f);
+		addRowValuesVypisZmetekMzdy(row, "Materiál", data[VLASTNIMATERIAL], STRINGDATA, null, null, STRINGDATA, sdf, f, dateStyle);
 		indexOfBeginRow++;
 		row = sheet.createRow(indexOfBeginRow);
 		
@@ -522,7 +557,7 @@ public class TableToExcel {
 	private static void addRowValuesVypisZmetekMzdy(Row row,
 			String nazevHodnoty1, String hodnota1, int isNumber1,
 			String nazevHodnoty2, String hodnota2, int isNumber2,
-			SimpleDateFormat sdf, HSSFFont f) throws ParseException {
+			SimpleDateFormat sdf, HSSFFont f, HSSFCellStyle dateStyle) throws ParseException {
 		
 		Cell cell;
 		cell = row.createCell(0, Cell.CELL_TYPE_STRING);
@@ -534,6 +569,7 @@ public class TableToExcel {
 		} else  if (isNumber1 == DATEDATA){ // datum
 			cell = row.createCell(1);
 			cell.setCellValue(sdf.parse(hodnota1));
+			cell.setCellStyle(dateStyle);
 		} else {
 			cell = row.createCell(1, Cell.CELL_TYPE_STRING);
 			cell.setCellValue(hodnota1);
@@ -552,6 +588,7 @@ public class TableToExcel {
 		} else  if (isNumber2 == DATEDATA){ // datum
 			cell = row.createCell(4);
 			cell.setCellValue(sdf.parse(hodnota2));
+			cell.setCellStyle(dateStyle);
 		} else {
 			cell = row.createCell(4, Cell.CELL_TYPE_STRING);
 			cell.setCellValue(hodnota2);

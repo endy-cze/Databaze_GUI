@@ -6,11 +6,6 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Rectangle;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyListener;
-import java.util.Calendar;
 
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
@@ -18,7 +13,6 @@ import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableModel;
 
 import storage.SkladOdkazu;
@@ -93,6 +87,11 @@ public class ColorCellTable extends JTable{
 		// nastaveni Renderu - cell rendere
 		this.cellRenderer = new MyRenderer(tm, zmeneno, isPlanovani);
 		this.setDefaultRenderer(Object.class, cellRenderer);
+		this.setDefaultRenderer(String.class, cellRenderer);
+		this.setDefaultRenderer(Integer.class, cellRenderer);
+		this.setDefaultRenderer(Boolean.class, cellRenderer);
+		this.setDefaultRenderer(Double.class, cellRenderer);
+		this.setDefaultRenderer(java.util.Date.class, cellRenderer);
 		// nastaveni Vzhledu hlavicky
 		this.getTableHeader().setDefaultRenderer(new DefaultHeaderRenderer());
 		
@@ -223,6 +222,7 @@ public class ColorCellTable extends JTable{
 		private TableModel tm;
 		private boolean [][] zmeneno;
 		public boolean isRozvrhPlanovani;
+		private Font decimalFont = new Font("Courier New", Font.PLAIN, 16);
 		
 		public MyRenderer(TableModel tm, boolean [][] zmeneno, boolean isRozvrhPlanovani) {
 			super();
@@ -242,14 +242,60 @@ public class ColorCellTable extends JTable{
 		
 		@Override
 		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-		   Component renderer = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-		   ((JLabel) renderer).setOpaque(true);
-		   
-		   if(isRozvrhPlanovani && ( column == 3 ||column == 5 ||column == 7 ||column == 9)){
-			   ((JLabel) renderer).setHorizontalAlignment(JLabel.CENTER);
-		   }
-		   
-		   ((JLabel) renderer).setBorder(ohraniceniBunky);
+			Component renderer = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+			((JLabel) renderer).setOpaque(true);
+			
+			Class<?> pom = table.getColumnClass(column);
+			if (pom.getName().equals(Double.class.getName())) {
+				((JLabel) renderer).setHorizontalAlignment(JLabel.RIGHT);
+				((JLabel) renderer).setFont(decimalFont);
+				String v = (String) value;
+				if(v != null){
+					if (v.contains(".")) {
+						StringBuilder strB = new StringBuilder(v);
+						int i;
+						// nahrazeni desetinnych nul mezerou
+						for (i = strB.length() - 1; 0 < i; i--) {
+							if (strB.charAt(i) == '0' && strB.charAt(i-1) != '.') {
+								strB.replace(i, i + 1, " ");
+							} else {
+								break;
+							}
+						}
+						// vyhledani pozice desetinne tecky
+						for (i = strB.length() - 1; 0 < i; i--) {
+							if (strB.charAt(i) == '.') {
+								break;
+							}
+						}
+						//vlozeni mezer za nasobky 1000
+						while(i > 3){strB.insert(i - 3, ' '); i -= 3;}
+						// nahrazeni desetinne tecky carkou
+						((JLabel) renderer).setText(strB.toString().replace('.', ','));
+					}
+				}
+				
+			} else if(pom.getName().equals(Integer.class.getName())) {
+				((JLabel) renderer).setHorizontalAlignment(JLabel.RIGHT);
+				String v = (String) value;
+				if(v != null){
+					if(v.length() > 3){
+						StringBuilder strB = new StringBuilder(v);
+						int i = v.length();
+						while(i > 3){strB.insert(i - 3, ' '); i -= 3;}
+						((JLabel) renderer).setText(strB.toString());
+					}
+				}
+				
+			} else {
+				((JLabel) renderer).setHorizontalAlignment(JLabel.LEFT);
+			}
+			
+			if(isRozvrhPlanovani && ( column == 3 ||column == 5 ||column == 7 ||column == 9)){
+				((JLabel) renderer).setHorizontalAlignment(JLabel.CENTER);
+			}
+			
+			((JLabel) renderer).setBorder(ohraniceniBunky);
 		 
 		   Color foreground, background;
 		   if (isSelected) {

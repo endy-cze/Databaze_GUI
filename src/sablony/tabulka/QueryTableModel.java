@@ -68,9 +68,9 @@ public class QueryTableModel extends AbstractTableModel {
 	}
 	
 	public Class<?> getColumnClass(int columnIndex){
-		/*if(this.tridySloupcu != null){
+		if(this.tridySloupcu != null){
 			return tridySloupcu[columnIndex];
-		}*/
+		}
 		return String.class.getClass();
 	}
 	public String getColumnName(int i) {
@@ -111,24 +111,16 @@ public class QueryTableModel extends AbstractTableModel {
 		headers = new String[colCount];
 		tridySloupcu = new Class<?>[colCount];
 		for (int h = 1; h <= colCount; h++) {
+			tridySloupcu[h - 1] = String.class;
 			if (colCount - 1 >= h) {
-				// headers[h - 1] = meta.getColumnName(h);
 				headers[h - 1] = meta.getColumnLabel(h);
-				// tridySloupcu[h - 1] = this.getTridu(meta, h);
-				/*
-				 * Class<?> trida = this.getTridu(meta, h);
-				 * System.out.println(this.getTridu(meta, h));
-				 */
 			} else {
 				headers[h - 1] = " ";
-				tridySloupcu[h - 1] = String.class;
 			}
 		}
 
-		// and file the cache with the records from our query. This would
-		// not be
-		// practical if we were expecting a few million records in response
-		// to our
+		// and file the cache with the records from our query. This would not be
+		// practical if we were expecting a few million records in response to our
 		// query, but we aren't, so we can do this.
 		DecimalFormatSymbols sym = new DecimalFormatSymbols(Locale.ENGLISH);
 		DecimalFormat formatNumber = new DecimalFormat("##0.###", sym);
@@ -139,7 +131,6 @@ public class QueryTableModel extends AbstractTableModel {
 			String[] record = new String[colCount];
 			for (int i = 0; i < colCount; i++) {
 				if (colCount - 2 >= i) {
-					// System.out.println(i+" "+meta.getColumnTypeName(i+1)+" "+meta.getColumnType(i+1)+" "+java.sql.Types.TINYINT);
 					if (meta.getColumnTypeName(i + 1).equalsIgnoreCase("TINYINT")) { // tinyInt reprezentuje boolean
 						pom = rs.getString(i + 1);
 						if (pom.equalsIgnoreCase("0")) {
@@ -150,25 +141,25 @@ public class QueryTableModel extends AbstractTableModel {
 							record[i] = "neni boolean " + pom;
 							// record[i] = false;
 						}
-					} else if (meta.getColumnTypeName(i + 1).equalsIgnoreCase("DATE")) { // tinyInt reprezentuje boolean
+						tridySloupcu[i] = Boolean.class;
+					} else if (meta.getColumnTypeName(i + 1).equalsIgnoreCase("DATE")) {
 						datum = rs.getDate(i + 1);
 						pom = null;
 						if (datum != null) {
 							pom = sdf.format(datum);
 						}
 						record[i] = pom; 
-						// record[i] = datum;
+						tridySloupcu[i] = java.util.Date.class;
 					} else if (meta.getColumnTypeName(i + 1).startsWith("DECIMAL")) {
 						double x = rs.getDouble(i + 1);
+						formatNumber.setMinimumFractionDigits(meta.getScale(i + 1));
 						record[i] = formatNumber.format(x);
+						tridySloupcu[i] = Double.class;
 						// record[i] = x;
-					} /*
-					 * else if (meta.getColumnTypeName(i + 1).startsWith("INT"))
-					 * { // navic if() když menim Collum type class double x =
-					 * rs.getDouble(i + 1); //record[i] =
-					 * formatNumber.format(x); record[i] = x; }
-					 */
-					else {
+					} else if (meta.getColumnTypeName(i + 1).contains("INT")) {
+						record[i] = rs.getString(i + 1);
+						tridySloupcu[i] = Integer.class;
+					} else {
 						// pro zbytek
 						pom = rs.getString(i + 1);
 						record[i] = pom;
@@ -199,7 +190,9 @@ public class QueryTableModel extends AbstractTableModel {
 		ResultSetMetaData meta = rs.getMetaData();
 		colCount = meta.getColumnCount() + 1;
 		headers = new String[colCount];
+		tridySloupcu = new Class<?>[colCount];
 		for (int h = 1; h <= colCount; h++) {
+			tridySloupcu[h - 1] = String.class;
 			if (colCount - 1 >= h) {
 				headers[h - 1] = meta.getColumnLabel(h);
 			} else {
@@ -207,7 +200,7 @@ public class QueryTableModel extends AbstractTableModel {
 			}
 		}
 		DecimalFormatSymbols sym = new DecimalFormatSymbols(Locale.ENGLISH);
-		DecimalFormat formatNumber = new DecimalFormat("###.###", sym);
+		DecimalFormat formatNumber = new DecimalFormat("##0.###", sym);
 		do {
 			rs = stmt.getResultSet();
 			meta = rs.getMetaData();
@@ -232,6 +225,7 @@ public class QueryTableModel extends AbstractTableModel {
 								record[i] = "Ano";
 							else
 								record[i] = "neni boolean " + pom;
+							tridySloupcu[i] = Boolean.class;
 						} else if (meta.getColumnTypeName(i + 1).equalsIgnoreCase("DATE")) {
 							datum = rs.getDate(i + 1);
 							pom = null;
@@ -239,9 +233,15 @@ public class QueryTableModel extends AbstractTableModel {
 								pom = sdf.format(datum);
 							}
 							record[i] = pom;
+							tridySloupcu[i] = java.util.Date.class;
 						} else if (meta.getColumnTypeName(i + 1).startsWith("DECIMAL")) {
 							double x = rs.getDouble(i + 1);
+							formatNumber.setMinimumFractionDigits(meta.getScale(i + 1));
 							record[i] = formatNumber.format(x);
+							tridySloupcu[i] = Double.class;
+						} else if (meta.getColumnTypeName(i + 1).contains("INT")) {
+							record[i] = rs.getString(i + 1);
+							tridySloupcu[i] = Integer.class;
 						} else {
 							// pro zbytek
 							pom = rs.getString(i + 1);
@@ -454,21 +454,6 @@ public class QueryTableModel extends AbstractTableModel {
 		}
 		return cache;
 	}
-	
-	/*private Class<?> getTridu(ResultSetMetaData meta, int col) throws SQLException{
-		String name = meta.getColumnTypeName(col).toUpperCase();
-		if(name.contains("TINYINT")){
-			return Boolean.class;
-		} else if(name.contains("DATE")){
-			return java.sql.Date.class;
-		} else if(name.contains("DECIMAL")){
-			return Double.class;
-		} else if(name.contains("INT")){
-			return Double.class;
-		} else {
-			return String.class;
-		}
-	}*/
 }
 
 
