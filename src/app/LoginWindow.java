@@ -50,7 +50,7 @@ public class LoginWindow extends JFrame implements KeyListener {
 	/**
 	 * Verze
 	 */
-	public static final String verzeGUI = "1.4";
+	public static final String verzeGUI = "1.5";
 	/**
 	 * Ip adresa poèítaèe, na kterém se vyskytuje server, na který se budeme pøipojovat.
 	 */
