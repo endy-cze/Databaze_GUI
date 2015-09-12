@@ -3,9 +3,7 @@ package tiskExcel;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.text.SimpleDateFormat;
 
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.table.TableModel;
 
@@ -30,9 +28,6 @@ import app.MainFrame;
 public class PlanovaniLitiToExcelTisk {
 	
 	private MainFrame hlavniOkno;
-	private SimpleDateFormat sdf;
-	private static String [] columnNamesNotInt = {"Èíslo modelu", "Cislo_modelu","Jméno zákazníka","Èíslo objednávky",
-		"Jméno modelu", "Materiál", "Vlastní materiál"};
 	private final String [][] columnNamesPlanLiti = {
 			{"Zákazník", "Jméno modelu", "Èíslo modelu", "Po", "Út", "St", "Èt", "Pá", "Celk."},
 			{"Materiál", "Mater. 2", "Hmotnost", "Termín", "Objed.", "Odl – zm.", "Norma", "Norma celk."}
@@ -42,14 +37,6 @@ public class PlanovaniLitiToExcelTisk {
 			{1,1,1,1,1,  1,3,3}
 	};
 	
-	private final static int maxWidthMaterial = 256 * 9; // 9 je pocet písmen
-	private final static int maxWidtColumnIndex= 1;
-	private final static int paperSizeInChars= 11 * 9 - 2; // delka stranky A4 v poctu pismenech pismena velikosti 12
-	private final static int widthTerminLiti = 256 * 12;
-	private final static int terminLitiColumnIndex = 3;
-	private final static int widthObjednano = 256 * 1	;
-	private final static int objednanoColumnIndex = 256 * 7;
-	
 	private final static int TEXT = 1;
 	private final static int CISLO = 2;
 	private final int [][] dataFormat = {
@@ -58,14 +45,13 @@ public class PlanovaniLitiToExcelTisk {
 	};
 	
 	public static void exportPlanovaniLitiToExcel(MainFrame hlavniOkno, TableModel model,
-			String nadpisExt, String name, SimpleDateFormat sdf) throws Exception{
-		PlanovaniLitiToExcelTisk proces = new PlanovaniLitiToExcelTisk(hlavniOkno, (QueryTableModel) model, nadpisExt, name, sdf);
+			String nadpisExt, String name) throws Exception{
+		new PlanovaniLitiToExcelTisk(hlavniOkno, (QueryTableModel) model, nadpisExt, name);
 	}
 	
 	private PlanovaniLitiToExcelTisk(MainFrame hlavniOkno, QueryTableModel model,
-			String nadpisExt, String name, SimpleDateFormat sdf) throws Exception{
+			String nadpisExt, String name) throws Exception{
 		this.hlavniOkno = hlavniOkno;
-		this.sdf = sdf;
 		this.export(model, nadpisExt, name);;
 		
 	}
@@ -107,44 +93,50 @@ public class PlanovaniLitiToExcelTisk {
 		//vyska bunek
 		sheet.setDefaultRowHeightInPoints((short) 15);
 		
+		// obycejny styl
 		HSSFCellStyle obycBorder = wb.createCellStyle();
 		obycBorder.setBorderBottom(CellStyle.BORDER_THIN);
 		obycBorder.setBorderLeft(CellStyle.BORDER_THIN);
 		obycBorder.setBorderRight(CellStyle.BORDER_THIN);
 		obycBorder.setBorderTop(CellStyle.BORDER_THIN);
 		obycBorder.setVerticalAlignment(CellStyle.VERTICAL_CENTER); // zarovnat na vysku na stred
+		obycBorder.setAlignment(CellStyle.ALIGN_LEFT); // zarovnani doleva (default)
 		obycBorder.setFont(font);
 		
 		// styl bunky s dvojitou hranici dole a 12 pismem
-		HSSFCellStyle style = wb.createCellStyle();
-		style.setBorderBottom(CellStyle.BORDER_THIN);
-		style.setBorderLeft(CellStyle.BORDER_THIN);
-		style.setBorderRight(CellStyle.BORDER_THIN);
-		style.setBorderTop(CellStyle.BORDER_THICK);
-		style.setVerticalAlignment(CellStyle.VERTICAL_CENTER); // zarovnat na vysku na stred
-		style.setFont(font);
+		HSSFCellStyle styleWithThinBorder = wb.createCellStyle();
+		styleWithThinBorder.setBorderBottom(CellStyle.BORDER_THIN);
+		styleWithThinBorder.setBorderLeft(CellStyle.BORDER_THIN);
+		styleWithThinBorder.setBorderRight(CellStyle.BORDER_THIN);
+		styleWithThinBorder.setBorderTop(CellStyle.BORDER_THICK);
+		styleWithThinBorder.setVerticalAlignment(CellStyle.VERTICAL_CENTER); // zarovnat na vysku na stred
+		styleWithThinBorder.setAlignment(CellStyle.ALIGN_LEFT); // zarovnani doleva (default)
+		styleWithThinBorder.setFont(font);
 		
-/*		
-		HSSFCellStyle obycBorderGeneralAlign = wb.createCellStyle();
-		obycBorderGeneralAlign.setBorderBottom(CellStyle.BORDER_THIN);
-		obycBorderGeneralAlign.setBorderLeft(CellStyle.BORDER_THIN);
-		obycBorderGeneralAlign.setBorderRight(CellStyle.BORDER_THIN);
-		obycBorderGeneralAlign.setBorderTop(CellStyle.BORDER_THIN);
-		obycBorderGeneralAlign.setFont(font);
-		obycBorderGeneralAlign.setAlignment(CellStyle.ALIGN_GENERAL);
+		// obycejny styl se zarovnanim na stred
+		HSSFCellStyle obycBorderCentered = wb.createCellStyle();
+		obycBorderCentered.setBorderBottom(CellStyle.BORDER_THIN);
+		obycBorderCentered.setBorderLeft(CellStyle.BORDER_THIN);
+		obycBorderCentered.setBorderRight(CellStyle.BORDER_THIN);
+		obycBorderCentered.setBorderTop(CellStyle.BORDER_THIN);
+		obycBorderCentered.setVerticalAlignment(CellStyle.VERTICAL_CENTER); // zarovnat na vysku na stred
+		obycBorderCentered.setAlignment(CellStyle.ALIGN_CENTER); // zarovnani doprostred)
+		obycBorderCentered.setFont(font);
 		
-		// styl bunky s dvojitou hranici dole a 12 pismem
-		HSSFCellStyle styleGeneralAlign = wb.createCellStyle();
-		styleGeneralAlign.setBorderBottom(CellStyle.BORDER_THIN);
-		styleGeneralAlign.setBorderLeft(CellStyle.BORDER_THIN);
-		styleGeneralAlign.setBorderRight(CellStyle.BORDER_THIN);
-		styleGeneralAlign.setBorderTop(CellStyle.BORDER_DOUBLE);
-		styleGeneralAlign.setFont(font);
-		styleGeneralAlign.setAlignment(CellStyle.ALIGN_GENERAL);
-*/
+		// styl bunky s dvojitou hranici dole a 12 pismem a se zarovnanim na stred
+		HSSFCellStyle styleWithThinBorderCentered = wb.createCellStyle();
+		styleWithThinBorderCentered.setBorderBottom(CellStyle.BORDER_THIN);
+		styleWithThinBorderCentered.setBorderLeft(CellStyle.BORDER_THIN);
+		styleWithThinBorderCentered.setBorderRight(CellStyle.BORDER_THIN);
+		styleWithThinBorderCentered.setBorderTop(CellStyle.BORDER_THICK);
+		styleWithThinBorderCentered.setVerticalAlignment(CellStyle.VERTICAL_CENTER); // zarovnat na vysku na stred
+		styleWithThinBorderCentered.setAlignment(CellStyle.ALIGN_CENTER); // zarovnani doprostred
+		styleWithThinBorderCentered.setFont(font);
+		
+		
 		
 		//insert data
-		this.insertDataPlanovani(model, sheet, obycBorder, style);
+		this.insertDataPlanovani(model, sheet, obycBorder, styleWithThinBorder, obycBorderCentered, styleWithThinBorderCentered);
 		//this.insertDataPlanovani(model, sheet, obycBorder, style, obycBorderGeneralAlign, styleGeneralAlign);
 		
 		//set First row as header at all printed pages
@@ -203,8 +195,9 @@ public class PlanovaniLitiToExcelTisk {
 	 * @param font font ktery použijeme v bunkach
 	 * @throws Exception
 	 */
-	private void insertDataPlanovani(QueryTableModel model, HSSFSheet sheet, HSSFCellStyle obycBorder, HSSFCellStyle stylBunkySDvojitouHranici) throws Exception{
-			// ,HSSFCellStyle obycBorderGeneralAlign, HSSFCellStyle stylBunkySDvojitouHraniciGeneralAlign) throws Exception{
+	private void insertDataPlanovani(QueryTableModel model, HSSFSheet sheet, HSSFCellStyle obycBorder,
+			HSSFCellStyle stylBunkySDvojitouHranici, HSSFCellStyle obycBorderCentered,
+			HSSFCellStyle stylBunkySDvojitouHraniciCentered) throws Exception{
 		Row row = null;
 		Cell cell = null;
 		// vyska radky
@@ -227,11 +220,21 @@ public class PlanovaniLitiToExcelTisk {
 					cell = row.createCell(sloupec);
 					if(m == 0)cell.setCellValue(columnNamesPlanLiti[j][i]);
 					sloupec++;
-					cell.setCellStyle(obycBorder);
+					
+					// nastaveni stylu pro bunku (zatim mam celkem 4)
 					if( j % 2 == 0){
-						cell.setCellStyle(stylBunkySDvojitouHranici);
+						if(isCenteredLeft(columnNamesPlanLiti[j][i])){
+							cell.setCellStyle(stylBunkySDvojitouHraniciCentered);
+						} else {
+							cell.setCellStyle(stylBunkySDvojitouHraniciCentered);
+						}
+					} else {
+						if(isCenteredLeft(columnNamesPlanLiti[j][i])){
+							cell.setCellStyle(obycBorderCentered);
+						} else {
+							cell.setCellStyle(obycBorderCentered);
+						}
 					}
-					cell.getCellStyle().setAlignment(CellStyle.ALIGN_CENTER);
 				}
 				sheet.addMergedRegion(new CellRangeAddress(j,j,cisBunky,cisBunky + sirkyBunek[j][i] - 1));
 				cisBunky += sirkyBunek[j][i];
@@ -266,11 +269,20 @@ public class PlanovaniLitiToExcelTisk {
 							sloupecModeluData++;
 						}
 						sloupec++;
-						//cell.setCellStyle(obycBorderGeneralAlign);¨
-						cell.setCellStyle(obycBorder);
+						
+						// nastaveni stylu pro bunku (zatim mam celkem 4)
 						if( j % 2 == 0){
-							cell.setCellStyle(stylBunkySDvojitouHranici);
-							//cell.setCellStyle(stylBunkySDvojitouHraniciGeneralAlign);
+							if(isCenteredLeft(columnNamesPlanLiti[j][i])){
+								cell.setCellStyle(stylBunkySDvojitouHranici);
+							} else {
+								cell.setCellStyle(stylBunkySDvojitouHraniciCentered);
+							}
+						} else {
+							if(isCenteredLeft(columnNamesPlanLiti[j][i])){
+								cell.setCellStyle(obycBorder);
+							} else {
+								cell.setCellStyle(obycBorderCentered);
+							}
 						}
 					}
 					sheet.addMergedRegion(new CellRangeAddress(rowIndex +2,rowIndex +2,cisBunky,cisBunky + sirkyBunek[j][i] - 1));
@@ -280,45 +292,25 @@ public class PlanovaniLitiToExcelTisk {
 			}
 		}
 		
-		//Format data
+		// zarovnat sloupce podle dat
 		
 		for(int i = 0; i < colCount ; i++){//mam totiž jeden sloupec navic aby se mi srovnali tabulky viz QuerytableModel
 			sheet.autoSizeColumn(i,true);
 		}
 		
-		
-		
-		
-		// overeni že se vše vejde
-		// zmerim si delku  použite stranky
-		/*
-		int paperWidth = 0;
-		for(int i = 0; i < colCount ; i++){
-			paperWidth += sheet.getColumnWidth(i);
+	}
+	
+	private boolean isCenteredLeft(String columnName){
+		for(int i = 0; i < 3; i++){ // prvni tri to jsou
+			if(this.columnNamesPlanLiti[0][i].equals(columnName)){
+				return true;
+			}
 		}
-		int widthInChars = paperWidth / 256;
-		
-		// nastaveni sirky datumu to je vždy stejny
-		if (widthInChars > paperSizeInChars){
-			sheet.setColumnWidth(terminLitiColumnIndex, widthTerminLiti);
+		for(int i = 0; i < 2; i++){ // prvni dva to jsou
+			if(this.columnNamesPlanLiti[1][i].equals(columnName)){
+				return true;
+			}
 		}
-		// mozna nastavim i sirku odlito a odlito - zm, to je vetsinou jen jedno cislo
-		
-		//if (widthInChars > paperSizeInChars){
-		//	sheet.setColumnWidth(objednanoColumnIndex, widthObjednano);
-		//}
-		
-		// nastaveni sirky materialu
-		if (widthInChars > paperSizeInChars){
-			// v prvnim radku je prvni bunka sloucena do dvou
-			// ve druhem radu je vl. material  a pak material
-			int rozdilDoOptimalityInChars = widthInChars - paperSizeInChars;
-			int width = Math.max(maxWidthMaterial, sheet.getColumnWidth(maxWidtColumnIndex) - rozdilDoOptimalityInChars * 256);
-			sheet.setColumnWidth(maxWidtColumnIndex, width);	
-		}
-		*/
-		
-		// nastaveni sirky datumu to je vždy stejny
-		
+		return false;
 	}
 }

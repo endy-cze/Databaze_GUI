@@ -304,7 +304,7 @@ public class HledejListener implements ActionListener, MouseListener {
 			String extend = lastUsedWeekNumberAYear[0] +" v roce "+  lastUsedWeekNumberAYear[1] + ", " + this.lastUsedFormovna;
 			
 			//TableToExcel.exportToExcelNaSirku(hlavniOkno, mod, extend, "Planovaci_lici_plan", cisloExportu);
-			PlanovaniLitiToExcelTisk.exportPlanovaniLitiToExcel(hlavniOkno, mod, extend, "Planovaci_lici_plan", sdf);
+			PlanovaniLitiToExcelTisk.exportPlanovaniLitiToExcel(hlavniOkno, mod, extend, "Planovaci_lici_plan");
 		}
 	}
 	
