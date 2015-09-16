@@ -35,6 +35,7 @@ public class CreateConectionToMySQL implements ActionListener {
 	private final String driver = "com.mysql.jdbc.Driver";
 	private final String spatneHeslo= "Access denied for user";
 	private final String neniPripojeni= "Communications link failure";
+	private static final String acesDenied = "execute command denied to user";
 	private JFrame loginWindow;
 	private ProgresBarFrame prgbarFrame;
 	private Task t;
@@ -144,19 +145,25 @@ public class CreateConectionToMySQL implements ActionListener {
         	} catch (SQLException e){
         		prgbarFrame.setVisible(false);
         		prgbarFrame.setZalohaDB();
-				//ExceptionWin.showExceptionMessage(e);
-    			JOptionPane.showMessageDialog(loginWindow, "Objevila se chyba pøi vytváøení GUI, CreateConection -doInBackground(), pokud chcete obnovit databázi vyberte soubor strukturaDB.sql");
-    			File curDirectory = new File("./");
-    			File obnovDBSqlFile = null;
-    			JFileChooser chooser = new JFileChooser(curDirectory);
-    		    FileNameExtensionFilter filter = new FileNameExtensionFilter("Soubor SQL", "sql");
-    		    chooser.setFileFilter(filter);
-    		    chooser.setDialogTitle("Vyberte soubor strukturaDB.sql");
-    		    returnVal = chooser.showOpenDialog(loginWindow);
-    		    if(returnVal == JFileChooser.APPROVE_OPTION) {
-    		    	prgbarFrame.setVisible(true);
-    		    	obnovaStrukturyDB(conn, chooser.getSelectedFile());
-    		    }
+        		if(e.getMessage().startsWith(acesDenied)){        			
+        			JOptionPane.showMessageDialog(loginWindow, "Chybí vám pravomoce. Kontaktuje prosím administrátora.");
+				} else {
+					//ExceptionWin.showExceptionMessage(e);
+					e.printStackTrace();
+					JOptionPane.showMessageDialog(loginWindow, "Objevila se chyba pøi vytváøení GUI, CreateConection -doInBackground(), pokud chcete obnovit databázi vyberte soubor strukturaDB.sql");
+					File curDirectory = new File("./");
+					File obnovDBSqlFile = null;
+					JFileChooser chooser = new JFileChooser(curDirectory);
+					FileNameExtensionFilter filter = new FileNameExtensionFilter("Soubor SQL", "sql");
+					chooser.setFileFilter(filter);
+					chooser.setDialogTitle("Vyberte soubor strukturaDB.sql");
+					returnVal = chooser.showOpenDialog(loginWindow);
+					if(returnVal == JFileChooser.APPROVE_OPTION) {
+						prgbarFrame.setVisible(true);
+						obnovaStrukturyDB(conn, chooser.getSelectedFile());
+					}
+				}
+				
         	}
         	
         	if(returnVal != 0){
