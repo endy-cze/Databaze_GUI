@@ -42,7 +42,7 @@ public class SQLStor {
 	private static final int dobaNaZavrenyPripojeni = 1*60000;
 	private static final int maxDelkaRetezce = 30;
 	private static final int maxDelkaPaganyrky = 5;
-	private static final int maxDelkaPoznamkyUZakazky = 45, maxDelkaVady = 45;
+	private static final int maxDelkaPoznamkyUZakazky = 45, maxDelkaVady = 45, maxDelkaPoznamkyUModelu = 50;
 	private static final int maxDelkamaterialu = 25, maxDelkaVinika = 25;
 	private static final int maxDelkaVlastnihoMaterialu = 10, maxDelkaCislaTavby = 10;
 	private static final int maxPocetKusuNovaZakazka = 1500;
@@ -61,10 +61,10 @@ public class SQLStor {
 	 * Sql prikazy
 	 */
 	private final String [][] sqlPrikazy = {
-			{"{CALL pomdb.novyZakaznik(?)}", "{CALL pomdb.novyModel(?,?,?,?,?,?,?,?)}", "{CALL pomdb.novaZakazka(?,?,?,?,?,?,?,?,?,?,?,?)}"},   // insert
+			{"{CALL pomdb.novyZakaznik(?)}", "{CALL pomdb.novyModel(?,?,?,?,?,?,?,?,?)}", "{CALL pomdb.novaZakazka(?,?,?,?,?,?,?,?,?,?,?,?)}"},   // insert
 			{"{CALL pomdb.vyberZakazniky(?)}", "{CALL pomdb.vyberModely(?,?,?,?,?,?,?,?)}", "{CALL pomdb.vyberZakazky2(?,?,?,?,?,?,?,?)}",
 				"{CALL pomdb.vyberFyzKusy(?,?)}", "{CALL pomdb.vyberZmetky(?,?,?,?,?,?,?,?)}"},	//select
-			{"{CALL pomdb.upravZakaznika(?,?)}", "{CALL pomdb.upravModel(?,?,?,?,?,?,?,?,?)}", "{CALL pomdb.upravZakazku(?,?,?,?,?,?,?,?,?,?,?,?,?)}"},  //update
+			{"{CALL pomdb.upravZakaznika(?,?)}", "{CALL pomdb.upravModel(?,?,?,?,?,?,?,?,?,?)}", "{CALL pomdb.upravZakazku(?,?,?,?,?,?,?,?,?,?,?,?,?)}"},  //update
 			{"{CALL pomdb.zadej_cislo_faktury_cislo_tavby_prohlizeci(?,?,?)}", "{CALL pomdb.zadejPlanovanyDatumLiti(?,?)}", "{CALL pomdb.zadejOdlitek(?,?,?,?,?,?,?,?,?,?,?)}",
 				"{CALL pomdb.zadejUdajeOZmetku(?,?,?,?)}", "{CALL pomdb.zadejDilciTerminy(?,?,?,?)}"}, // "{CALL pomdb.zadejDatumVycistenehoKusu(?,?,?)}"
 			{"{CALL pomdb.pridejVinika(?)}", "{CALL pomdb.pridejVadu(?)}", "{CALL pomdb.planovaniRozvrh(?,?)}", "{CALL pomdb.generujKusy(?)}",
@@ -177,11 +177,12 @@ public class SQLStor {
 	 * @param isOdhadHmot
 	 * @param formovna
 	 * @param norma
+	 * @param poznamkaModel
 	 * @throws SQLException
 	 */
 	
 	public void novyModel(String jmeno, String cisloModelu, String material, String materialVlastni, double hmotnost,
-			boolean isOdhadHmot,  String formovna, double norma) throws SQLException{
+			boolean isOdhadHmot,  String formovna, double norma, String poznamkaModel) throws SQLException{
 		int i = 0, j = 1;
 		if(jmeno == null){
 			JOptionPane.showMessageDialog(hlavniOkno, "Jméno modelu je prázdné");
@@ -231,6 +232,12 @@ public class SQLStor {
 			JOptionPane.showMessageDialog(hlavniOkno, "Norma je menší nebo rovno nule");
 			return;
 		}
+		if(poznamkaModel != null){
+			if(poznamkaModel.length() > maxDelkaPoznamkyUModelu){
+				JOptionPane.showMessageDialog(hlavniOkno, "Poznámka je moc dlouhá");
+				return;
+			}
+		}	
 		
 		if(cst[i][j] == null){
 			cst[i][j] = conn.prepareCall(sqlPrikazy[i][j]);
@@ -238,7 +245,7 @@ public class SQLStor {
 		}
 		c = cst[i][j];
 		c.setString(1, jmeno); c.setString(2, cisloModelu); c.setString(3, material); c.setString(4, materialVlastni);
-		c.setDouble(5, hmotnost); c.setBoolean(6, isOdhadHmot); c.setString(7, formovna); c.setDouble(8, norma);
+		c.setDouble(5, hmotnost); c.setBoolean(6, isOdhadHmot); c.setString(7, formovna); c.setDouble(8, norma);c.setString(9, poznamkaModel);
 		ResultSet rs = c.executeQuery();
 		if(rs.next()){
 			JOptionPane.showMessageDialog(sklad.getHlavniOkno(),"Model byl úspìšnì pøidán do databáze, jeho ID je: "+rs.getInt(1));
@@ -695,9 +702,11 @@ public class SQLStor {
 	 * @param isOdhadHmot
 	 * @param formovna
 	 * @param norma
+	 * @param poznamkaModel
 	 * @throws SQLException
 	 */
-	public void updateModel(int idModelu, String jmenoModelu, String cisloModelu, String material, String materialVlastni, double hmotnost, boolean isOdhadHmot, String formovna, double norma) throws SQLException{
+	public void updateModel(int idModelu, String jmenoModelu, String cisloModelu, String material, String materialVlastni,
+			double hmotnost, boolean isOdhadHmot, String formovna, double norma, String poznamkaModel) throws SQLException{
 		if(idModelu < 0){
 			JOptionPane.showMessageDialog(hlavniOkno, "Id modelu je špatnì zapsané v programu");
 			return;
@@ -734,16 +743,20 @@ public class SQLStor {
 			JOptionPane.showMessageDialog(hlavniOkno, "Hmotnost je menší nebo rovno nule");
 			return;
 		}
-		
 		if(formovna == null){
 			JOptionPane.showMessageDialog(hlavniOkno, "Formovna je špatnì zapsána");
+			return;
 		}
 		else if( formovna.length() != 1){
 			JOptionPane.showMessageDialog(hlavniOkno, "Formovna je špatnì zapsána");
 			return;
 		}
-			
-			
+		if(poznamkaModel != null){
+			if(poznamkaModel.length() > maxDelkaPoznamkyUModelu){
+				JOptionPane.showMessageDialog(hlavniOkno, "Poznámka je moc dlouhá");
+				return;
+			}
+		}			
 		
 		
 		
@@ -755,7 +768,7 @@ public class SQLStor {
 		}
 		c = cst[i][j];
 		c.setInt(1, idModelu); c.setString(2, jmenoModelu); c.setString(3, cisloModelu); c.setString(4, material); c.setString(5, materialVlastni);
-		c.setDouble(6, hmotnost); c.setBoolean(7, isOdhadHmot); c.setString(8, formovna); c.setDouble(9, norma);
+		c.setDouble(6, hmotnost); c.setBoolean(7, isOdhadHmot); c.setString(8, formovna); c.setDouble(9, norma);c.setString(10, poznamkaModel);
 		c.execute();
 	}
 	

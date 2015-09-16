@@ -29,19 +29,19 @@ public class PlanovaniLitiToExcelTisk {
 	
 	private MainFrame hlavniOkno;
 	private final String [][] columnNamesPlanLiti = {
-			{"Zákazník", "Jméno modelu", "Èíslo modelu", "Po", "Út", "St", "Èt", "Pá", "Celk."},
-			{"Materiál", "Mater. 2", "Hmotnost", "Termín", "Objed.", "Odl – zm.", "Norma", "Norma celk."}
+			{"Zákazník", "Jméno modelu", "Èíslo modelu", "Po", "Út", "St", "Èt", "Pá", "Celk.", "Pozn. zakázka"},
+			{"Materiál", "Mater. 2", "Hmotnost", "Termín", "Objed.", "Odl – zm.", "Norma", "Norma celk.", "Pozn. model"}
 			};
 	private final int [][] sirkyBunek = {
-			{2,2,2,1,1,  1,1,1,1},
-			{1,1,1,1,1,  1,3,3}
+			{2,2,2,1,1,  1,1,1,1,1},
+			{1,1,1,1,1,  1,3,3,1}
 	};
 	
 	private final static int TEXT = 1;
 	private final static int CISLO = 2;
 	private final int [][] dataFormat = {
-			{TEXT,TEXT,TEXT,CISLO,CISLO,   CISLO,CISLO,CISLO,CISLO},
-			{TEXT,TEXT,CISLO,TEXT,CISLO,   CISLO, CISLO, CISLO}
+			{TEXT,TEXT,TEXT,CISLO,CISLO,   CISLO,CISLO,CISLO,CISLO, TEXT},
+			{TEXT,TEXT,CISLO,TEXT,CISLO,   CISLO, CISLO, CISLO, TEXT}
 	};
 	
 	public static void exportPlanovaniLitiToExcel(MainFrame hlavniOkno, TableModel model,
@@ -310,6 +310,10 @@ public class PlanovaniLitiToExcelTisk {
 			if(this.columnNamesPlanLiti[1][i].equals(columnName)){
 				return true;
 			}
+		}
+		// poznamka model a poznamka zakazka to jsou taky
+		if(columnNamesPlanLiti[0][9].equals(columnName) || columnNamesPlanLiti[1][8].equals(columnName)){
+			return true;
 		}
 		return false;
 	}

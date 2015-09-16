@@ -58,6 +58,9 @@ public class PromOknoNovyModel extends JPanel{
 	private JLabel nadpisLabelModel;
 	private JLabel lblNewLabel;
 	private JLabel lblNormaSe;
+	private JLabel lblPoznmka;
+	private JTextField textPoznamkaModel;
+	private JLabel lblkonstruknZmenyApod;
 	
 	public void setUpravModel(String [] parametryModelu){
 		popisIdModelu.setVisible(true);
@@ -123,6 +126,7 @@ public class PromOknoNovyModel extends JPanel{
 		listTextComponent[6] = isOdhatHmotnost;
 		listTextComponent[7] = textFormovna;
 		listTextComponent[8] = textNorma;
+		listTextComponent[9] = textPoznamkaModel;
 	}
 	public void zvetsiPismo(){
 		Font f = new Font("Tahoma", Font.PLAIN, 12);
@@ -145,9 +149,9 @@ public class PromOknoNovyModel extends JPanel{
 		
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[] {20, 0, 20, 20, 35, 37, 72, 0, 30, 30, 30, 30, 100, 68, 0, 20, 0};
-		gridBagLayout.rowHeights = new int[]{0, 0, 0, 0, 15, 0, 0, 19, 0, 19, 35, 24, 35, 0, 0, 20, 0};
+		gridBagLayout.rowHeights = new int[]{0, 0, 0, 0, 15, 0, 0, 19, 0, 19, 0, 35, 24, 35, 0, 0, 20, 0};
 		gridBagLayout.columnWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, Double.MIN_VALUE};
-		gridBagLayout.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, Double.MIN_VALUE};
+		gridBagLayout.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, Double.MIN_VALUE};
 		setLayout(gridBagLayout);
 		
 		nadpisLabelModel = new JLabel("P\u0159idat nov\u00FD model");
@@ -342,12 +346,39 @@ public class PromOknoNovyModel extends JPanel{
 		gbc_lblNormaSe.gridx = 9;
 		gbc_lblNormaSe.gridy = 8;
 		add(lblNormaSe, gbc_lblNormaSe);
+		
+		lblPoznmka = new JLabel("Pozn\u00E1mka:");
+		GridBagConstraints gbc_lblPoznmka = new GridBagConstraints();
+		gbc_lblPoznmka.anchor = GridBagConstraints.WEST;
+		gbc_lblPoznmka.insets = new Insets(0, 0, 5, 5);
+		gbc_lblPoznmka.gridx = 1;
+		gbc_lblPoznmka.gridy = 9;
+		add(lblPoznmka, gbc_lblPoznmka);
+		
+		textPoznamkaModel = new JTextField();
+		GridBagConstraints gbc_textPoznamkaModel = new GridBagConstraints();
+		gbc_textPoznamkaModel.gridwidth = 6;
+		gbc_textPoznamkaModel.insets = new Insets(0, 0, 5, 5);
+		gbc_textPoznamkaModel.fill = GridBagConstraints.HORIZONTAL;
+		gbc_textPoznamkaModel.gridx = 2;
+		gbc_textPoznamkaModel.gridy = 9;
+		add(textPoznamkaModel, gbc_textPoznamkaModel);
+		textPoznamkaModel.setColumns(10);
+		
+		lblkonstruknZmenyApod = new JLabel("(konstruk\u010Dn\u00ED zm\u011Bny apod.)");
+		GridBagConstraints gbc_lblkonstruknZmenyApod = new GridBagConstraints();
+		gbc_lblkonstruknZmenyApod.anchor = GridBagConstraints.WEST;
+		gbc_lblkonstruknZmenyApod.gridwidth = 5;
+		gbc_lblkonstruknZmenyApod.insets = new Insets(0, 0, 5, 5);
+		gbc_lblkonstruknZmenyApod.gridx = 9;
+		gbc_lblkonstruknZmenyApod.gridy = 9;
+		add(lblkonstruknZmenyApod, gbc_lblkonstruknZmenyApod);
 		GridBagConstraints gbc_pridatModel = new GridBagConstraints();
 		gbc_pridatModel.gridwidth = 4;
 		gbc_pridatModel.fill = GridBagConstraints.BOTH;
 		gbc_pridatModel.insets = new Insets(0, 0, 7, 5);
 		gbc_pridatModel.gridx = 1;
-		gbc_pridatModel.gridy = 10;
+		gbc_pridatModel.gridy = 11;
 		add(pridatModel, gbc_pridatModel);
 		
 		/*

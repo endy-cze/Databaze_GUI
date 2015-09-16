@@ -56,12 +56,13 @@ public class PridejZakaznikaList implements ActionListener {
 		else if(com.equalsIgnoreCase("PridejNovyModelAction")){
 			Component [] comp = sklad.getNovyModelListTextComponent();
 			String pom;
-			String jmeno; String cisloModelu; String material; String materialVlastni; double hmotnost; boolean isOdhadHmot;  String formovna; double norma;
+			String jmeno; String cisloModelu; String material; String materialVlastni; double hmotnost; boolean isOdhadHmot;  String formovna; double norma;String poznamkaModel;
 			// comp[0] je Id modelu
 			jmeno = ((JTextField)comp[1]).getText();
 			cisloModelu = ((JTextField)comp[2]).getText();
 			material = ((JTextField)comp[3]).getText();
 			materialVlastni = ((JTextField)comp[4]).getText();
+			poznamkaModel = ((JTextField)comp[9]).getText();
 			pom = ((JTextField)comp[5]).getText();
 			try {
 				pom = ((JTextField) comp[5]).getText();
@@ -73,13 +74,13 @@ public class PridejZakaznikaList implements ActionListener {
 				pom = ((JTextField) comp[8]).getText();
 				pom = pom.replace(',', '.');
 				norma = myRound(Double.parseDouble(pom), 1);
-				System.out.println(norma);
+ 
 				if(jmeno.isEmpty() || cisloModelu.isEmpty() || material.isEmpty() || materialVlastni.isEmpty() || formovna.isEmpty()){
 					JOptionPane.showMessageDialog(sklad.getHlavniOkno(),"Nìjaké pole je prázdné");
 					return;
 				}
 				try {
-					sql.novyModel(jmeno, cisloModelu, material,	materialVlastni, hmotnost, isOdhadHmot, formovna,norma);
+					sql.novyModel(jmeno, cisloModelu, material,	materialVlastni, hmotnost, isOdhadHmot, formovna, norma, poznamkaModel);
 				} catch (SQLException e) {
 					if(e.getLocalizedMessage().startsWith(acesDenied)){
 						JOptionPane.showMessageDialog(sklad.getHlavniOkno(), "Na tuto operaci nemáte pravomoce");
@@ -99,13 +100,14 @@ public class PridejZakaznikaList implements ActionListener {
 			Component [] comp = sklad.getNovyModelListTextComponent();
 			String pom;
 			int idzakazky = 0;
-			String jmeno; String cisloModelu; String material; String materialVlastni; double hmotnost; boolean isOdhadHmot;  String formovna; double norma;
+			String jmeno; String cisloModelu; String material; String materialVlastni; double hmotnost; boolean isOdhadHmot;  String formovna; double norma;String poznamkaModel;
 			// comp[0] je Id modelu
 			
 			jmeno = ((JTextField)comp[1]).getText();
 			cisloModelu = ((JTextField)comp[2]).getText();
 			material = ((JTextField)comp[3]).getText();
 			materialVlastni = ((JTextField)comp[4]).getText();
+			poznamkaModel = ((JTextField)comp[9]).getText();
 			pom = ((JTextField)comp[5]).getText();
 			try {
 				idzakazky = Integer.parseInt(((JLabel)comp[0]).getText());
@@ -124,7 +126,7 @@ public class PridejZakaznikaList implements ActionListener {
 					return;
 				}
 				try {
-					sql.updateModel(idzakazky, jmeno, cisloModelu, material,	materialVlastni, hmotnost, isOdhadHmot, formovna,norma);
+					sql.updateModel(idzakazky, jmeno, cisloModelu, material,	materialVlastni, hmotnost, isOdhadHmot, formovna, norma, poznamkaModel);
 					JOptionPane.showMessageDialog(sklad.getHlavniOkno(),"Model byl úspìšnì upraven");
 				} catch (SQLException e) {
 					if(e.getLocalizedMessage().startsWith(acesDenied)){

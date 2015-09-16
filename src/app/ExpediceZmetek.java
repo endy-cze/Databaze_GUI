@@ -96,6 +96,7 @@ public class ExpediceZmetek extends JPanel implements ActionListener //, ChangeL
 	private JLabel textIsOdhadLabel;
 	private JLabel textNorma;
 	private JLabel textIdZakaznika;
+	private JLabel textPoznamkaModel;
 	
 	private Color [] barvy = {
 	  	    new Color(63,63,63),       //0 cerna hlavicka
@@ -171,7 +172,7 @@ public class ExpediceZmetek extends JPanel implements ActionListener //, ChangeL
 	private static final int pozicePoznamkyVParametrech = 21;
 	private static final int pozicePaganyrkyVParametech = 22;
 	private static final int poziceUzavreneZakazkyVParametrech = 20;
-	
+	private static final int pozicePoznamkyModeluVParametrech = 24;
 	/**
 	 * Pro zadavani odlitku
 	 */
@@ -250,6 +251,7 @@ public class ExpediceZmetek extends JPanel implements ActionListener //, ChangeL
 			btnUzavtZakzku.setActionCommand("ObnovZakazku");
 			btnUzavtZakzku.setText("Obnov zak\u00E1zku (P\u0159esnos z archivu)");
 		}
+		textPoznamkaModel.setText(parametryZakazky[pozicePoznamkyModeluVParametrech]);
 		
 		
 		String [][] vadyVinici = sklad.getVadyVinici();
@@ -378,6 +380,7 @@ public class ExpediceZmetek extends JPanel implements ActionListener //, ChangeL
 		}
 		this.textPaganyrka.setFont(f);
 		textPoznamka.setFont(f);
+		this.textPoznamkaModel.setFont(f);
 		
 		for(int i = 0; i < popisLabels.length; i++){
 			popisLabels[i].setFont(f);
@@ -417,7 +420,7 @@ public class ExpediceZmetek extends JPanel implements ActionListener //, ChangeL
 		setBackground(barvy[12]);
 		this.hlavniOkno = hlavniOkno;
 		this.sklad = hlavniOkno.getSklad();
-		this.popisLabels = new JLabel [25];
+		this.popisLabels = new JLabel [26];
 		this.sql = sklad.getSql();
 		fonty = sklad.getFonty();
 		
@@ -821,6 +824,25 @@ public class ExpediceZmetek extends JPanel implements ActionListener //, ChangeL
 		
 		oznacOdlito = new MyJButton("Ozna\u010Dit jako (ne)odlito",16 ,1, sklad);
 		oznacOdlito.addActionListener(this);
+		
+		JLabel poznamkaModelLabel = new JLabel("Pozn\u00E1mka k modelu:");
+		popisLabels[25] = poznamkaModelLabel;
+		GridBagConstraints gbc_poznamkaModelLabel = new GridBagConstraints();
+		gbc_poznamkaModelLabel.gridwidth = 3;
+		gbc_poznamkaModelLabel.anchor = GridBagConstraints.NORTHWEST;
+		gbc_poznamkaModelLabel.insets = new Insets(0, 0, 5, 5);
+		gbc_poznamkaModelLabel.gridx = 11;
+		gbc_poznamkaModelLabel.gridy = 10;
+		add(poznamkaModelLabel, gbc_poznamkaModelLabel);
+		
+		textPoznamkaModel = new JLabel("xxxx");
+		GridBagConstraints gbc_textPoznamkaModel = new GridBagConstraints();
+		gbc_textPoznamkaModel.anchor = GridBagConstraints.NORTHWEST;
+		gbc_textPoznamkaModel.gridwidth = 8;
+		gbc_textPoznamkaModel.insets = new Insets(0, 0, 5, 5);
+		gbc_textPoznamkaModel.gridx = 14;
+		gbc_textPoznamkaModel.gridy = 10;
+		add(textPoznamkaModel, gbc_textPoznamkaModel);
 		oznacOdlito.setActionCommand("OznacOdlito");
 		GridBagConstraints gbc_oznacOdlito = new GridBagConstraints();
 		gbc_oznacOdlito.fill = GridBagConstraints.BOTH;
