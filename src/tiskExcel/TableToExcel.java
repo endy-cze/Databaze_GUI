@@ -46,8 +46,8 @@ public class TableToExcel {
 	public static final int DATEDATA = 91;
 	
 	private JFrame hlavniOkno;
-	private static String [] columnNamesIsString = {"Èíslo modelu", "Cislo_modelu","Jméno zákazníka","Èíslo objednávky",
-			"Jméno modelu", "Materiál", "Vlastní materiál", "Cislo_tavby", "Èíslo tavby"};
+	//private static String [] columnNamesIsString = {"Èíslo modelu", "Cislo_modelu","Jméno zákazníka","Èíslo objednávky",
+	//		"Jméno modelu", "Materiál", "Vlastní materiál", "Cislo_tavby", "Èíslo tavby"};
 	
 	private SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
 	
@@ -257,7 +257,7 @@ public class TableToExcel {
 			atr[0] = "Mzdy slévaèù";atr[1] = "Mzdy slévaèù od ";atr[2] = "./vypisy";
 			break;
 		case ParametryFiltr.VypisOdlitkuVKgKc:
-			atr[0] = "Výpis odlitkù v kg-kè za období";atr[1] = "Výpis odlitkù v kg-kè od " ;atr[2] = "./vypisy";
+			atr[0] = "Výpis odlitkù v kg-Kè za období";atr[1] = "Výpis odlitkù v kg-Kè od " ;atr[2] = "./vypisy";
 			break;
 		case ParametryFiltr.VypisOdlitychKusuOdDo:
 			atr[0] = "Výpis odlitých kusù za období";atr[1] = "Výpis odlitých kusù od ";atr[2] = "./vypisy";
@@ -284,7 +284,7 @@ public class TableToExcel {
 			atr[0] = "Výpis zmetkù za období";atr[1] = "Výpis zmetkù od ";atr[2] = "./vypisy";
 			break;
 		case ParametryFiltr.VypisVinikuVKgKcMzdy:
-			atr[0] = "Výpis viníkù v kg-kè období";atr[1] = "Výpis viníkù v kg/kè od ";atr[2] = "./vypisy";
+			atr[0] = "Výpis viníkù v kg-Kè období";atr[1] = "Výpis viníkù v kg/Kè od ";atr[2] = "./vypisy";
 			break;
 		case ParametryFiltr.ZaklPlanLiti:
 			atr[0] = "Základni licí plán";atr[1] = "Základni licí plán pro týden: ";atr[2] = "./lici_plany";
