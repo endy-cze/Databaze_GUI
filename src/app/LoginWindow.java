@@ -50,7 +50,7 @@ public class LoginWindow extends JFrame implements KeyListener {
 	/**
 	 * Verze
 	 */
-	public static final String verzeGUI = "1.5";
+	public static final String verzeGUI = "1.5"; // 1.6 pouze uprava nazvu  na "Kè" z "kè" v sidemenuitems vypisy
 	/**
 	 * Ip adresa poèítaèe, na kterém se vyskytuje server, na který se budeme pøipojovat.
 	 */
