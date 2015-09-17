@@ -145,6 +145,10 @@ public class MainActionMenuItemListener implements ActionListener {
 			case 2:
 				novaZakazOkno.setNovaZakazka();
 				break;
+			case 3:
+				hlavniOkno.setWindow(0); // novy model na zakladì jineho
+				searchOkno.nastavOkno(i, j); // jako uprav model
+				break;
 			default:
 				JOptionPane.showMessageDialog(hlavniOkno, "Nìco je špatnì v MainActionMenuItemListener, nastavOknoAplikace()");
 				break;
@@ -170,6 +174,9 @@ public class MainActionMenuItemListener implements ActionListener {
 			break;
 		case 2:
 			novaZakazOkno.setNovaZakazka();
+			break;
+		case 3:
+			searchOkno.setVyhledejModel();
 			break;
 		default: JOptionPane.showMessageDialog(hlavniOkno, "Nìco je špatnì v MainActionMenuItemListener, index0()");	
 			break;

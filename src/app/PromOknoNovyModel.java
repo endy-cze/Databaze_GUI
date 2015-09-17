@@ -7,7 +7,6 @@ import java.awt.GridBagLayout;
 import javax.swing.JLabel;
 
 import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
 
@@ -15,10 +14,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.JComboBox;
 import javax.swing.JCheckBox;
-import javax.swing.JScrollPane;
 
 import sablony.MyJButton;
-import sablony.tabulka.ColorCellTable;
 import storage.SkladOdkazu;
 
 import java.awt.Font;
@@ -27,8 +24,7 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.border.LineBorder;
 
 import java.awt.Color;
-import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
+
 
 public class PromOknoNovyModel extends JPanel{
 	/**
@@ -47,7 +43,6 @@ public class PromOknoNovyModel extends JPanel{
 	private JTextField textHmotnost;
 	private JTextField textMaterial;
 	private JTextField textMaterialVlastni;
-	private ColorCellTable table;
 	private JTextField textNorma;
 	
 	private Color [] barvy;
@@ -70,7 +65,7 @@ public class PromOknoNovyModel extends JPanel{
 		pridatModel.setActionCommand("UpravModelAction");
 		
 		
-		for(int i = 0; i < parametryModelu.length; i++){
+		for(int i = 0; i < listTextComponent.length; i++){
 			if(listTextComponent[i] instanceof JTextField){
 				((JTextField) listTextComponent[i]).setText(parametryModelu[i]);
 			} else if(listTextComponent[i] instanceof JCheckBox){
@@ -114,6 +109,15 @@ public class PromOknoNovyModel extends JPanel{
 			}
 		}
 		
+	}
+	
+	public void setNovyModelDleStareho(String [] parametryModelu){
+		this.setUpravModel(parametryModelu);
+		popisIdModelu.setVisible(false);
+		textLabelIdModelu.setVisible(false);
+		pridatModel.setText("P\u0159idat model");
+		nadpisLabelModel.setText("P\u0159idat nov\u00FD model");
+		pridatModel.setActionCommand("PridejNovyModelAction");
 	}
 	
 	private void initListComponent(){

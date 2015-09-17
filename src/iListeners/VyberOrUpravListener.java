@@ -138,6 +138,7 @@ public class VyberOrUpravListener implements ActionListener {
 			switch (i) {
 			case 0:
 				// Novy zakazka model ci zakaznik
+				index0(j);
 				break;
 			case 1:
 				index1(j);
@@ -175,6 +176,29 @@ public class VyberOrUpravListener implements ActionListener {
 		
 		
 
+	}
+	
+	/**
+	 * Slouží pro novy model dle jineho
+	 * @param j
+	 */
+	private void index0(int j){
+		int selectedRow = table.getSelectedRow();
+		String columnName = table.getColumnName(0);
+		String [] parametry;
+		if(columnName.equalsIgnoreCase("ID modelu") || columnName.equalsIgnoreCase("Id modelu")){
+			hlavniOkno.setWindow(1);
+			tmp3 = (PromOknoNovyModel) promOkna[1];
+			selectedRow = table.getSelectedRow();
+			parametry = new String [table.getColumnCount()-1];
+			for(int m = 0; m < parametry.length; m++){
+				parametry[m] = (String) this.table.getValueAt(selectedRow, m);
+			}
+			tmp3.setNovyModelDleStareho(parametry);
+		} else {
+			JOptionPane.showMessageDialog(hlavniOkno, "Špatná tabulka");
+			return;
+		}
 	}
 		
 	/**

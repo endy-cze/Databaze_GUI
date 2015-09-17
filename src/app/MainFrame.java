@@ -158,7 +158,7 @@ public class MainFrame extends JFrame {
 		sklad.setSidePopupMenuItems(sidePopupMenuItems);
 		int i = 0;
 		
-		String [] jmena0 = {"Nov\u00FD z\u00E1kazn\u00EDk", "Nov\u00FD model", "Nov\u00E1 zak\u00E1zka"};
+		String [] jmena0 = {"Nov\u00FD z\u00E1kazn\u00EDk", "Nov\u00FD model", "Nov\u00E1 zak\u00E1zka", "Nový model dle jiného"};
 		sidePopupMenulist[i] = new MyPopUp(jmena0, sidePopupMenuItems, i, sklad);
 		
 		i = 1;

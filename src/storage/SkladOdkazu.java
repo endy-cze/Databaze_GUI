@@ -51,7 +51,7 @@ public class SkladOdkazu {
 	 * a buttony v <code>ParametryFiltr</code> maji <code>HledejListener</code>. Kolize nehrozi.</p>
 	 */
 	private final String [][] commands = {
-			{"PridejZakaznika", "PridejModel", "PridejZakazku"},
+			{"PridejZakaznika", "PridejModel", "PridejZakazku", "PridejModelDleJineho"},
 			{"Planovani", "VyhledejZakaznika", "VyhledejModel", "VyhledejZakazku", "VyhledejZakazku", "VyhledejZmetek", "VyhledejViniky", "VyhledejVady", "VyhledejKapPropocet"},
 			{"NovyOdlitekZmetek", "UpravaCislaTavby"},
 			{"Expedice", "LiciPlanZakladni", "LiciPlanPlanovaci", "PlanExpedice"},
