@@ -44,10 +44,12 @@ public class SQLStor {
 	private static final int maxDelkaPaganyrky = 5;
 	private static final int maxDelkaPoznamkyUZakazky = 45, maxDelkaVady = 45, maxDelkaPoznamkyUModelu = 50;
 	private static final int maxDelkamaterialu = 25, maxDelkaVinika = 25;
-	private static final int maxDelkaVlastnihoMaterialu = 10, maxDelkaCislaTavby = 10;
+	private static final int maxDelkaVlastnihoMaterialu = 10;
 	private static final int maxPocetKusuNovaZakazka = 1500;
 	private static final double maxCena = 1e9;
-	private static final int maxDelkaCislaFaktury = 19;
+	public static final int maxDelkaCislaFaktury = 19;
+	public static final int maxDelkaCislaTavby = 10;
+	public static final int maxDelkaTeplotyLiti = 20;
 	private ProgresBarFrame prgbar = new ProgresBarFrame();
 	
 	/**
@@ -65,7 +67,7 @@ public class SQLStor {
 			{"{CALL pomdb.vyberZakazniky(?)}", "{CALL pomdb.vyberModely(?,?,?,?,?,?,?,?)}", "{CALL pomdb.vyberZakazky2(?,?,?,?,?,?,?,?)}",
 				"{CALL pomdb.vyberFyzKusy(?,?)}", "{CALL pomdb.vyberZmetky(?,?,?,?,?,?,?,?)}"},	//select
 			{"{CALL pomdb.upravZakaznika(?,?)}", "{CALL pomdb.upravModel(?,?,?,?,?,?,?,?,?,?)}", "{CALL pomdb.upravZakazku(?,?,?,?,?,?,?,?,?,?,?,?,?)}"},  //update
-			{"{CALL pomdb.zadej_cislo_faktury_cislo_tavby_prohlizeci(?,?,?)}", "{CALL pomdb.zadejPlanovanyDatumLiti(?,?)}", "{CALL pomdb.zadejOdlitek(?,?,?,?,?,?,?,?,?,?,?)}",
+			{"{CALL pomdb.zadej_cislo_faktury_cislo_tavby_prohlizeci(?,?,?)}", "{CALL pomdb.zadejPlanovanyDatumLiti(?,?)}", "{CALL pomdb.zadejOdlitek(?,?,?,?,?,?,?,?,?,?,?,?)}",
 				"{CALL pomdb.zadejUdajeOZmetku(?,?,?,?)}", "{CALL pomdb.zadejDilciTerminy(?,?,?,?)}"}, // "{CALL pomdb.zadejDatumVycistenehoKusu(?,?,?)}"
 			{"{CALL pomdb.pridejVinika(?)}", "{CALL pomdb.pridejVadu(?)}", "{CALL pomdb.planovaniRozvrh(?,?)}", "{CALL pomdb.generujKusy(?)}",
 				"{CALL pomdb.planovaniRozvrhVycisteno(?,?)}", "{CALL pomdb.kapacitniPropocet(?,?)}", "{CALL pomdb.uzavriZakazku(?,?,?,?,?,?,?,?)}",
@@ -1409,7 +1411,7 @@ public class SQLStor {
 		return c;
 	}
 	
-	public void zadejCisloTavbyCisloFaktury(int idKusu, String cisloTavby, String cisloFaktury) throws SQLException{
+	public void zadejCisloTavbyCisloFakturyTeplotuLiti(int idKusu, String cisloTavby, String cisloFaktury) throws SQLException{
 		if(idKusu  < 0){
 			JOptionPane.showMessageDialog(hlavniOkno, "Id fyz. kusu je špatnì zapsaný");
 			return;
@@ -1513,7 +1515,7 @@ public class SQLStor {
 	 * @throws SQLException 
 	 */
 	public void zadejOdlitek(int idFyzKusu, boolean isOdlito, Date datumOdliti, boolean isVycisteno, Date datumVycisteni, boolean isExpedovano,
-			Date datumExpedice, boolean isZmetek, Date datumZadaniZmetku, String cisloTavby, String cisloFaktury) throws SQLException{
+			Date datumExpedice, boolean isZmetek, Date datumZadaniZmetku, String cisloTavby, String cisloFaktury, String teplotaLiti) throws SQLException{
 		if(idFyzKusu < 0){
 			JOptionPane.showMessageDialog(hlavniOkno, "Id fyz. kusu je špatnì zapsaný");
 			return;
@@ -1576,6 +1578,14 @@ public class SQLStor {
 			c.setNull(11, java.sql.Types.VARCHAR);
 		} else {
 			c.setString(11, cisloFaktury);
+		}
+		
+		if(teplotaLiti == null){
+			c.setNull(12, java.sql.Types.VARCHAR);
+		} else if(teplotaLiti.equalsIgnoreCase("")){
+			c.setNull(12, java.sql.Types.VARCHAR);
+		} else {
+			c.setString(12, teplotaLiti);
 		}
 		
 		c.execute();

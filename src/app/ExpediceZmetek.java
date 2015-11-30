@@ -178,8 +178,12 @@ public class ExpediceZmetek extends JPanel implements ActionListener //, ChangeL
 	 */
 	private static final int poziceCislaTavbyVTabulce = 2;
 	private static final int poziceCislaFakturyVTabulce = 8;
+	private static final int poziceTeplotyLitiVTabulce = 17;
 	
 	private String[] parametryZakazky;
+	private JLabel lblTeplotaLit;
+	private JTextField teplotaLitiText;
+	private JButton pridejTeplotuLiti;
 
 
 	/**
@@ -420,14 +424,14 @@ public class ExpediceZmetek extends JPanel implements ActionListener //, ChangeL
 		setBackground(barvy[12]);
 		this.hlavniOkno = hlavniOkno;
 		this.sklad = hlavniOkno.getSklad();
-		this.popisLabels = new JLabel [26];
+		this.popisLabels = new JLabel [27];
 		this.sql = sklad.getSql();
 		fonty = sklad.getFonty();
 		
 		GridBagLayout gridBagLayout = new GridBagLayout();
-		gridBagLayout.columnWidths = new int[]{22, 160, 100, 20, 25, 66, 38, 60, 48, 40, 10, 0, 15, 10, 43, 20, 0, 30, 30, 20, 30, 20, 130, 80, 20, 20, 0};
+		gridBagLayout.columnWidths = new int[]{22, 160, 100, 20, 25, 66, 38, 60, 48, 40, 10, 0, 15, 10, 43, 20, 0, 30, 30, 20, 30, 20, 60, 70, 80, 20, 20, 0};
 		gridBagLayout.rowHeights = new int[]{21, 0, 0, 12, 0, 0, 0, 0, 0, 0, 30, 25, 32, 32, 0, 32, 0, 32, 0, 20, 0};
-		gridBagLayout.columnWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, Double.MIN_VALUE};
+		gridBagLayout.columnWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, Double.MIN_VALUE};
 		gridBagLayout.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, Double.MIN_VALUE};
 		setLayout(gridBagLayout);
 		
@@ -862,7 +866,7 @@ public class ExpediceZmetek extends JPanel implements ActionListener //, ChangeL
 		
 		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		GridBagConstraints gbc_tabbedPane = new GridBagConstraints();
-		gbc_tabbedPane.gridwidth = 2;
+		gbc_tabbedPane.gridwidth = 3;
 		gbc_tabbedPane.gridheight = 7;
 		gbc_tabbedPane.insets = new Insets(0, 0, 5, 5);
 		gbc_tabbedPane.fill = GridBagConstraints.BOTH;
@@ -1102,6 +1106,36 @@ public class ExpediceZmetek extends JPanel implements ActionListener //, ChangeL
 		gbc_zadatCisloFaktury.gridy = 15;
 		add(zadatCisloFaktury, gbc_zadatCisloFaktury);
 		
+		lblTeplotaLit = new JLabel("Teplota lit\u00ED:");
+		popisLabels[26] = lblTeplotaLit;
+		GridBagConstraints gbc_lblTeplotaLit = new GridBagConstraints();
+		gbc_lblTeplotaLit.anchor = GridBagConstraints.EAST;
+		gbc_lblTeplotaLit.insets = new Insets(0, 0, 5, 5);
+		gbc_lblTeplotaLit.gridx = 18;
+		gbc_lblTeplotaLit.gridy = 15;
+		add(lblTeplotaLit, gbc_lblTeplotaLit);
+		
+		teplotaLitiText = new JTextField();
+		GridBagConstraints gbc_teplotaLitiText = new GridBagConstraints();
+		gbc_teplotaLitiText.gridwidth = 4;
+		gbc_teplotaLitiText.insets = new Insets(0, 0, 5, 5);
+		gbc_teplotaLitiText.fill = GridBagConstraints.HORIZONTAL;
+		gbc_teplotaLitiText.gridx = 19;
+		gbc_teplotaLitiText.gridy = 15;
+		add(teplotaLitiText, gbc_teplotaLitiText);
+		teplotaLitiText.setColumns(10);
+		
+		pridejTeplotuLiti = new MyJButton("Zadej teplotu lití", 16 ,1, sklad);
+		pridejTeplotuLiti.setActionCommand("PridejTeplotuLiti");
+		pridejTeplotuLiti.addActionListener(this);
+		GridBagConstraints gbc_pridejTeplotuLiti = new GridBagConstraints();
+		gbc_pridejTeplotuLiti.gridwidth = 2;
+		gbc_pridejTeplotuLiti.fill = GridBagConstraints.BOTH;
+		gbc_pridejTeplotuLiti.insets = new Insets(0, 0, 5, 5);
+		gbc_pridejTeplotuLiti.gridx = 23;
+		gbc_pridejTeplotuLiti.gridy = 15;
+		add(pridejTeplotuLiti, gbc_pridejTeplotuLiti);
+		
 		JLabel lblSeznamKus = new JLabel("Seznam kus\u016F:");
 		popisLabels[23] = lblSeznamKus;
 		GridBagConstraints gbc_lblSeznamKus = new GridBagConstraints();
@@ -1167,14 +1201,14 @@ public class ExpediceZmetek extends JPanel implements ActionListener //, ChangeL
 		btnUzavtZakzku.addActionListener(this);
 		GridBagConstraints gbc_btnUzavtZakzku = new GridBagConstraints();
 		gbc_btnUzavtZakzku.fill = GridBagConstraints.BOTH;
-		gbc_btnUzavtZakzku.gridwidth = 3;
+		gbc_btnUzavtZakzku.gridwidth = 5;
 		gbc_btnUzavtZakzku.insets = new Insets(0, 0, 5, 5);
 		gbc_btnUzavtZakzku.gridx = 20;
 		gbc_btnUzavtZakzku.gridy = 17;
 		add(btnUzavtZakzku, gbc_btnUzavtZakzku);
 		GridBagConstraints gbc_scrollPane_1 = new GridBagConstraints();
 		gbc_scrollPane_1.insets = new Insets(0, 0, 5, 5);
-		gbc_scrollPane_1.gridwidth = 24;
+		gbc_scrollPane_1.gridwidth = 25;
 		gbc_scrollPane_1.fill = GridBagConstraints.BOTH;
 		gbc_scrollPane_1.gridx = 1;
 		gbc_scrollPane_1.gridy = 18;
@@ -1261,7 +1295,7 @@ public class ExpediceZmetek extends JPanel implements ActionListener //, ChangeL
 				}
 			} else if (event.equalsIgnoreCase("ZadatCisloFaktury")) {
 				String cislo = this.textCisloFaktury.getText();
-				if(cislo.length() >= 19){
+				if(cislo.length() > SQLStor.maxDelkaCislaFaktury){
 					JOptionPane.showMessageDialog(hlavniOkno,"Èíslo faktury mùže být maximálnì 19 znakù dlouhé");
 					return;
 				}
@@ -1272,7 +1306,7 @@ public class ExpediceZmetek extends JPanel implements ActionListener //, ChangeL
 					return;
 				}*/
 				for (int i = 0; i < selected.length; i++) {
-					this.tableFyzkusyEx.setValueAt(cislo, selected[i], 8);
+					this.tableFyzkusyEx.setValueAt(cislo, selected[i], poziceCislaFakturyVTabulce);
 				}
 				tableFyzkusyEx.getColumAdjuster().adjustColumns();
 
@@ -1388,12 +1422,21 @@ public class ExpediceZmetek extends JPanel implements ActionListener //, ChangeL
 				}
 			} else if (event.equalsIgnoreCase("ZadejCisloTavby")) {
 				String text = textTavba.getText();
-				if(text.length() > 10){
+				if(text.length() > SQLStor.maxDelkaCislaTavby){
 					JOptionPane.showMessageDialog(hlavniOkno,"Èíslo tavby mùže být maximálnì 10 znakù dlouhé");
 					return;
 				}
 				for(int i = 0; i < selected.length; i++){
-					this.tableFyzkusyEx.setValueAt(text, selected[i], 2);
+					this.tableFyzkusyEx.setValueAt(text, selected[i], poziceCislaTavbyVTabulce);
+				}
+			} else if (event.equalsIgnoreCase("PridejTeplotuLiti")) { // TODO
+				String text = this.teplotaLitiText.getText();
+				if(text.length() > SQLStor.maxDelkaTeplotyLiti){
+					JOptionPane.showMessageDialog(hlavniOkno,"Teplota lití mùže být maximálnì 10 znakù dlouhé");
+					return;
+				}
+				for(int i = 0; i < selected.length; i++){
+					this.tableFyzkusyEx.setValueAt(text, selected[i], poziceTeplotyLitiVTabulce);
 				}
 			} else if (event.equalsIgnoreCase("Aktualizovat")) {
 				this.setZadejOdlitekZmetek(parametryZakazky, Integer.parseInt(this.textIdZakazky.getText()));
@@ -1425,7 +1468,7 @@ public class ExpediceZmetek extends JPanel implements ActionListener //, ChangeL
 				// Aktualizace (viz Aktualizovat JButton)
 				this.setZadejOdlitekZmetek(parametryZakazky, Integer.parseInt(this.textIdZakazky.getText())); 
 				
-			} else if (event.equalsIgnoreCase("DokonciZadavani")) {
+			} else if (event.equalsIgnoreCase("DokonciZadavani")) { // TODO
 				boolean[][] zmeneno = tableFyzkusyEx.getZmeneno();
 				boolean pomBol = false, needOnlyProhlizecPriv = true;
 				int upraveno = 0;
@@ -1574,16 +1617,10 @@ public class ExpediceZmetek extends JPanel implements ActionListener //, ChangeL
 			JOptionPane.showMessageDialog(hlavniOkno, "Vyskytla se neèekaná chyba ExpediceZmetek.class, øadek 1076");
 			return;
 		}
-		String cisloTavby = (String) this.tableFyzkusyEx.getValueAt(i, 2);
-		String cisloFakturyStr = (String) this.tableFyzkusyEx.getValueAt(i, 8);
-		/*long cisloFaktury = -1;
-		if(cisloFakturyStr == null){
-			cisloFaktury = 0;
-		} else if(cisloFakturyStr.equalsIgnoreCase("")) {
-			cisloFaktury = 0;
-		} else {
-			cisloFaktury = Long.parseLong(cisloFakturyStr);
-		}*/
+		String cisloTavby = (String) this.tableFyzkusyEx.getValueAt(i, poziceCislaTavbyVTabulce);
+		String cisloFakturyStr = (String) this.tableFyzkusyEx.getValueAt(i, poziceCislaFakturyVTabulce);
+		String teplotaLiti = (String) this.tableFyzkusyEx.getValueAt(i, poziceTeplotyLitiVTabulce);
+	
 		
 		
 		if(!isOdlito){
@@ -1594,7 +1631,8 @@ public class ExpediceZmetek extends JPanel implements ActionListener //, ChangeL
 			datumExpedice = null;
 			isZmetek = false;
 		}
-		sql.zadejOdlitek(idKusu, isOdlito, datumOdliti, isVycisteno, datumVycisteni, isExpedovano, datumExpedice,  isZmetek, datumZadaniodlitku, cisloTavby, cisloFakturyStr);
+		sql.zadejOdlitek(idKusu, isOdlito, datumOdliti, isVycisteno, datumVycisteni, isExpedovano,
+				datumExpedice,  isZmetek, datumZadaniodlitku, cisloTavby, cisloFakturyStr, teplotaLiti);
 	}
 
 	private boolean endZadavaniVadyAVinika(int i) throws SQLException{
@@ -1630,7 +1668,7 @@ public class ExpediceZmetek extends JPanel implements ActionListener //, ChangeL
 		String cisloTavby = (String) tableFyzkusyEx.getValueAt(i, poziceCislaTavbyVTabulce);
 		String cisloFaktury = (String) tableFyzkusyEx.getValueAt(i, poziceCislaFakturyVTabulce);
 		int idKusu = Integer.parseInt((String)this.tableFyzkusyEx.getValueAt(i, 0));
-		sql.zadejCisloTavbyCisloFaktury(idKusu, cisloTavby, cisloFaktury);
+		sql.zadejCisloTavbyCisloFakturyTeplotuLiti(idKusu, cisloTavby, cisloFaktury);
 	}
 	
 	/*
