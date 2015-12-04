@@ -244,7 +244,7 @@ DELIMITER ;
 /*!50003 SET character_set_results = utf8 */ ;
 /*!50003 SET collation_connection  = utf8_general_ci */ ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` FUNCTION `returnPresnouCenuZaKus`(idFyzKusu int(10) unsigned) RETURNS decimal(17,6)
 BEGIN
@@ -254,11 +254,14 @@ declare hmot decimal(10,2) unsigned;
 declare kurzEuNaCzkpom decimal(8,4) unsigned;
 declare cenaPom decimal(13,3) unsigned;
 declare idZakazky int(10) unsigned;
+
+
 select Id_zakazky from fyzkusy where Id_kusu = idFyzKusu into idZakazky;
 select Cena from seznam_zakazek where seznam_zakazek.Id_zakazky = idZakazky into cenaPom;
 select IsCZK from seznam_zakazek where seznam_zakazek.Id_zakazky = idZakazky into isCzKPom;
 select IsZaKus from seznam_zakazek where seznam_zakazek.Id_zakazky = idZakazky into isZaKusPom;
 select KurzEUnaCZK from seznam_zakazek where seznam_zakazek.Id_zakazky = idZakazky into kurzEuNaCzkpom;
+
 if(isCzKPom)then
 	if(isZaKusPom)then
 		return cenaPom;
@@ -296,19 +299,24 @@ BEGIN
 DECLARE pocetNovychKusu INT;
 declare pocetNeZmetku int;
 declare idModelu int(10) unsigned;
+
 select Id_modelu from seznam_zakazek where Id_zakazky = Idzakazky into idModelu;
+
 select count(*) from fyzkusy where fyzkusy.Id_zakazky = Idzakazky and Zmetek = false into pocetNeZmetku;
+
 select 
     Pocet_kusu
 from
     pomdb.seznam_zakazek
 where
     Id_zakazky = Idzakazky into pocetNovychKusu;
+    
 set pocetNovychKusu = pocetNovychKusu - pocetNeZmetku;
  WHILE pocetNovychKusu > 0 DO
     INSERT INTO `pomdb`.`fyzkusy`
 		(`Id_zakazky`, `Id_modelu_odlito`)
 	values(Idzakazky, idModelu);
+
     SET pocetNovychKusu = pocetNovychKusu - 1;
   END WHILE;
 END ;;
@@ -337,12 +345,16 @@ declare pa date;
 declare odecistDnu int;
 SET lc_time_names = 'cs_CZ';
 set po = prvniDenVTydnu;
+
 set odecistDnu = 2 - dayofweek(prvniDenVTydnu);
 set po = date_add(po,INTERVAL odecistDnu day);
 set ut = date_add(po,INTERVAL 1 day);
 set st = date_add(ut,INTERVAL 1 day);
 set ct = date_add(st,INTERVAL 1 day);
 set pa = date_add(ct,INTERVAL 1 day);
+
+
+
 select po as datum, sum(Norma_slevac) as 'Norma celkem', count(*) as 'počet kusů' from (pomdb.seznam_zakazek join pomdb.seznam_modelu on (seznam_zakazek.Id_modelu = seznam_modelu.Id_modelu)) join pomdb.fyzkusy on (seznam_zakazek.Id_zakazky = fyzkusy.Id_zakazky)
  where Datum_liti = po and seznam_modelu.Formovna = formovna
 union all
@@ -386,14 +398,18 @@ BEGIN
   DECLARE idZakazky int unsigned;
   DECLARE cur CURSOR FOR SELECT Id_zakazky FROM seznam_zakazek where Id_modelu = idModelu;
   DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
+
   OPEN cur;
+
   read_loop: LOOP
     FETCH cur INTO idZakazky;
     IF done THEN
       LEAVE read_loop;
     END IF;
+   -- prace s daty
 	CALL `pomdb`.`prepocitatPresnouCenuZaKus`(idZakazky);
   END LOOP;
+
   CLOSE cur;
 END ;;
 DELIMITER ;
@@ -415,11 +431,13 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `liciPlanPlanovaci`(cisloTydne small
 BEGIN
 declare pomDate1 date;
 declare pomDate2 date;
+
 declare po date;
 declare ut date;
 declare st date;
 declare ct date;
 declare pa date;
+
 	if(cisloTydne is null or rok is null) then
 		set pomDate1 = null, pomDate2 = null;
 	else
@@ -433,12 +451,15 @@ declare pa date;
 		set pomDate2 = pomDate1;
 		set pomDate1 = date_add(pomDate1, interval (2 - dayofweek(pomDate1)) day); -- nastaveni dnu na pondeli
 		set pomDate2 = date_add(pomDate1, interval (8 - dayofweek(pomDate1)) day); -- nastave dnu na patek
+		-- select pomDate1, pomDate2;
+		-- select weekofyear(pomDate1), dayname(pomDate1), weekofyear(pomDate2), dayname(pomDate2);
 	end if;
 set po = pomDate1;
 set ut = date_add(pomDate1, interval 1 day);
 set st = date_add(pomDate1, interval 2 day);
 set ct = date_add(pomDate1, interval 3 day);
 set pa = date_add(pomDate1, interval 4 day);
+
 SELECT 
 	`zakaznici`.`Jmeno_zakaznika` as `Zákazník`,
 	seznam_modelu.Jmeno_modelu as `Jméno modelu`,
@@ -450,6 +471,7 @@ SELECT
 	(select count(*) from fyzkusy where fyzkusy.Datum_liti = pa and seznam_zakazek.Id_zakazky = fyzkusy.Id_zakazky) as `pá`,
 	 count(*) as 'Celk.',
 	seznam_zakazek.Poznamka as 'Pozn. zakázka',
+
 	seznam_modelu.Material_vlastni as `Mat. vl.`,
 	seznam_modelu.Material as `Materiál`,
 	seznam_modelu.Hmotnost as `Hmot.`,
@@ -474,10 +496,12 @@ where
 group by `seznam_zakazek`.`Id_zakazky`
 order by `zakaznici`.`Jmeno_zakaznika`,`seznam_modelu`.`Cislo_modelu`,fyzkusy.Datum_liti, `seznam_zakazek`.`Id_zakazky` desc
 ;
+
 select 'Paganýrka 0-0','Nevydáno:','','','',
 	   '','','','','','',
 	   '','','','','',
 		'','','';
+
 SELECT 
 	`zakaznici`.`Jmeno_zakaznika` as `Jméno zákazníka`,
 	seznam_modelu.Jmeno_modelu as `Jméno modelu`,
@@ -489,12 +513,14 @@ SELECT
 	(select count(*) from fyzkusy where fyzkusy.Datum_liti = pa and seznam_zakazek.Id_zakazky = fyzkusy.Id_zakazky) as `pá`,
 	 count(*) as 'celk.',
 	seznam_zakazek.Poznamka as 'Pozn. zakázka',
+
 	seznam_modelu.Material_vlastni as `Mat. vl.`,
 	seznam_modelu.Material as `Materál`,
 	seznam_modelu.Hmotnost as `Hmot.`,
 	seznam_zakazek.Termin_expedice as `Termín exp.`,
 	seznam_zakazek.Pocet_kusu as `Objed.`,
 	(select count(*) from fyzkusy where seznam_zakazek.Id_zakazky = fyzkusy.Id_zakazky and fyzkusy.Odlito = true and fyzkusy.Zmetek = false and Datum_odliti  <= pomDate2) as Odlito,
+	-- seznam_zakazek.Cislo_objednavky as `Č. objed.`,
 	seznam_modelu.Norma_slevac as `Norma`,
 	seznam_modelu.Norma_slevac * count(*) as 'Norma celk.',
 	seznam_modelu.Poznamka_model as 'Pozn. model'
@@ -510,6 +536,8 @@ where
 	seznam_modelu.Formovna = formovna
 	 and 
 	seznam_zakazek.Paganyrka is null
+	-- seznam_zakazek.Uzavreno = false
+
 group by `seznam_zakazek`.`Id_zakazky`
 order by `zakaznici`.`Jmeno_zakaznika`,`seznam_modelu`.`Cislo_modelu`,fyzkusy.Datum_liti, `seznam_zakazek`.`Id_zakazky` desc
 ;
@@ -533,11 +561,13 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `liciPlanZakl`(cisloTydne smallint, 
 BEGIN
 declare pomDate1 date;
 declare pomDate2 date;
+
 declare po date;
 declare ut date;
 declare st date;
 declare ct date;
 declare pa date;
+
 	if(cisloTydne is null or rok is null) then
 		set pomDate1 = null, pomDate2 = null;
 	else
@@ -551,12 +581,15 @@ declare pa date;
 		set pomDate2 = pomDate1;
 		set pomDate1 = date_add(pomDate1, interval (2 - dayofweek(pomDate1)) day);
 		set pomDate2 = date_add(pomDate1, interval (8 - dayofweek(pomDate1)) day);
+		-- select pomDate1, pomDate2;
+		-- select weekofyear(pomDate1), dayname(pomDate1), weekofyear(pomDate2), dayname(pomDate2);
 	end if;
 set po = pomDate1;
 set ut = date_add(pomDate1, interval 1 day);
 set st = date_add(pomDate1, interval 2 day);
 set ct = date_add(pomDate1, interval 3 day);
 set pa = date_add(pomDate1, interval 4 day);
+
 SELECT 
 	`zakaznici`.`Jmeno_zakaznika` as 'Jméno zákazníka',
 	seznam_modelu.Jmeno_modelu as 'Jméno modelu',
@@ -581,11 +614,14 @@ where
 	seznam_modelu.Formovna = formovna
 	 and	
 	seznam_zakazek.Paganyrka is not null
+	-- seznam_zakazek.Uzavreno = false
 group by `seznam_zakazek`.`Id_zakazky`
 order by `zakaznici`.`Jmeno_zakaznika`,`seznam_modelu`.`Cislo_modelu`,fyzkusy.Datum_liti, `seznam_zakazek`.`Id_zakazky` desc
 ;
+
 select 'Paganýrka 0-0','Nevydáno:','','','',
 	   '','','','','','';
+
 SELECT 
 	`zakaznici`.`Jmeno_zakaznika` as 'Jméno zákazníka',
 	seznam_modelu.Jmeno_modelu as 'Jméno modelu',
@@ -610,9 +646,11 @@ where
 	seznam_modelu.Formovna = formovna
 	 and	
 	seznam_zakazek.Paganyrka is null
+	-- seznam_zakazek.Uzavreno = false
 group by `seznam_zakazek`.`Id_zakazky`
 order by `zakaznici`.`Jmeno_zakaznika`,`seznam_modelu`.`Cislo_modelu`,fyzkusy.Datum_liti, `seznam_zakazek`.`Id_zakazky` desc
 ;
+
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -636,6 +674,7 @@ declare pocetDuplicit int;
 declare presnaCenaZaKus decimal(17,6) unsigned;
 declare pom decimal (10,2) unsigned; -- pomocna promena na hmotnost
 declare id int;
+
 SELECT 
 	count(*)
 FROM pomdb.seznam_zakazek
@@ -651,7 +690,9 @@ where
 	IsCZK = isCzK and
 	IsZaKus = isZaKus 
 into pocetDuplicit;
+
 if(pocetDuplicit = 0 and pocetKusu <= 1500 and pocetKusu > 0) then
+
 if(isCzK)then
 	if(isZaKus)then
 		set presnaCenaZaKus = cena;
@@ -670,6 +711,7 @@ else if(kurzEuNaCzk > 0)then
 		set presnaCenaZaKus = null, cena = null , kurzEuNaCzk = null;
 	end if;
 end if;
+
 INSERT INTO `pomdb`.`seznam_zakazek`
 (`Id_zakaznika`,
 `Id_modelu`,
@@ -698,6 +740,7 @@ kurzEuNaCzk,
 poznamka,
 datumExpedice,
 presnaCenaZaKus);
+
 set id = LAST_INSERT_ID();
 CALL `pomdb`.`generujKusy`(id);
 select true, id;
@@ -760,6 +803,7 @@ DELIMITER ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `novyZakaznik`(jmeno varchar(30))
 BEGIN
+
 if(jmeno is not null and jmeno != '') then
 INSERT INTO `pomdb`.`zakaznici`
 (`Jmeno_zakaznika`)
@@ -781,10 +825,19 @@ DELIMITER ;
 /*!50003 SET character_set_results = utf8 */ ;
 /*!50003 SET collation_connection  = utf8_general_ci */ ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `obnovDB`()
 BEGIN
+-- ..chapter/sql-syntax.html#load-data ... pouziju prikaz LOAD DATA infile a klicove slovo local, ktere mi zajisti, že se bude soubor pro
+-- ahravani hledat na klientském PC. POzor: 1. chyba muze nastat kdyz neni povoleno jak na klientu tak na 
+-- serveru pouziti tohoto slova! 
+-- 2. chyba muze nastat pokud na servveru neni dostatek místa pro vytvoření kopie souboru ktery tam z klienta posílam
+-- obvykle se pry uděla kopie ve C:/Windwos/TMP ...
+-- pokud se chci vyhnout vynechal slovo local a server cte na jeho PC.
+-- pro pouziti toho prikazu musim mít File privilege pro nahrani primo na serveru ... pokud
+-- pouziji local a client tak toho privilegium mit nemusim
+-- potom jeste dalsi prikazy tam jsou pro handlovani chyb.
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -829,7 +882,13 @@ DELIMITER ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `planovaniRozvrh`(idZakazky int, OUT pocetNeplanovanychKusu int)
 BEGIN
+-- DECLARE den int;
+-- DECLARE do_ date;
 SET lc_time_names = 'cs_CZ';
+-- set den = dayofweek(od_) - 1;
+-- set od_ =  DATE_SUB(od_,INTERVAL den day);
+-- set do_ =  DATE_ADD(od_,INTERVAL pocetTydnu week);
+
 select count(*) from fyzkusy where isnull(Datum_liti) and fyzkusy.Id_zakazky = idZakazky into pocetNeplanovanychKusu;
 select 
     monthname(Datum_liti),
@@ -841,6 +900,7 @@ select
 from
     `fyzkusy`
 where
+   -- (Datum_liti between od_ and do_) and 
 	 Datum_liti is not null 
 		and
 	fyzkusy.Id_zakazky = idZakazky
@@ -864,6 +924,13 @@ DELIMITER ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `planovaniRozvrhVycisteno`(idZakazky int, OUT pocetNeplanovanychKusu int)
 BEGIN
+-- DECLARE den int;
+-- DECLARE do_ date;
+-- SET lc_time_names = 'cs_CZ';
+-- set den = dayofweek(od_) - 1;
+-- set od_ =  DATE_SUB(od_,INTERVAL den day);
+-- set do_ =  DATE_ADD(od_,INTERVAL pocetTydnu week);
+
 select count(*) from fyzkusy where isnull(Datum_vycisteni) and fyzkusy.Id_zakazky = idZakazky into pocetNeplanovanychKusu;
 select 
 	monthname(Datum_vycisteni),
@@ -875,6 +942,7 @@ select
 from
     fyzkusy
 where
+   -- (Datum_liti between od_ and do_) and 
 	 Datum_vycisteni is not null 
 		and
 	fyzkusy.Id_zakazky = idZakazky
@@ -904,6 +972,7 @@ create temporary table pomTable
 	dilciTermin date,
 	pocet_ks smallint unsigned
 );
+-- vyberu prvni tri nesplnene dílčí termíny pro každou zakazku z dílčích termínů
 insert into pomTable
 (id_zakazky, dilciTermin, pocet_ks)
 select t1.Id_zakazky, t1.dilci_termin, t1.pocet_kusu  -- , count(*) as 'počet datumu přede mnou včetně mě'
@@ -913,6 +982,8 @@ where t1.splnen = false and t2.splnen = false
 group by Id_zakazky, dilci_termin
 having count(*) <= 3
 order by t1.Id_zakazky, t1.dilci_termin;
+
+
 SELECT 
 	seznam_zakazek.Id_zakazky as `ID zakázky`,
     `zakaznici`.`Jmeno_zakaznika` as `Jméno zákazníka`,
@@ -969,11 +1040,14 @@ declare pom decimal(10,2) unsigned; -- Hmotnost
 declare idModelupom int unsigned;
 declare cenapom decimal(13,3) unsigned;
 declare presnaCenaZaKuspom decimal(17,6) unsigned;
+
+
 select IsCZK from seznam_zakazek where Id_zakazky = idZakazky into isCzKpom;
 select IsZaKus from seznam_zakazek where Id_zakazky = idZakazky into isZaKuspom;
 select KurzEUnaCZK from seznam_zakazek where Id_zakazky = idZakazky into kurzEuNaCzkpom;
 select Id_modelu from seznam_zakazek where Id_zakazky = idZakazky into idModelupom;
 select Cena from seznam_zakazek where Id_zakazky = idZakazky into cenapom;
+
 if(isCzKpom)then
 	if(isZaKuspom)then
 		set presnaCenaZaKuspom = cenapom;
@@ -989,11 +1063,13 @@ else
 		set presnaCenaZaKuspom = cenapom * pom * kurzEuNaCzkpom;
 	end if;
 end if;
+
 UPDATE `pomdb`.`seznam_zakazek` 
 SET 
 	`Presna_cena_za_kus` = presnaCenaZaKuspom
 WHERE
 	`Id_zakazky` = idZakazky;
+
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -1060,6 +1136,7 @@ select count(*)
 from fyzkusy
 where Id_kusu = idKusu
 into status_mazani;
+
 if( status_mazani = 1) then
 	delete from fyzkusy
 	where Id_kusu = idKusu;
@@ -1088,28 +1165,36 @@ BEGIN
 if (jmenoModelu is not null)
 	then UPDATE `pomdb`.`seznam_modelu` set`Jmeno_modelu` = jmenoModelu WHERE `Id_modelu` = idModelu;
 end if;
+
 if (cisloModelu is not null)
 	then UPDATE `pomdb`.`seznam_modelu` set`Cislo_modelu` = cisloModelu WHERE `Id_modelu` = idModelu;
 end if;
+
 if (material is not null)
 	then UPDATE `pomdb`.`seznam_modelu` set`Material` = material WHERE `Id_modelu` = idModelu;
 end if;
+
 if (materialVlastni is not null)
 	then UPDATE `pomdb`.`seznam_modelu` set`Material_vlastni` = materialVlastni WHERE `Id_modelu` = idModelu;
 end if;
+
 if (hmotnost is not null)
 	then UPDATE `pomdb`.`seznam_modelu` set`Hmotnost` = hmotnost WHERE `Id_modelu` = idModelu;
 	CALL `pomdb`.`kontrolaPresneCenyZaKusCursor`(idModelu);
 end if;
+
 if (isOdhatHmotnost is not null)
 	then UPDATE `pomdb`.`seznam_modelu` set`IsOdhadHmot` = isOdhatHmotnost WHERE `Id_modelu` = idModelu;
 end if;
+
 if (formovna is not null)
 	then UPDATE `pomdb`.`seznam_modelu` set`Formovna` = formovna WHERE `Id_modelu` = idModelu;
 end if;
+
 if (norma is not null)
 	then UPDATE `pomdb`.`seznam_modelu` set`Norma_slevac` = norma WHERE `Id_modelu` = idModelu;
 end if;
+
 UPDATE `pomdb`.`seznam_modelu` set`Poznamka_model` = poznamkaModel WHERE `Id_modelu` = idModelu;
 END ;;
 DELIMITER ;
@@ -1132,8 +1217,13 @@ datumPrijetiZakazky date, paganyrka varchar(5), cena decimal(13,3) unsigned, isC
 BEGIN
 declare presnaCenaZaKus decimal (17,6) unsigned;
 declare pom decimal (10,2) unsigned;
+
+
 declare pocetDuplicit int;
+-- declare presnaCenaZaKus decimal(13,3);
+-- declare pom int;
 declare id int;
+
 SELECT 
 	count(*)
 FROM pomdb.seznam_zakazek
@@ -1150,6 +1240,7 @@ where
 	IsZaKus = isZaKus and
     Id_zakazky != idZakazky
 into pocetDuplicit;
+
 if(pocetDuplicit = 0 and pocetKusu <= 1500 and pocetKusu > 0) then
 	if(isCzK)then
 		if(isZaKus)then
@@ -1169,6 +1260,7 @@ if(pocetDuplicit = 0 and pocetKusu <= 1500 and pocetKusu > 0) then
 			set presnaCenaZaKus = null, cena = null , kurzEuNaCzk = null;
 		end if;
 	end if;
+
 	UPDATE `pomdb`.`seznam_zakazek` 
 	SET 
 		`Id_zakaznika` = idZakaznika,
@@ -1186,9 +1278,11 @@ if(pocetDuplicit = 0 and pocetKusu <= 1500 and pocetKusu > 0) then
 		`Presna_cena_za_kus` = presnaCenaZaKus
 	WHERE
 		`Id_zakazky` = idZakazky;
+	
 	update fyzkusy join seznam_zakazek on (fyzkusy.Id_zakazky = seznam_zakazek.Id_zakazky)
 	set fyzkusy.Id_modelu_odlito = seznam_zakazek.Id_modelu
 	where fyzkusy.Odlito = false;
+
 	CALL `pomdb`.`generujKusy`(idZakazky);
 	SELECT TRUE;
 else
@@ -1281,9 +1375,12 @@ declare uzavreno tinyint(1);
 declare objednanoKusu smallint;
 set lzeUzavrit = true;
 set uzavreno = false;
+
 select Pocet_kusu from seznam_zakazek where seznam_zakazek.Id_zakazky = idZakazky 
 into objednanoKusu;
+
 set objednanoKs = objednanoKusu;
+
 select count(*) 
 FROM (pomdb.seznam_zakazek join pomdb.seznam_modelu on (seznam_zakazek.Id_modelu = seznam_modelu.Id_modelu))
 		join 
@@ -1293,6 +1390,7 @@ where
  fyzkusy.Zmetek = false and
  fyzkusy.Odlito = true 
 into pocetOdlitych;
+ 
 select count(*) 
 FROM (pomdb.seznam_zakazek join pomdb.seznam_modelu on (seznam_zakazek.Id_modelu = seznam_modelu.Id_modelu))
 		join 
@@ -1302,6 +1400,7 @@ where
  fyzkusy.Zmetek = false and
  fyzkusy.Vycisteno = true 
 into pocetVycistenych;
+ 
 select count(*) 
 FROM (pomdb.seznam_zakazek join pomdb.seznam_modelu on (seznam_zakazek.Id_modelu = seznam_modelu.Id_modelu))
 		join 
@@ -1311,6 +1410,7 @@ where
  fyzkusy.Zmetek = false and
  fyzkusy.Expedovano = true 
 into pocetExpedovanych;
+ 
 select count(*) 
 FROM (pomdb.seznam_zakazek join pomdb.seznam_modelu on (seznam_zakazek.Id_modelu = seznam_modelu.Id_modelu))
 		join 
@@ -1320,20 +1420,27 @@ where
  fyzkusy.Zmetek = false and
  fyzkusy.Odlito = false 
 into pocetNeodlitych;
+ 
+ 
 select count(*) 
 from ((`pomdb`.`fyzkusy` left join zmetky_vady on (`fyzkusy`.`Id_kusu` = zmetky_vady.Id_kusu)) left join vinici on (vinici.Id_vinika = zmetky_vady.Id_vinika))left join vady on (vady.idvady = zmetky_vady.Id_vady)
  where `fyzkusy`.`Zmetek` and Id_zakazky = idZakazky and zmetky_vady.Id_kusu is null 
 into  pocetZmetkuBezVady;
+
+
 select count(*)
 from pomdb.dilci_terminy
 where dilci_terminy.Id_zakazky = idZakazky and splnen = false
 into pocetNedokoncenychDilcichterminu;
+
+
  if (objednanoKusu = pocetOdlitych and objednanoKusu = pocetVycistenych and objednanoKusu = pocetExpedovanych and pocetNeodlitych = 0 and pocetZmetkuBezVady = 0 and pocetNedokoncenychDilcichterminu = 0)then
   update seznam_zakazek set Uzavreno = true where seznam_zakazek.Id_zakazky = idZakazky;
  select true;
  else 
  select false;
  end if;
+
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -1352,7 +1459,7 @@ DELIMITER ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `verze`()
 BEGIN
-select '1.5';
+select '1.6';
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -1433,7 +1540,7 @@ DELIMITER ;
 /*!50003 SET character_set_results = utf8 */ ;
 /*!50003 SET collation_connection  = utf8_general_ci */ ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `vyberModely`(jmeno varchar(30), cisloModelu varchar(30), nazevModelu varchar(30), idModelu int UNSIGNED, datumZakazky date, formovna char(1), idZakazky int UNSIGNED, pouzeUzavrene tinyint)
 BEGIN
@@ -1441,6 +1548,7 @@ declare pomJmeno varchar(31);
 declare pomCisloModelu varchar(31);
 declare pomNazevModelu varchar(31);
 declare pomFormovna char(2);
+
 if (jmeno like ' %') then set jmeno = '';
 end if;
 if (cisloModelu like ' %') then set cisloModelu = '';
@@ -1453,6 +1561,10 @@ set pomJmeno = CONCAT(jmeno,'%');
 set pomCisloModelu = CONCAT(cisloModelu,'%');
 set pomNazevModelu = CONCAT(nazevModelu,'%');
 set pomFormovna =  CONCAT(formovna,'%');
+
+
+
+
 SELECT `seznam_modelu`.`Id_modelu` as 'ID modelu',
     `seznam_modelu`.`Jmeno_modelu` as 'Jméno modelu',
     `seznam_modelu`.`Cislo_modelu` as 'Číslo modelu',
@@ -1488,6 +1600,7 @@ where
 group by `seznam_modelu`.`Id_modelu`, `zakaznici`.`Jmeno_zakaznika`
 order by `zakaznici`.`Jmeno_zakaznika`, `seznam_modelu`.`Cislo_modelu`
 limit 500;
+	
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -1507,9 +1620,11 @@ DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `vyberVady`(jmenoVady varchar(45))
 BEGIN
 declare pomJmenoVady varchar(46);
+
 if (jmenoVady like ' %' or jmenoVady is null) then set jmenoVady = '';
 end if;
 set pomJmenoVady = CONCAT(jmenoVady,'%');
+
 SELECT vady.idvady as 'ID vady', vady.vada as 'Jméno vady'
 FROM pomdb.vady
 where vady.vada like pomJmenoVady;
@@ -1532,6 +1647,7 @@ DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `vyberViniky`(jmenoVinika varchar(45))
 BEGIN
 declare pomJmenoVinika varchar(46);
+
 if (jmenoVinika like ' %' or jmenoVinika is null) then set jmenoVinika = '';
 end if;
 set pomJmenoVinika = CONCAT(jmenoVinika,'%');
@@ -1585,6 +1701,7 @@ declare pomJmeno varchar(31);
 declare pomCisloModelu varchar(31);
 declare pomNazevModelu varchar(31);
 declare pomCisloObjednavky varchar(31);
+
 if (jmeno like ' %') then set jmeno = '';
 end if;
 if (cisloModelu like ' %') then set cisloModelu = '';
@@ -1597,6 +1714,10 @@ set pomJmeno = CONCAT(jmeno,'%');
 set pomCisloModelu = CONCAT(cisloModelu,'%');
 set pomNazevModelu = CONCAT(nazevModelu,'%');
 set pomCisloObjednavky =  CONCAT(cisloObjednavky,'%');
+
+
+
+
 SELECT 
 	`seznam_zakazek`.`Id_zakazky` as 'ID zakázky',
 	`zakaznici`.`Jmeno_zakaznika` as 'Jméno zákazníka',
@@ -1643,7 +1764,9 @@ where
 		end ) and
 	seznam_zakazek.Uzavreno = bolPouzeUzavrene
 order by `zakaznici`.`Jmeno_zakaznika`,`seznam_modelu`.`Cislo_modelu`, `seznam_zakazek`.`Id_zakazky` desc
+
 limit 500;
+	
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -1663,8 +1786,10 @@ DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `vyberZakazniky`(jmeno varchar(30))
 BEGIN
 declare pom varchar(31);
+
 if (jmeno like ' %') then set jmeno = null;
 end if;
+
 set pom = CONCAT(jmeno,'%');
 SELECT `zakaznici`.`Id_zakaznika` as 'ID zákazníka',
     `zakaznici`.`Jmeno_zakaznika` as 'Jméno zákazníka'
@@ -1672,6 +1797,7 @@ FROM `pomdb`.`zakaznici`
 where `zakaznici`.`Jmeno_zakaznika` like pom
 order by Jmeno_zakaznika, Id_zakaznika desc
 limit 100;
+
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -1694,6 +1820,7 @@ declare pomJmeno varchar(31);
 declare pomCisloModelu varchar(31);
 declare pomNazevModelu varchar(31);
 declare pomCisloObjednavky varchar(31);
+
 if (jmeno like ' %') then set jmeno = '';
 end if;
 if (cisloModelu like ' %') then set cisloModelu = '';
@@ -1706,8 +1833,14 @@ set pomJmeno = CONCAT(jmeno,'%');
 set pomCisloModelu = CONCAT(cisloModelu,'%');
 set pomNazevModelu = CONCAT(nazevModelu,'%');
 set pomCisloObjednavky =  CONCAT(cisloObjednavky,'%');
+
+
+
+
 SELECT 
+	-- fyzkusy.Datum_odliti as 'Datum lití',
 	fyzkusy.Datum_zadani_zmetku as 'Datum zmetku',
+	-- fyzkusy.Zmetek,
 	vinici.Jmeno_vinika as 'Jméno viníka',
 	vady.vada as 'Vada',
 	`seznam_zakazek`.`Id_zakazky` as 'ID zakázky',
@@ -1734,6 +1867,7 @@ FROM ((pomdb.seznam_zakazek
 										left join vinici on (vinici.Id_vinika = zmetky_vady.Id_vinika))	
 										left join vady on (vady.idvady = zmetky_vady.Id_vady))
 				on(seznam_zakazek.Id_zakazky = fyzkusy.Id_zakazky)
+
 where 
 	`zakaznici`.`Jmeno_zakaznika` like pomJmeno and
 	`seznam_modelu`.`Cislo_modelu` like pomCisloModelu and
@@ -1775,6 +1909,7 @@ DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `vypisDenniOdlitychKusu`(datum date)
 BEGIN
 declare odlitoCelkemZaDen int;
+
 select count(Odlito) from fyzkusy where fyzkusy.Datum_odliti = datum into odlitoCelkemZaDen;
 SELECT
 	seznam_zakazek.Id_zakazky as 'ID zakázky',
@@ -1793,7 +1928,41 @@ FROM
 where fyzkusy.Datum_odliti = datum
 group by seznam_zakazek.Id_zakazky
 order by Jmeno_zakaznika, Cislo_modelu;
+
 select '','','Celkem:',odlitoCelkemZaDen,'','','';
+
+
+-- drop table if exists odlitykusy;
+-- create temporary table if not exists odlitykusy (IdZakazkyOdlitku int unsigned, odlitku mediumint unsigned);
+
+-- insert into
+ -- odlitykusy (IdZakazkyOdlitku, odlitku) 
+-- select seznam_zakazek.Id_zakazky, sum(fyzkusy.Odlito) from fyzkusy left join seznam_zakazek on (fyzkusy.Id_zakazky = seznam_zakazek.Id_zakazky)
+  -- where
+-- 	fyzkusy.Datum_odliti = datum
+	-- Opravdu nech zakomentaovany and seznam_zakazek.Uzavreno = false
+--  group by seznam_zakazek.Id_zakazky with rollup;
+
+-- alter table odlitykusy add index (IdZakazkyOdlitku);
+
+-- SELECT  distinct
+	-- seznam_zakazek.Id_zakazky as 'ID zakázky',
+    -- `zakaznici`.`Jmeno_zakaznika` as 'Jméno zákazníka',
+    -- `seznam_modelu`.`Cislo_modelu` as 'Číslo modelu',
+	-- odlitku as Odlito,
+	-- seznam_modelu.Material as 'Materiál',
+	-- seznam_modelu.Material_vlastni as 'Materiál vlastní',
+-- 	Cislo_tavby as 'Číslo tavby'
+-- FROM
+   -- ((((pomdb.seznam_zakazek
+   -- join pomdb.seznam_modelu ON (seznam_zakazek.Id_modelu = seznam_modelu.Id_modelu))
+   -- join pomdb.zakaznici ON (seznam_zakazek.Id_zakaznika = zakaznici.Id_zakaznika))
+    --     join
+   --  fyzkusy ON (fyzkusy.Id_zakazky = seznam_zakazek.Id_zakazky))) right join odlitykusy on (seznam_zakazek.Id_zakazky = odlitykusy.IdZakazkyOdlitku)
+-- order by zakaznici.Jmeno_zakaznika, seznam_zakazek.Id_zakazky;
+
+-- drop table if exists odlitykusy;
+
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -1808,7 +1977,7 @@ DELIMITER ;
 /*!50003 SET character_set_results = utf8 */ ;
 /*!50003 SET collation_connection  = utf8_general_ci */ ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `vypisDleTerminuExpediceCisloTydne`(od date, do_ date)
 BEGIN
@@ -1827,8 +1996,12 @@ create temporary table pomTable
 	odlito smallint,
 	vycisteno smallint,
 	expedovano smallint,
+	-- zmetky smallint,
 	isTerminExpedice tinyint(1)
+-- pridat polozku zda to je dilcitermin nebo termin expedice
 );
+
+-- termin expedice
 insert into pomTable 
 (termin_ex, dilci_ter, id_zakazky, jmeno_zakaznika, jmeno_modelu, cislo_modelu, dodat_ks,
  pocet_ks, hmotnost, cislo_objednavky, odlito, vycisteno, expedovano, isTerminExpedice)
@@ -1857,6 +2030,8 @@ where
 	fyzkusy.Zmetek = false and
 	seznam_zakazek.Termin_expedice between od and do_   
 group by  seznam_zakazek.Id_zakazky, seznam_zakazek.Termin_expedice;
+	
+-- dilci terminy
 insert into pomTable 
 (termin_ex, dilci_ter, id_zakazky, jmeno_zakaznika, jmeno_modelu, cislo_modelu, dodat_ks,
  pocet_ks, hmotnost, cislo_objednavky, odlito, vycisteno, expedovano, isTerminExpedice)
@@ -1885,14 +2060,22 @@ where
 	fyzkusy.Zmetek = false and
 	dilci_terminy.dilci_termin between od and do_  
 group by  seznam_zakazek.Id_zakazky, dilci_terminy.dilci_termin;
+	
+
+
+-- zmetci
 drop table if exists zmetci;
 create temporary table if not exists zmetci (IdZakazkyZmetku int unsigned, pocetZmetku smallint unsigned, isTerminExpedice tinyint(1));
+
+-- dle termínu expedice
 insert into zmetci (IdZakazkyZmetku, pocetZmetku, isTerminExpedice) 
 select seznam_zakazek.Id_zakazky, sum(Zmetek), 1
 from fyzkusy left join seznam_zakazek on (fyzkusy.Id_zakazky = seznam_zakazek.Id_zakazky) 
 where 
 	seznam_zakazek.Termin_expedice between od and do_ 
 group by seznam_zakazek.Id_zakazky, seznam_zakazek.Termin_expedice;
+
+-- dle dilcich terminu
 insert into zmetci (IdZakazkyZmetku, pocetZmetku, isTerminExpedice) 
 select seznam_zakazek.Id_zakazky, sum(Zmetek), 0
 from (fyzkusy left join seznam_zakazek on (fyzkusy.Id_zakazky = seznam_zakazek.Id_zakazky)) 
@@ -1900,7 +2083,13 @@ from (fyzkusy left join seznam_zakazek on (fyzkusy.Id_zakazky = seznam_zakazek.I
 where 
 	dilci_terminy.dilci_termin between od and do_ 
 group by seznam_zakazek.Id_zakazky, dilci_terminy.dilci_termin;
+
+-- pridat datum zmetku jako primary key
 alter table zmetci add primary key (IdZakazkyZmetku, isTerminExpedice);
+
+
+
+-- select
 SELECT 
 	jmeno_zakaznika as `Jméno zákazníka`,
 	termin_ex as `Termín expedice`,
@@ -1919,7 +2108,9 @@ SELECT
 FROM
    pomTable left join zmetci on (zmetci.IdZakazkyZmetku = pomTable.id_zakazky and zmetci.isTerminExpedice = pomTable.isTerminExpedice)
 order by `Jméno zákazníka`, `Číslo modelu`, `Termín expedice`;
+
 drop temporary table if exists pomTable;
+
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -1934,16 +2125,19 @@ DELIMITER ;
 /*!50003 SET character_set_results = utf8 */ ;
 /*!50003 SET collation_connection  = utf8_general_ci */ ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `vypisExpedovanychKusuOdDo`(od date, do_ date)
 BEGIN
+-- pomocne tabulky
 drop temporary table if exists pomTable;
 create temporary table pomTable (datum_ex  date, id int unsigned, Jmeno_zakaznika varchar(30), Cislo_modelu varchar(30), Jmeno_modelu varchar(30),
 	exped smallint, cenaCelk decimal(17,6), hmotCelk decimal(10,2), cisloFaktury varchar(19));
 drop temporary table if exists pomTable2;
 create temporary table pomTable2 (datum_ex  date, id int unsigned, Jmeno_zakaznika varchar(30), Cislo_modelu varchar(30), Jmeno_modelu varchar(30),
 	exped smallint, cenaCelk decimal(17,6), hmotCelk decimal(10,2), cisloFaktury varchar(19));
+
+-- prace s daty
 insert into pomTable (datum_ex, id, Jmeno_zakaznika, Cislo_modelu, Jmeno_modelu, exped, cenaCelk, hmotCelk, cisloFaktury)
 SELECT 
 	fyzkusy.Datum_expedice as `Datum expedice`,
@@ -1968,6 +2162,8 @@ where
 	fyzkusy.Expedovano = true and
 	fyzkusy.Datum_expedice between od and do_   
 group by  seznam_zakazek.Id_zakazky, fyzkusy.Datum_expedice, fyzkusy.Cislo_faktury;
+
+-- mezisoucty
 insert into pomTable2 (datum_ex, id, Jmeno_zakaznika, Cislo_modelu, Jmeno_modelu, exped, cenaCelk, hmotCelk, cisloFaktury)
 SELECT 
 	null,
@@ -1982,6 +2178,8 @@ SELECT
 FROM
    pomTable
 group by  Jmeno_zakaznika;
+
+-- celkovy soucet
 insert into pomTable2 (datum_ex, id, Jmeno_zakaznika, Cislo_modelu, Jmeno_modelu, exped, cenaCelk, hmotCelk, cisloFaktury)
 SELECT 
 	null,
@@ -1995,11 +2193,15 @@ SELECT
 	null
 FROM
    pomTable;
+-- zkopirovat data z pomTable
 insert into pomTable2 (datum_ex, id, Jmeno_zakaznika, Cislo_modelu, Jmeno_modelu, exped, cenaCelk, hmotCelk, cisloFaktury)
 select 
  datum_ex, id, Jmeno_zakaznika, Cislo_modelu, Jmeno_modelu, exped, cenaCelk, hmotCelk, cisloFaktury
 from
 	pomTable;
+
+-- Vyber dat
+
 select 
 	datum_ex as `Datum expedice`,
     id as `ID zakázky`,
@@ -2014,6 +2216,8 @@ from
 	pomTable2
 order by 
 	Jmeno_zakaznika, datum_ex desc;
+
+
 drop temporary table if exists pomTable;
 drop temporary table if exists pomTable2;
 END ;;
@@ -2030,7 +2234,7 @@ DELIMITER ;
 /*!50003 SET character_set_results = utf8 */ ;
 /*!50003 SET collation_connection  = utf8_general_ci */ ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `vypisKusuNaSkladu`()
 BEGIN
@@ -2046,6 +2250,7 @@ SELECT
     count(*) as 'Kusů na skladě',
     sum(fyzkusy.Vycisteno * returnPresnouCenuZaKus(fyzkusy.Id_kusu)) as 'P. cena * kusy',
     sum(fyzkusy.Vycisteno * getHmotnostFyzKusu(fyzkusy.Id_kusu)) as 'Hmotnost * kusy'
+
 FROM ((pomdb.seznam_zakazek join pomdb.seznam_modelu on (seznam_zakazek.Id_modelu = seznam_modelu.Id_modelu)) join pomdb.zakaznici on (seznam_zakazek.Id_zakaznika = zakaznici.Id_zakaznika))
  join fyzkusy on (fyzkusy.Id_zakazky = seznam_zakazek.Id_zakazky)
 where 
@@ -2056,6 +2261,9 @@ where
 	 seznam_zakazek.Uzavreno = false
 group by seznam_zakazek.Id_zakazky
 ;
+
+-- order by  seznam_zakazek.Termin_expedice,`zakaznici`.`Jmeno_zakaznika`, `seznam_modelu`.`Cislo_modelu`
+
 SELECT 
 	Id_zakazky as 'ID zakázky',
  	Termin_expedice as 'Termín expedice',
@@ -2067,6 +2275,7 @@ SELECT
 FROM 
 	pomTable
 order by  Termin_expedice, Jmeno_zakaznika;
+
 SELECT 
 	'Celkem',
  	'',
@@ -2077,6 +2286,7 @@ SELECT
     sum(hmotKratKusy) as 'Hmotnost * kusy'
 FROM 
 	pomTable;
+    
 drop temporary table if exists pomTable;
 END ;;
 DELIMITER ;
@@ -2092,10 +2302,13 @@ DELIMITER ;
 /*!50003 SET character_set_results = utf8 */ ;
 /*!50003 SET collation_connection  = utf8_general_ci */ ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `vypisMzdySlevacu`(datum_od date, datum_do date)
 BEGIN
+-- nekdy se muze stat ze nebude tabulka odpovidat, tzn Bude norma slevace, počet odlitych kusů a třetí sloupec se nebude rovnat odlito*norma. 
+-- to protože počítám se skutečnou normou, podle puvodně odlitého modelu. to znamená že tato zakazka změnila model v jejim pruběhu.
+
 drop temporary table if exists pomTable;
 create temporary table pomTable 
 	(idZakazky int(10) unsigned,
@@ -2106,6 +2319,7 @@ create temporary table pomTable
 	odlito smallint unsigned,
 	vyrobeno decimal(12,1) unsigned
 );
+-- soucty
 drop temporary table if exists pomTable2;
 create temporary table pomTable2 
 	(idZakazky int(10) unsigned,
@@ -2116,6 +2330,7 @@ create temporary table pomTable2
 	odlito smallint unsigned,
 	vyrobeno decimal(12,1) unsigned
 );
+
 insert into pomTable (idZakazky, jmenoZakaznika, cisloModelu, formovna, norma_slevace, odlito, vyrobeno)
 SELECT 
 	seznam_zakazek.Id_zakazky as `ID zakázky`,
@@ -2136,6 +2351,8 @@ where
     fyzkusy.Odlito = true and
 	fyzkusy.Datum_odliti between datum_od and datum_do
 group by seznam_zakazek.Id_zakazky, seznam_modelu.Formovna; 
+
+-- součty součtů
 insert into pomTable2 (idZakazky, jmenoZakaznika, cisloModelu, formovna, norma_slevace, odlito, vyrobeno)
 SELECT 
 	null,
@@ -2148,12 +2365,15 @@ SELECT
 FROM
    pomTable
 group by formovna;
+
 insert into pomTable (idZakazky, jmenoZakaznika, cisloModelu, formovna, norma_slevace, odlito, vyrobeno)
 SELECT 
 	*
 FROM
    pomTable2
 group by formovna;
+
+-- select
 select  
 	idZakazky as `ID zakázky`,
 	jmenoZakaznika as `Jméno zákazníka`,
@@ -2164,6 +2384,7 @@ select
 	vyrobeno  as `Vyrobeno`
 from pomTable
 order by formovna, jmenoZakaznika, cisloModelu;
+
 drop temporary table if exists pomTable;
 drop temporary table if exists pomTable2;
 END ;;
@@ -2180,7 +2401,7 @@ DELIMITER ;
 /*!50003 SET character_set_results = utf8 */ ;
 /*!50003 SET collation_connection  = utf8_general_ci */ ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `vypisOdlituVKgKcOdDo`(od date, do_ date)
 BEGIN
@@ -2190,6 +2411,7 @@ create temporary table pomTable
 	cena decimal(20,6), -- nepouzivam unsigned
 	hmotnost decimal(12,2) -- nepouzivam unsgined
 );
+
 insert into pomTable (formovna, cena, hmotnost)
 SELECT 
 	seznam_modelu.Formovna,
@@ -2204,7 +2426,10 @@ FROM
 where
 	fyzkusy.Odlito = true and
     fyzkusy.Datum_odliti between od and do_
+
 group by seznam_modelu.Formovna;
+
+-- hmotnost a cena zmetků, kterou musím odečíst. PODLE Datum_zadani_zmetku
 insert into pomTable (formovna, cena, hmotnost)
 SELECT 
 	seznam_modelu.Formovna,
@@ -2221,6 +2446,8 @@ where
     fyzkusy.Datum_zadani_zmetku between od and do_ and
     fyzkusy.Zmetek = true
 group by seznam_modelu.Formovna;
+
+-- select
  select 
  	formovna as 'Formovna', 
 	 sum(cena) as 'Cena Kč',
@@ -2241,14 +2468,17 @@ DELIMITER ;
 /*!50003 SET character_set_results = utf8 */ ;
 /*!50003 SET collation_connection  = utf8_general_ci */ ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `vypisOdlitychKusuOdDo`(od date, do_ date, formovna char(1), vlastni_material_reg_ex varchar(500))
 BEGIN
 declare pom_formovna char(2);
+
 if (formovna like ' %') then set formovna = ''; -- zbytecny
 end if;
+
 set pom_formovna = CONCAT(formovna,'%');
+
 SELECT 
 	seznam_zakazek.Id_zakazky as `ID zakázky`,
     `zakaznici`.`Jmeno_zakaznika` as `Jméno zákazníka`,
@@ -2315,7 +2545,7 @@ DELIMITER ;
 /*!50003 SET character_set_results = utf8 */ ;
 /*!50003 SET collation_connection  = utf8_general_ci */ ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `vypisRozpracovaneVyroby`()
 BEGIN
@@ -2338,6 +2568,7 @@ where
 	fyzkusy.Odlito = true 
 group by  seznam_zakazek.Id_zakazky
 order by `zakaznici`.`Jmeno_zakaznika` , `seznam_modelu`.`Cislo_modelu`;
+
 SELECT 
 	'Celkem',
     '',
@@ -2369,7 +2600,7 @@ DELIMITER ;
 /*!50003 SET character_set_results = utf8 */ ;
 /*!50003 SET collation_connection  = utf8_general_ci */ ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `vypisStavNeuzavrenychZakazek`(idZakazky int UNSIGNED, jmeno varchar(30), cisloModelu varchar(30), nazevModelu varchar(30), idModelu int UNSIGNED, datumZakazky date, cisloObjednavky varchar(30))
 BEGIN
@@ -2377,6 +2608,7 @@ declare pomJmeno varchar(31);
 declare pomCisloModelu varchar(31);
 declare pomNazevModelu varchar(31);
 declare pomCisloObjednavky varchar(31);
+
 if (jmeno like ' %') then set jmeno = '';
 end if;
 if (cisloModelu like ' %') then set cisloModelu = '';
@@ -2389,10 +2621,12 @@ set pomJmeno = CONCAT(jmeno,'%');
 set pomCisloModelu = CONCAT(cisloModelu,'%');
 set pomNazevModelu = CONCAT(nazevModelu,'%');
 set pomCisloObjednavky =  CONCAT(cisloObjednavky,'%');
+
 drop temporary table if exists zmetci;
 create temporary table if not exists zmetci (IdZakazkyZmetku int unsigned, pocetZmetku mediumint unsigned);
 insert into zmetci (IdZakazkyZmetku, pocetZmetku) select seznam_zakazek.Id_zakazky, sum(Zmetek) from fyzkusy left join seznam_zakazek on (fyzkusy.Id_zakazky = seznam_zakazek.Id_zakazky)  where Uzavreno = false group by seznam_zakazek.Id_zakazky;
 alter table zmetci add primary key (IdZakazkyZmetku);
+
 select
 	seznam_zakazek.Id_zakazky as 'ID zakázky',
 	Jmeno_zakaznika as 'Jméno zákazníka',
@@ -2431,6 +2665,7 @@ where
 group by seznam_zakazek.Id_zakazky
 order by zakaznici.Jmeno_zakaznika, Cislo_modelu
 limit 500;
+
 drop temporary table if exists zmetci;
 END ;;
 DELIMITER ;
@@ -2446,7 +2681,7 @@ DELIMITER ;
 /*!50003 SET character_set_results = utf8 */ ;
 /*!50003 SET collation_connection  = utf8_general_ci */ ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `vypisStavNeuzavrenychZakazek_short`(idZakazky int UNSIGNED, jmeno varchar(30), cisloModelu varchar(30), nazevModelu varchar(30), idModelu int UNSIGNED, datumZakazky date, cisloObjednavky varchar(30))
 BEGIN
@@ -2454,6 +2689,7 @@ declare pomJmeno varchar(31);
 declare pomCisloModelu varchar(31);
 declare pomNazevModelu varchar(31);
 declare pomCisloObjednavky varchar(31);
+
 if (jmeno like ' %') then set jmeno = '';
 end if;
 if (cisloModelu like ' %') then set cisloModelu = '';
@@ -2466,10 +2702,14 @@ set pomJmeno = CONCAT(jmeno,'%');
 set pomCisloModelu = CONCAT(cisloModelu,'%');
 set pomNazevModelu = CONCAT(nazevModelu,'%');
 set pomCisloObjednavky =  CONCAT(cisloObjednavky,'%');
+
 drop table if exists zmetci;
 create temporary table if not exists zmetci (IdZakazkyZmetku int unsigned, pocetZmetku mediumint unsigned);
 insert into zmetci (IdZakazkyZmetku, pocetZmetku) select seznam_zakazek.Id_zakazky, sum(Zmetek) from fyzkusy left join seznam_zakazek on (fyzkusy.Id_zakazky = seznam_zakazek.Id_zakazky)  where Uzavreno = false group by seznam_zakazek.Id_zakazky;
 alter table zmetci add primary key (IdZakazkyZmetku);
+
+
+
 select
 	Pocet_kusu as 'Obj.',
 	sum(Odlito) as 'Odl.',
@@ -2501,7 +2741,75 @@ where
 group by seznam_zakazek.Id_zakazky
 order by zakaznici.Jmeno_zakaznika
 limit 500;
+
 drop table if exists zmetci;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `VypisStavZakazek` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `VypisStavZakazek`(jmeno varchar(30), cisloModelu varchar(30), nazevModelu varchar(30), idModelu int UNSIGNED, datumZakazky date)
+BEGIN
+declare pomJmeno varchar(31);
+declare pomCisloModelu varchar(31);
+declare pomNazevModelu varchar(31);
+if (jmeno like ' %') then set jmeno = '';
+end if;
+if (cisloModelu like ' %') then set cisloModelu = '';
+end if;
+if (nazevModelu like ' %') then set nazevModelu = '';
+end if;
+set pomJmeno = CONCAT(jmeno,'%');
+set pomCisloModelu = CONCAT(cisloModelu,'%');
+set pomNazevModelu = CONCAT(nazevModelu,'%');
+drop temporary table if exists zmetci;
+create temporary table if not exists zmetci (IdZakazkyZmetku int unsigned, pocetZmetku mediumint unsigned);
+insert into zmetci (IdZakazkyZmetku, pocetZmetku) select seznam_zakazek.Id_zakazky, sum(Zmetek) from fyzkusy left join seznam_zakazek on (fyzkusy.Id_zakazky = seznam_zakazek.Id_zakazky) group by seznam_zakazek.Id_zakazky;
+alter table zmetci add primary key (IdZakazkyZmetku);
+select
+	seznam_zakazek.Id_zakazky as 'ID zakázky',
+	Jmeno_zakaznika as 'Jméno zákazníka',
+	Cislo_modelu as 'Číslo modelu',
+	Jmeno_modelu as 'Název modelu',
+	seznam_zakazek.Cislo_objednavky as 'Číslo objed.',
+	seznam_modelu.Material_vlastni as 'Materiál vl.',
+	seznam_zakazek.Termin_expedice as 'Termín exp.',
+	Pocet_kusu as 'Objed.',
+	sum(Odlito) as 'Odlito',
+	sum(Vycisteno) as 'Vyčiš.',
+	sum(Expedovano) as 'Exped.',
+	pocetZmetku as  'Zmetků'
+from (((seznam_zakazek left join zakaznici on (seznam_zakazek.Id_zakaznika = zakaznici.Id_zakaznika))
+		left join seznam_modelu on (seznam_zakazek.Id_modelu = seznam_modelu.Id_modelu))
+		left join fyzkusy on (fyzkusy.Id_zakazky = seznam_zakazek.Id_zakazky))
+		left join zmetci on (seznam_zakazek.Id_zakazky = zmetci.IdZakazkyZmetku)
+where
+	`zakaznici`.`Jmeno_zakaznika` like pomJmeno and
+	`seznam_modelu`.`Cislo_modelu` like pomCisloModelu and
+	`seznam_modelu`.`Jmeno_modelu` like pomNazevModelu and
+	(case !isnull(datumZakazky) and !isnull(seznam_zakazek.Datum_prijeti_zakazky)
+		when true then  seznam_zakazek.Datum_prijeti_zakazky >= datumZakazky
+		else true
+		end ) and
+	(case idModelu
+		when 0 then true
+		else `seznam_modelu`.Id_modelu = idModelu
+		end ) and
+    Zmetek = false
+group by seznam_zakazek.Id_zakazky
+order by zakaznici.Jmeno_zakaznika, Cislo_modelu;
+drop temporary table if exists zmetci;
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -2516,7 +2824,7 @@ DELIMITER ;
 /*!50003 SET character_set_results = utf8 */ ;
 /*!50003 SET collation_connection  = utf8_general_ci */ ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `vypisVinikyVKgKc`(od date, do_ date)
 BEGIN
@@ -2530,6 +2838,7 @@ SELECT
 	sum(fyzkusy.Zmetek * getHmotnostFyzKusu(fyzkusy.Id_kusu)) as 'Hmotnost celkem',
 	sum(fyzkusy.Zmetek * getNormaSlevaceFyzKusu(fyzkusy.Id_kusu)) as 'Norma celkem',
 	sum(fyzkusy.Zmetek * returnPresnouCenuZaKus(fyzkusy.Id_kusu)) as 'Cena celkem'
+	
 FROM ((pomdb.seznam_zakazek
 		join pomdb.seznam_modelu on (seznam_zakazek.Id_modelu = seznam_modelu.Id_modelu))
 		join pomdb.zakaznici on (seznam_zakazek.Id_zakaznika = zakaznici.Id_zakaznika))
@@ -2537,10 +2846,14 @@ FROM ((pomdb.seznam_zakazek
 										left join vinici on (vinici.Id_vinika = zmetky_vady.Id_vinika))	
 										left join vady on (vady.idvady = zmetky_vady.Id_vady))
 				on(seznam_zakazek.Id_zakazky = fyzkusy.Id_zakazky)
+
 where 
 	fyzkusy.Zmetek = true and
 	Datum_zadani_zmetku between od and do_
 group by seznam_zakazek.Id_zakazky, vinici.Id_vinika;
+
+
+-- seznam viniku
 SELECT
 	vinik as 'Jméno viníka',
 	sum(kusu) as 'kusů',
@@ -2551,8 +2864,13 @@ FROM
 	pomTable
 group by pomTable.Id_vinika
 order by vinik;
+
+
+-- celkovy soucet
 select 'Celkem', sum(kusu), sum(Hmotnost), sum(Norma),  sum(cena)
 from pomTable;
+
+
 drop temporary table if exists pomTable;
 END ;;
 DELIMITER ;
@@ -2568,7 +2886,7 @@ DELIMITER ;
 /*!50003 SET character_set_results = utf8 */ ;
 /*!50003 SET collation_connection  = utf8_general_ci */ ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `vypisVycistenychKusuOdDo`(od date, do_ date)
 BEGIN
@@ -2590,8 +2908,11 @@ where
 	fyzkusy.Odlito = true
 	and fyzkusy.Vycisteno = true
 	and fyzkusy.Datum_vycisteni between od and do_
+    -- and seznam_zakazek.Uzavreno = false
 group by  seznam_zakazek.Id_zakazky, fyzkusy.Datum_vycisteni)
+
 union all
+
 (select null,null,`zakaznici`.`Jmeno_zakaznika`,'Celkem',
 	sum(fyzkusy.Vycisteno) as 'Vyčištěno kusů',
 	sum(returnPresnouCenuZaKus(fyzkusy.Id_kusu)) as 'Cena celkem',
@@ -2607,7 +2928,10 @@ where
 	and fyzkusy.Vycisteno = true
 	and fyzkusy.Datum_vycisteni between od and do_
 group by zakaznici.Jmeno_zakaznika)
+
  order by `Jméno zákazníka`, `ID zakázky` desc;
+
+-- celkovy soucet
 SELECT 
 	'Celkem',
 	'',
@@ -2627,6 +2951,8 @@ where
 	and fyzkusy.Vycisteno = true
 	and fyzkusy.Datum_vycisteni between od and do_
 ;
+
+ 
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -2641,7 +2967,7 @@ DELIMITER ;
 /*!50003 SET character_set_results = utf8 */ ;
 /*!50003 SET collation_connection  = utf8_general_ci */ ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `vypisZmetky`(od date, do_ date)
 BEGIN
@@ -2660,6 +2986,7 @@ SELECT
 	`seznam_modelu`.`Material_vlastni` as 'Vl. mater.',
 	seznam_zakazek.Presna_cena_za_kus as 'cena/ks',
 	sum(fyzkusy.Zmetek * returnPresnouCenuZaKus(fyzkusy.Id_kusu)) as 'Cena celk.'
+	
 FROM ((pomdb.seznam_zakazek
 		join pomdb.seznam_modelu on (seznam_zakazek.Id_modelu = seznam_modelu.Id_modelu))
 		join pomdb.zakaznici on (seznam_zakazek.Id_zakaznika = zakaznici.Id_zakaznika))
@@ -2667,6 +2994,7 @@ FROM ((pomdb.seznam_zakazek
 										left join vinici on (vinici.Id_vinika = zmetky_vady.Id_vinika))	
 										left join vady on (vady.idvady = zmetky_vady.Id_vady))
 				on(seznam_zakazek.Id_zakazky = fyzkusy.Id_zakazky)
+
 where 
 	fyzkusy.Zmetek = true and
 	Datum_zadani_zmetku between od and do_
@@ -2714,6 +3042,8 @@ where
 group by seznam_zakazek.Termin_expedice, seznam_zakazek.Id_zakazky
 order by seznam_zakazek.Termin_expedice, seznam_zakazek.Id_zakazky
 ;
+
+
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -2790,19 +3120,24 @@ DELIMITER ;
 /*!50003 SET character_set_results = utf8 */ ;
 /*!50003 SET collation_connection  = utf8_general_ci */ ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `zadejOdlitek`(idKusu int(10) unsigned, isOdlito tinyint(1), datumOdliti date, isVycisteno tinyint(1), datumVycisteni date,
  isExpedovano tinyint(1), datumExpedice date, isZmetek tinyint(1), datumZadaniZmetku date, cisloTavby varchar(10), cisloFaktury varchar(19), teplotaLiti varchar(20) )
 BEGIN
 declare idModelu int(10) unsigned;
 declare isOdlitoFyzKus tinyint(1) unsigned;
+
 select Id_modelu 
 from seznam_zakazek join fyzkusy on (seznam_zakazek.Id_zakazky = fyzkusy.Id_zakazky)
 where fyzkusy.Id_kusu = idKusu
 into idModelu;
+
 select Odlito from fyzkusy where fyzkusy.Id_kusu = idKusu into isOdlitoFyzKus;
+
+
 if(idKusu is not null and idKusu > 0) then
+	-- zadam model pouze kdyz prave ted oznacuji jako ze odlito = true nebo kdyz je odlito = false aktualizuji dany model (na default model zakazky)
 	if (isOdlito = true and isOdlito != isOdlitoFyzKus or isOdlito = false) then
 		UPDATE `pomdb`.`fyzkusy`
 		SET
@@ -2810,6 +3145,8 @@ if(idKusu is not null and idKusu > 0) then
 		WHERE 
 			`Id_kusu` = idKusu;
 	end if;
+
+
 	if(isOdlito is not null) then 
 		UPDATE `pomdb`.`fyzkusy`
 		SET
@@ -2817,6 +3154,7 @@ if(idKusu is not null and idKusu > 0) then
 		WHERE
 			`Id_kusu` = idKusu;
 	end if;
+
 	if(isVycisteno is not null) then
 		UPDATE
 			`pomdb`.`fyzkusy`
@@ -2824,6 +3162,7 @@ if(idKusu is not null and idKusu > 0) then
 			`Vycisteno` = isVycisteno
 		WHERE `Id_kusu` = idKusu;
 	end if;
+
 	if(isExpedovano is not null) then 
 		UPDATE
 			`pomdb`.`fyzkusy`
@@ -2831,6 +3170,7 @@ if(idKusu is not null and idKusu > 0) then
 			fyzkusy.Expedovano = isExpedovano
 		WHERE `Id_kusu` = idKusu;
 	end if;
+
 	if(isZmetek is not null) then
 		UPDATE
 			`pomdb`.`fyzkusy`
@@ -2838,9 +3178,11 @@ if(idKusu is not null and idKusu > 0) then
 			fyzkusy.Zmetek = isZmetek
 		WHERE `Id_kusu` = idKusu;
 	end if;
+
 	if (isZmetek = false)then
 		set datumZadaniZmetku = null;
 	end if;
+
 	UPDATE `pomdb`.`fyzkusy`
 	SET
 		fyzkusy.Datum_odliti = datumOdliti,
@@ -2853,6 +3195,8 @@ if(idKusu is not null and idKusu > 0) then
 	WHERE 
 		`Id_kusu` = idKusu;
 end if;
+
+
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -2897,9 +3241,11 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `zadejUdajeOZmetku`(idKusu int(10) u
 BEGIN
 declare pom int;
 set prubeh = true;
+
 if(isnull(idKusu) || idKusu = 0)
 then set prubeh = false;
 end if;
+
 if((idVinika is null or idVady is null) and prubeh)
 then delete from `pomdb`.`zmetky_vady` where zmetky_vady.Id_kusu = idKusu;
 else
@@ -2909,6 +3255,7 @@ else
 	select count(*) from vady where vady.idvady = idVady into pom ;
 	if (pom != 1) then set prubeh = false;
 	end if;
+
 	if(prubeh)then
 	select count(*) from `pomdb`.`zmetky_vady` where `Id_kusu`= idKusu into pom ;
 		if(pom = 0) then
@@ -2929,6 +3276,8 @@ else
 		end if;
 	end if;
 end if;
+
+
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -2947,6 +3296,7 @@ DELIMITER ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `zadej_cislo_faktury_cislo_tavby_prohlizeci`(idKusu int(10) unsigned, cisloTavby varchar(10), cisloFaktury varchar(19))
 BEGIN
+
 if(idKusu is not null and idKusu > 0) then
 	UPDATE `pomdb`.`fyzkusy`
 	SET
@@ -2955,6 +3305,7 @@ if(idKusu is not null and idKusu > 0) then
 	WHERE 
 		`Id_kusu` = idKusu;
 end if;
+
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -2969,10 +3320,11 @@ DELIMITER ;
 /*!50003 SET character_set_results = utf8 */ ;
 /*!50003 SET collation_connection  = utf8_general_ci */ ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `zalohaDatabaze`()
 BEGIN
+
 SELECT * FROM pomdb.seznam_zakazek order by Id_zakazky;
 SELECT * FROM pomdb.zakaznici order by Id_zakaznika;
 SELECT * FROM pomdb.seznam_modelu order by Id_modelu;
@@ -2998,4 +3350,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-12-04  7:26:39
+-- Dump completed on 2015-12-04 10:52:35
