@@ -287,7 +287,7 @@ public class TableToExcel {
 			atr[0] = "Výpis viníkù v kg-Kè období";atr[1] = "Výpis viníkù v kg/Kè od ";atr[2] = "./vypisy";
 			break;
 		case ParametryFiltr.ZaklPlanLiti:
-			atr[0] = "Základni licí plán";atr[1] = "Základni licí plán pro týden: ";atr[2] = "./lici_plany";
+			atr[0] = "Základní licí plán";atr[1] = "Základní licí plán pro týden: ";atr[2] = "./lici_plany";
 			break;
 		case ParametryFiltr.PlanovaniLiti:
 			atr[0] = "Licí plán";atr[1] = "Licí plán pro týden: ";atr[2] = "./lici_plany";

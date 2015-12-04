@@ -775,7 +775,7 @@ public class ExpediceZmetek extends JPanel implements ActionListener //, ChangeL
 		gbc_textHmotnost.gridy = 8;
 		add(textHmotnost, gbc_textHmotnost);
 		
-		JLabel lblPoznamka = new JLabel("Pozn\u00E1mka k z\u00E1kazce:");
+		JLabel lblPoznamka = new JLabel("Pozn\u00E1mka k zak\u00E1zce:");
 		popisLabels[19] = lblPoznamka;
 		GridBagConstraints gbc_lblPoznamka = new GridBagConstraints();
 		gbc_lblPoznamka.anchor = GridBagConstraints.WEST;
