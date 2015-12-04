@@ -50,12 +50,12 @@ public class LoginWindow extends JFrame implements KeyListener {
 	/**
 	 * Verze
 	 */
-	public static final String verzeGUI = "1.5"; // 1.6 pouze uprava nazvu  na "Kè" z "kè" v sidemenuitems vypisy
+	public static final String verzeGUI = "1.6";
 	/**
 	 * Ip adresa poèítaèe, na kterém se vyskytuje server, na který se budeme pøipojovat.
 	 */
-	//private static final String ipServeru = "10.190.33.1";
-	private static final String ipServeru = "localhost";
+	private static final String ipServeru = "10.190.33.1";
+	//private static final String ipServeru = "localhost";
 	private static final String url = "jdbc:mysql://"+ipServeru+":3306/";
 	/**
 	 * JButton prihlašení
