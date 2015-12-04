@@ -75,7 +75,7 @@ public class SQLStor {
 			{"{CALL pomdb.vypisOdlituVKgKcOdDo(?,?)}", "{CALL pomdb.vypisZpozdeneVyroby(?)}", "{CALL pomdb.vypisDleTerminuExpediceCisloTydne(?,?)}", "{CALL pomdb.vypisPolozekSOdhadHmot()}", "{CALL pomdb.vypisMzdySlevacu(?,?)}",
 				"{CALL pomdb.vypisOdlitychKusuOdDo(?,?,?,?)}", "{CALL pomdb.vypisVycistenychKusuOdDo(?,?)}", "{CALL pomdb.vypisRozpracovaneVyroby()}", "{CALL pomdb.vypisExpedovanychKusuOdDo(?,?)}", "{CALL pomdb.vypisKusuNaSkladu()}",
 				"{CALL pomdb.vypisStavNeuzavrenychZakazek(?,?,?,?,?,?,?)}", "{CALL pomdb.vypisDenniOdlitychKusu(?)}", "{CALL pomdb.vypisZmetky(?,?)}", "{CALL pomdb.vypisVinikyVKgKc(?,?)}",
-				"{CALL pomdb.vypisStavNeuzavrenychZakazek_short(?,?,?,?,?,?,?)}", "{CALL pomdb.vypisOdlitychKusuOdDoRegEx(?,?,?,?)}"},
+				"{CALL pomdb.vypisStavNeuzavrenychZakazek_short(?,?,?,?,?,?,?)}", "{CALL pomdb.VypisStavZakazek(?,?,?,?,?)}"},
 			{"{CALL pomdb.liciPlanZakl(?,?,?)}", "{CALL pomdb.liciPlanPlanovaci(?,?,?)}", "{CALL pomdb.vyberDilciTerminy(?)}", "{CALL pomdb.vyberDilciTerminySeJmeny(?)}", 
 				"{CALL pomdb.plan_expedice()}"},
 			{"{CALL pomdb.smaz_fyz_kus(?,?)}"},
@@ -1071,6 +1071,48 @@ public class SQLStor {
 			c.setDate(6, sqlDate);  // datumZakazky 
 		}
 		c.setString(7, cisloObjednavky);
+		rs = c.executeQuery();
+		return rs;
+	}
+	
+	
+	public ResultSet vypisStavuZakazek(String jmenoZakaznika, String cisloModelu, String nazevModelu, int idModelu, java.util.Date datumZakazky) throws SQLException{
+		if(jmenoZakaznika == null){
+			jmenoZakaznika = "";
+		}else if(jmenoZakaznika.length() > maxDelkaRetezce){
+			JOptionPane.showMessageDialog(hlavniOkno, "Jméno zákazníka je moc dlouhé, mùže obsahovat max "+maxDelkaRetezce+" znakù");
+			return null;
+		}
+		if(cisloModelu == null) {
+			cisloModelu = "";
+		}else if(cisloModelu.length() > maxDelkaRetezce){
+			JOptionPane.showMessageDialog(hlavniOkno, "Èíslo modelu je moc dlouhé, mùže obsahovat max "+maxDelkaRetezce+" znakù");
+			return null;
+		}
+		if(nazevModelu == null){
+			nazevModelu = "";
+		}else if(nazevModelu.length() > maxDelkaRetezce){
+			JOptionPane.showMessageDialog(hlavniOkno, "Jméno zákazníka je moc dlouhé, mùže obsahovat max "+maxDelkaRetezce+" znakù");
+			return null;
+		}
+		if(idModelu < 0){
+			JOptionPane.showMessageDialog(hlavniOkno, "Id modelu je menší než nula");
+			return null;
+		}		
+		int i = 5, j = 15;
+		if(cst[i][j] == null){
+			cst[i][j] = conn.prepareCall(sqlPrikazy[i][j]);
+			naposledyPouzito[i][j] = new Date();
+		}
+		c = cst[i][j];
+		c.setString(1, jmenoZakaznika); c.setString(2, cisloModelu); c.setString(3, nazevModelu); c.setInt(4, idModelu);
+		
+		if(datumZakazky == null) {
+			c.setNull(5, java.sql.Types.DATE);		
+		}else {
+			java.sql.Date sqlDate = new java.sql.Date(datumZakazky.getTime());
+			c.setDate(5, sqlDate);  // datumZakazky 
+		}
 		rs = c.executeQuery();
 		return rs;
 	}

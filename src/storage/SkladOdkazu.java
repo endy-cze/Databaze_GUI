@@ -58,7 +58,7 @@ public class SkladOdkazu {
 			{"VypisStavNeuzavrenychZakazek","DenniVypisOdlitychKusu", "VypisVycistenychKusuZaObdobi", "MzdySlevacu", "VypisOdlitkuVKgKc",
 				"VypisOdlitychKusuOdDo", "VypisPolozekSOdhadHmot", "VypisDleTerminuExpedice", "VypisExpedice od-do",
 				"VypisZpozdeneVyroby", "InventuraRozpracVyroby", "VypisSkladuKeDnesnimuDni", "VypisZmetkuZaObdobi",
-				"VypisVinikuVKgKcMzdy"},
+				"VypisVinikuVKgKcMzdy", "VypisStavuZakazek"},
 			{"UpravaZakaznika", "UpravaModelu", "UpravaZakazky"},
 			{"Pøidat viníky", "Pøidat druhy vad", "UpravVinika", "UpravVadu"},
 			{"SmazatFyzKusy"},
@@ -522,6 +522,10 @@ public class SkladOdkazu {
 		this.idZakaznikaText = idZakaznikaText;
 	} 
 	
+	/**
+	 * Navrátí již vytvoøenou instanci {@code SimpleDateFormat}. Tato instance se vytváøí pøi vytvoøení tøídy {@code SkladOdkazu}
+	 * @return SimpleDateFormat ve formatu dd_MM_yyyy
+	 */
 	public SimpleDateFormat getSdf2() {
 		return sdf2;
 	}	

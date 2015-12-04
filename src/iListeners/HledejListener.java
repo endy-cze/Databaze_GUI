@@ -37,6 +37,7 @@ import sqlstorage.SQLStor;
 import storage.SkladOdkazu;
 import tiskExcel.PlanovaniLitiToExcelTisk;
 import tiskExcel.TableToExcel;
+import tiskExcel.VypisStavZakazekToCSV;
 
 /**
  * Implementovane interface pro PanelFitr na hledani zakazek, zakazniku, modelu a fyzických kusù.
@@ -234,6 +235,10 @@ public class HledejListener implements ActionListener, MouseListener {
 				break;
 			case ParametryFiltr.VypisVinikuVKgKcMzdy:
 				this.vypisVinikyVKgKc(isVypis, i);
+				break;
+			case ParametryFiltr.VypisStavuZakazek:
+				//this.vypisVinikyVKgKc(isVypis, i);
+				this.vypisStavuZakazek(isVypis, i);
 				break;
 			case ParametryFiltr.ZaklPlanLiti:
 				zaklLiciPlan(isVypis, i);
@@ -597,6 +602,33 @@ public class HledejListener implements ActionListener, MouseListener {
 			String datumy = sdf.format(lastUsedDate1)+" do "+ sdf.format(lastUsedDate2);
 			TableToExcel.exportToExcelNaSirku(hlavniOkno, model, datumy, (cisloVypisu+1- ParametryFiltr.VypisStavNeuzavrenychZakazek)+". "+"Vypis_viniku_v_kg-kc", cisloVypisu);
 		}
+	}
+	
+	private void vypisStavuZakazek(boolean isVypis, int cisloVypisu) throws Exception{ 
+		//To-Dosss
+		//if(isVypis){
+			// nic nedelej protoze tu nechci aby to vypisovalo do aplikace ale pøímo do souboru
+			/*Date od = get1Date(), do_ = get2Date();
+			Statement st =sql.vypisVinikyVKgKc(od, do_);
+			if (st != null) {
+				QueryTableModel tm = new QueryTableModel(st);
+				table.setModel(tm);
+				columAdjuster.adjustColumns();
+				//st.close(); kvuli optimalizaci
+			}*/
+		//}  else {
+			/*TableModel model = table.getModel();
+			String datumy = sdf.format(lastUsedDate1)+" do "+ sdf.format(lastUsedDate2);
+			TableToExcel.exportToExcelNaSirku(hlavniOkno, model, datumy, (cisloVypisu+1- ParametryFiltr.VypisStavNeuzavrenychZakazek)+". "+"Vypis_viniku_v_kg-kc", cisloVypisu);
+			 */
+			String jmenoZakaznika = filtr.getJmenoZakaznikaOrVadyOrVinika();
+			String cisloModelu = filtr.getCisloModelu();
+			String nazevModelu = filtr.getNazevModelu();
+			String idModeluString = filtr.getIDModelu();
+			if(idModeluString.equalsIgnoreCase(""))idModeluString = "0";
+			Date datumZakazky = filtr.getDatumZakazky();
+			VypisStavZakazekToCSV.vypisToCSV(hlavniOkno, jmenoZakaznika, cisloModelu, nazevModelu, Integer.parseInt(idModeluString), datumZakazky);
+		//}
 	}
 	
 	private Date get1Date() throws Exception{

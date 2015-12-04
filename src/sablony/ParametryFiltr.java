@@ -173,7 +173,7 @@ public class ParametryFiltr extends JPanel {
 			"VypisVycistenychKusuZaObdobi", "MzdySlevacu", "VypisOdlitkuVKgKc",
 			"VypisOdlitychKusuOdDo", "VypisPolozekSOdhadHmot", "VypisDleTerminuExpedice",
 			"VypisExpedice od-do", "VypisZpozdeneVyroby", "InventuraRozpracVyroby",
-			"VypisSkladuKeDnesnimuDni", "VypisZmetkuZaObdobi", "VypisVinikuVKgKcMzdy"};
+			"VypisSkladuKeDnesnimuDni", "VypisZmetkuZaObdobi", "VypisVinikuVKgKcMzdy", "VypisStavuZakazek"};
 	
 	private final int [] cisloAkceToStav ={FILTR_HLEDEJ_ZAKAZNIKY, FILTR_HLEDEJ_MODELY,
 			FILTR_HLEDEJ_ZAKAZKY, FILTR_HLEDEJ_FYZ_KUSY, FILTR_HLEDEJ_ZMETKY, FILTR_HLEDEJ_VINIKY,
@@ -183,7 +183,7 @@ public class ParametryFiltr extends JPanel {
 			FILTR_HLEDEJZAKAZKY_BEZ_UZAVRENO_PDF, FILTR_DATUM_OD_PDF, FILTR_DATUM_OD_DO_PDF, FILTR_DATUM_OD_DO_PDF,
 			FILTR_DATUM_OD_DO_PDF, FILTR_VYPIS_ODLITYCH_VYROBENYCH_KUSU_PDF, FILTR_PRAZDNY_PDF,
 			FILTR_POUZE_CISLO_TYDNE_CISLO_ROKU, FILTR_DATUM_OD_DO_PDF, FILTR_DATUM_OD,
-			FILTR_PRAZDNY_PDF, FILTR_PRAZDNY_PDF, FILTR_DATUM_OD_DO_PDF, FILTR_DATUM_OD_DO_PDF};
+			FILTR_PRAZDNY_PDF, FILTR_PRAZDNY_PDF, FILTR_DATUM_OD_DO_PDF, FILTR_DATUM_OD_DO_PDF, FILTR_HLEDEJ_STAV_ZAKAZEK};
 	
 	/**
 	 * Seznam všech výpisù a hledání, pomocí kterých získám jednoznaèný stav v ParametryFiltr ktery chci a taky
@@ -214,6 +214,7 @@ public class ParametryFiltr extends JPanel {
 	public static final int VypisSkladuKeDnesnimuDni = 22;
 	public static final int VypisZmetkuZaObdobi = 23;
 	public static final int VypisVinikuVKgKcMzdy = 24;
+	public static final int VypisStavuZakazek = 25;
 
 	/**
 	 * Stavy ParametryFiltr. Slouží pro jednoznaèné urèení rozložení komponentù v ParametryFiltr.
@@ -235,6 +236,7 @@ public class ParametryFiltr extends JPanel {
 	private static final int FILTR_VYPIS_ODLITYCH_VYROBENYCH_KUSU_PDF = 15;
 	private static final int FILTR_CISLO_TYDNE_CISLO_ROKU_FORMOVNA = 16;
 	private static final int FILTR_CISLO_TYDNE_CISLO_ROKU_FORMOVNA_PDF = 17;
+	private static final int FILTR_HLEDEJ_STAV_ZAKAZEK = 18;
 	
 	private int stavAktualni = -1;
 	
@@ -359,6 +361,9 @@ public class ParametryFiltr extends JPanel {
 			pomMetoda();
 			break;
 		case FILTR_CISLO_TYDNE_CISLO_ROKU_FORMOVNA_PDF:
+			pomMetoda();
+			break;
+		case FILTR_HLEDEJ_STAV_ZAKAZEK:
 			pomMetoda();
 			break;
 		default: JOptionPane.showMessageDialog(hlavniOkno, "Spatny vypis, ParametryFiltr.java -> poskladejComponenty() "+stav);
@@ -490,6 +495,16 @@ public class ParametryFiltr extends JPanel {
 			formovnaLabel2.setVisible(true);
 			prevodDoPdf.setVisible(true);
 			break;
+		case FILTR_HLEDEJ_STAV_ZAKAZEK:
+			for(int i = 0; i < showZakazkyComponents.length; i++){
+				showZakazkyComponents[i].setVisible(true);
+			}
+			checkVcetneUzavZak.setVisible(false);
+			this.cisloObjednavkyLabel.setVisible(false);
+			this.cisloObjednavkyText.setVisible(false);
+			this.idZakazky.setVisible(false);
+			this.idZakazkyLabel.setVisible(false);
+			break;
 		default: JOptionPane.showMessageDialog(hlavniOkno, "Spatny vypis, ParametryFiltr.java -> poskladejComponenty() "+stav);
 			break;
 		}
@@ -553,6 +568,8 @@ public class ParametryFiltr extends JPanel {
 		case VypisZmetkuZaObdobi:
 			break;
 		case VypisVinikuVKgKcMzdy:
+			break;
+		case VypisStavuZakazek:
 			break;
 		default: JOptionPane.showMessageDialog(hlavniOkno, "Spatny vypis, ParametryFiltr.java -> upravTexty() " + cisloAkce);
 			break;
