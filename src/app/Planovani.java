@@ -76,7 +76,7 @@ public class Planovani extends JPanel implements ActionListener, ListSelectionLi
 	public static final int CTVRTEK = 5;
 	private static final int hodinaDriv = 3;
 	private static final int hodinaPozdeji = 8;
-	private static final int maxPocetRadkuVGenerickeTabulce = 60;
+	private static final int maxPocetRadkuVGenerickeTabulce = 53; // rok ma max 53 tydnu
 
 	public static final int indexSloupcePlanovaneLiti = 1;
 	
@@ -1041,7 +1041,7 @@ public class Planovani extends JPanel implements ActionListener, ListSelectionLi
 		// Ochrana proti pridani moc radku, respektive aby tabulka rozvrhu nemela moc radku!
 		if (maxPocetRadkuVGenerickeTabulce < tableGenericka.getRowCount() + pocTydnuZaRozvrh + pocTydnuPredRozvrh){
 			this.zrusZmeneno(tableFyzkusy, zmenyHodnot);
-			JOptionPane.showMessageDialog(hlavniOkno, "Pøekroèili jste možný poèet øádkù v rozvrhu. Prosím zvolte Plánované datum lití jinak.");
+			JOptionPane.showMessageDialog(hlavniOkno, "Pøekroèili jste možný poèet øádkù v rozvrhu. Zakázka mùže trvat jen 53 týdnù. Prosím zvolte plánované datum lití jinak.");
 			return;
 		}
 		

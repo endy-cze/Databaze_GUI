@@ -1,10 +1,8 @@
-CREATE DATABASE  IF NOT EXISTS `pomdb` /*!40100 DEFAULT CHARACTER SET utf8 */;
-USE `pomdb`;
--- MySQL dump 10.13  Distrib 5.6.17, for Win32 (x86)
+-- MySQL dump 10.13  Distrib 5.6.23, for Win64 (x86_64)
 --
 -- Host: localhost    Database: pomdb
 -- ------------------------------------------------------
--- Server version	5.5.38-log
+-- Server version	5.5.44-log
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -63,7 +61,7 @@ CREATE TABLE `fyzkusy` (
   KEY `Id_modelu` (`Id_modelu_odlito`),
   CONSTRAINT `fk_fyzkusy_seznam_modelu1` FOREIGN KEY (`Id_modelu_odlito`) REFERENCES `seznam_modelu` (`Id_modelu`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_fyzkusy_seznam_zakazek` FOREIGN KEY (`Id_zakazky`) REFERENCES `seznam_zakazek` (`Id_zakazky`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=3928 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=4893 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -86,7 +84,7 @@ CREATE TABLE `seznam_modelu` (
   `Poznamka_model` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`Id_modelu`),
   KEY `cislo_modelu_index` (`Cislo_modelu`)
-) ENGINE=InnoDB AUTO_INCREMENT=591 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=729 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -117,7 +115,7 @@ CREATE TABLE `seznam_zakazek` (
   KEY `fk_seznam_zakazek_seznam_modelu1_idx` (`Id_modelu`),
   CONSTRAINT `fk_seznam_zakazek_seznam_modelu1` FOREIGN KEY (`Id_modelu`) REFERENCES `seznam_modelu` (`Id_modelu`) ON DELETE NO ACTION ON UPDATE CASCADE,
   CONSTRAINT `fk_seznam_zakazek_zakaznici1` FOREIGN KEY (`Id_zakaznika`) REFERENCES `zakaznici` (`Id_zakaznika`) ON DELETE NO ACTION ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=989 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1249 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -132,7 +130,7 @@ CREATE TABLE `vady` (
   `vada` varchar(45) NOT NULL,
   PRIMARY KEY (`idvady`),
   UNIQUE KEY `vada_UNIQUE` (`vada`)
-) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -162,7 +160,7 @@ CREATE TABLE `zakaznici` (
   `Jmeno_zakaznika` varchar(30) NOT NULL,
   PRIMARY KEY (`Id_zakaznika`),
   UNIQUE KEY `Jmeno_zakaznika_UNIQUE` (`Jmeno_zakaznika`)
-) ENGINE=InnoDB AUTO_INCREMENT=43 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=46 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -182,8 +180,8 @@ CREATE TABLE `zmetky_vady` (
   KEY `fk_zmetky_vady_vinici1_idx` (`Id_vinika`),
   KEY `fk_zmetky_vady_vady1_idx` (`Id_vady`),
   CONSTRAINT `fk_zmetky_vady_fyzkusy1` FOREIGN KEY (`Id_kusu`) REFERENCES `fyzkusy` (`Id_kusu`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_zmetky_vady_vady1` FOREIGN KEY (`Id_vady`) REFERENCES `vady` (`idvady`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_zmetky_vady_vinici1` FOREIGN KEY (`Id_vinika`) REFERENCES `vinici` (`Id_vinika`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  CONSTRAINT `fk_zmetky_vady_vinici1` FOREIGN KEY (`Id_vinika`) REFERENCES `vinici` (`Id_vinika`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_zmetky_vady_vady1` FOREIGN KEY (`Id_vady`) REFERENCES `vady` (`idvady`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -198,7 +196,7 @@ CREATE TABLE `zmetky_vady` (
 /*!50003 SET character_set_results = utf8 */ ;
 /*!50003 SET collation_connection  = utf8_general_ci */ ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` FUNCTION `getHmotnostFyzKusu`(idFyzKusu int(10) unsigned) RETURNS decimal(10,2) unsigned
 BEGIN
@@ -221,7 +219,7 @@ DELIMITER ;
 /*!50003 SET character_set_results = utf8 */ ;
 /*!50003 SET collation_connection  = utf8_general_ci */ ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` FUNCTION `getNormaSlevaceFyzKusu`(idFyzKusu int(10) unsigned) RETURNS decimal(10,2) unsigned
 BEGIN
@@ -760,7 +758,7 @@ DELIMITER ;
 /*!50003 SET character_set_results = utf8 */ ;
 /*!50003 SET collation_connection  = utf8_general_ci */ ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `novyModel`(jmenoModelu varchar(30), cisloModelu varchar(30), material varchar(25), materialVlastni varchar(10), hmotnost double, isOdhatHmotnost tinyint(1), formovna char(1), norma double, poznamkaModel varchar(50))
 BEGIN
@@ -1459,7 +1457,7 @@ DELIMITER ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `verze`()
 BEGIN
-select '1.6';
+select '1.7';
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -1498,7 +1496,7 @@ DELIMITER ;
 /*!50003 SET character_set_results = utf8 */ ;
 /*!50003 SET collation_connection  = utf8_general_ci */ ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `vyberFyzKusy`(idZakazky int(10) unsigned, OUT pocetZmetkuBezVady smallint)
 BEGIN
@@ -2757,7 +2755,7 @@ DELIMITER ;
 /*!50003 SET character_set_results = utf8 */ ;
 /*!50003 SET collation_connection  = utf8_general_ci */ ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `VypisStavZakazek`(jmeno varchar(30), cisloModelu varchar(30), nazevModelu varchar(30), idModelu int UNSIGNED, datumZakazky date)
 BEGIN
@@ -3215,12 +3213,11 @@ DELIMITER ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `zadejPlanovanyDatumLiti`(idKusu int(10) unsigned, datumLiti date)
 BEGIN
-if(datumLiti is not null) then
 UPDATE `pomdb`.`fyzkusy`
 SET
-Datum_liti = datumLiti
-WHERE `Id_kusu` = idKusu;
-end if;
+	Datum_liti = datumLiti
+WHERE 
+	`Id_kusu` = idKusu;
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -3350,4 +3347,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-12-04 10:52:35
+-- Dump completed on 2016-03-07 20:06:36

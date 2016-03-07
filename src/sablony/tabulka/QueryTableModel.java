@@ -383,7 +383,7 @@ public class QueryTableModel extends AbstractTableModel {
 		LocalDateTime posledniDatum = LocalDateTime.of(lastDate.get(Calendar.YEAR), lastDate.get(Calendar.MONTH) + 1, lastDate.get(Calendar.DAY_OF_MONTH), 0, 0);
 
 		Duration delka = Duration.between(posledniDatum, prvniDatum);
-		if (Math.abs(delka.toDays()) > 365) {
+		if (Math.abs(delka.toDays()) > 371) { // 53 * 7 = 371, max 53 tydnu muže trvat zakazka
 			throw new SQLException("Pøi plánováni se vyskytka neošetøená chyba. Zakázka trvá déle než jeden rok");
 		}
 		int prvCislDne = firstDate.get(Calendar.DAY_OF_WEEK), poslCislDne = lastDate.get(Calendar.DAY_OF_WEEK);
@@ -406,7 +406,7 @@ public class QueryTableModel extends AbstractTableModel {
 		firstDate.set(Calendar.DAY_OF_WEEK, prvCislDne);
 		lastDate.set(Calendar.DAY_OF_WEEK, poslCislDne);
 		
-		if (rozdilTydnu > 52) {
+		if (rozdilTydnu > 53) {
 			throw new SQLException("Pøi plánováni se vyskytka neošetøená chyba. Zakázka trvá déle než jeden rok");
 		}
 
