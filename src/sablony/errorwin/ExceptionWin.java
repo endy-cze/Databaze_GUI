@@ -12,7 +12,8 @@ public class ExceptionWin {
 	 * 
 	 * @param e
 	 */
-	public ExceptionWin(Exception e){
+	private ExceptionWin(Exception e){
+		
 		StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw, true);
     	e.printStackTrace(pw);
@@ -24,14 +25,15 @@ public class ExceptionWin {
 	public static ExceptionWin showExceptionMessage(Exception e){
 		e.printStackTrace();
 		ExceptionWin win = new ExceptionWin(e);
+		
+		/*
 		StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw, true);
     	e.printStackTrace(pw);
     	String error = sw.toString();
     	ErrorWin okno = ErrorWin.createErrorWin(error, false);
     	okno.setVisible(true);
-    	
-    	
+    	*/
 		return win;
 	}
 
