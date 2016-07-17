@@ -32,7 +32,8 @@ import thread.ScriptRunner;
  */
 public class CreateConectionToMySQL implements ActionListener {
 	private final String url;
-	private final String driver = "com.mysql.jdbc.Driver";
+	private final String driverMysql = "com.mysql.jdbc.Driver";
+	private final String driverMariaDB = "org.mariadb.jdbc.Driver";
 	private final String spatneHeslo= "Access denied for user";
 	private final String neniPripojeni= "Communications link failure";
 	private static final String acesDenied = "execute command denied to user";
@@ -96,21 +97,27 @@ public class CreateConectionToMySQL implements ActionListener {
         	try{
         		password = new String(pass);
         		Arrays.fill(pass,'0');
-        		Class.forName(driver).newInstance();
+        		//Class.forName(driverMariaDB).newInstance();
 				conn = DriverManager.getConnection(url,userName,password);
 				password = " ";
         		password = null;
         	} catch(Exception e){
-        		if(e.getMessage().startsWith(spatneHeslo)){
+        		if(e.getMessage().contains(spatneHeslo)){
         			prgbarFrame.setVisible(false);
         			if(!isCancelled()){
-        				JOptionPane.showMessageDialog(loginWindow, "\u0160patn\u00E9 heslo");
+        				JOptionPane.showMessageDialog(loginWindow, "\u0160patn\u00E9 heslo nebo uživatelské jméno");
         			}
 				}
 				else if(e.getMessage().startsWith(neniPripojeni)) {
 					prgbarFrame.setVisible(false);
 					if(!isCancelled()){
 						JOptionPane.showMessageDialog(loginWindow, "Není zapnutý server (nebo špatná IP adresa serveru)");
+					}
+				}
+				else if(e.getClass().getCanonicalName().equals("java.sql.SQLNonTransientConnectionException")) {
+					prgbarFrame.setVisible(false);
+					if(!isCancelled()){
+						JOptionPane.showMessageDialog(loginWindow, "Není zapnutý server (nebo špatná IP adresa serveru), nepøipojeno");
 					}
 				}
 				else {
