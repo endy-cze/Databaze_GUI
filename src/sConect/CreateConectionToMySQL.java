@@ -97,9 +97,9 @@ public class CreateConectionToMySQL implements ActionListener {
         	try{
         		password = new String(pass);
         		Arrays.fill(pass,'0');
-        		//Class.forName(driverMariaDB).newInstance();
-				conn = DriverManager.getConnection(url,userName,password);
-				password = " ";
+        		Class.forName(driverMariaDB).newInstance();
+        		conn = DriverManager.getConnection(url,userName,password);
+        		password = " ";
         		password = null;
         	} catch(Exception e){
         		if(e.getMessage().contains(spatneHeslo)){

@@ -28,6 +28,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.nio.file.Paths;
 import java.awt.Toolkit;
 
 import javax.swing.JTextField;
@@ -50,14 +51,15 @@ public class LoginWindow extends JFrame implements KeyListener {
 	/**
 	 * Verze
 	 */
-	public static final String verzeGUI = "1.7";
+	public static final String verzeGUI = "1.8";
 	/**
 	 * Ip adresa poèítaèe, na kterém se vyskytuje server, na který se budeme pøipojovat.
 	 */
-	//private static final String ipServeru = "10.190.33.1";
-	private static final String ipServeru = "localhost";
-	//private static final String url = "jdbc:mysql://"+ipServeru+":3306/";
-	private static final String url = "jdbc:mariadb://"+ipServeru+":3306/";
+	private String ipServeru = "10.190.33.254";
+	//private String ipServeru = "localhost";
+	private String port = ":3306/";
+	private String prefix = "jdbc:mariadb://";
+	//private String prefix = "jdbc:mysql://";
 	/**
 	 * JButton prihlašení
 	 */
@@ -73,6 +75,7 @@ public class LoginWindow extends JFrame implements KeyListener {
 	 * JFrame, který který ukazuje na tuto tøídu. Použijeme jej v anonymní tøíde (add action listener)
 	 */
 	private JFrame okno = this;
+	private JTextField ipServerTextF;
 	
 	/**
 	 * 
@@ -95,6 +98,8 @@ public class LoginWindow extends JFrame implements KeyListener {
 				try {
 					LoginWindow frame = new LoginWindow();
 					frame.setVisible(true);
+					frame.account.requestFocus();
+					
 				} catch (Exception e) {
 					ExceptionWin.showExceptionMessage(e);
 				}
@@ -107,13 +112,14 @@ public class LoginWindow extends JFrame implements KeyListener {
 	 */
 	public LoginWindow() {		
 		setIconImage(Toolkit.getDefaultToolkit().getImage(LoginWindow.class.getResource("/app/dbSlevarnaIco.png")));
-		setMinimumSize(new Dimension(350, 310));
+		setMinimumSize(new Dimension(350, 370));
 		setTitle("P\u0159ihl\u00E1\u0161en\u00ED do datab\u00E1ze");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 352, 352);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
+		
 		
 		JLabel lblNewLabel = new JLabel("Sl\u00E9v\u00E1rna Stra\u0161ice");
 		lblNewLabel.setForeground(new Color(37,37,37));
@@ -145,10 +151,12 @@ public class LoginWindow extends JFrame implements KeyListener {
 						JOptionPane.showMessageDialog(okno, "Heslo je prázdné");
 						return;
 					}
-				
+					
 					ProgresBarFrame barFrame = new ProgresBarFrame();
 					barFrame.setVisible(true);
 					
+					ipServeru = ipServerTextF.getText();
+					String url = prefix+ipServeru+port;
 					CreateAppAndConnection over = new CreateAppAndConnection(okno, barFrame, url);
 					over.executeCreateApp(jmeno, heslo);
 				}
@@ -163,16 +171,19 @@ public class LoginWindow extends JFrame implements KeyListener {
 		passwordField = new JPasswordField();
 		passwordField.addKeyListener(this);
 		
-		JLabel lblIpAdresaServeru = new JLabel("IP adresa serveru: "+ipServeru);
+		JLabel lblIpAdresaServeru = new JLabel("IP adresa serveru:");
 		
 		JLabel lblOndejHavlek = new JLabel("Vytvo\u0159il: Ond\u0159ej Havl\u00ED\u010Dek");
 		
 		JLabel verze = new JLabel("Verze: " + LoginWindow.verzeGUI);
+		
+		ipServerTextF = new JTextField(ipServeru);
+		ipServerTextF.setColumns(10);
 		GroupLayout gl_contentPane = new GroupLayout(contentPane);
 		gl_contentPane.setHorizontalGroup(
 			gl_contentPane.createParallelGroup(Alignment.TRAILING)
 				.addGroup(gl_contentPane.createSequentialGroup()
-					.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
+					.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING, false)
 						.addGroup(gl_contentPane.createSequentialGroup()
 							.addGap(42)
 							.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING, false)
@@ -183,11 +194,14 @@ public class LoginWindow extends JFrame implements KeyListener {
 									.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
 										.addComponent(lblHeslo)
 										.addComponent(lblNewLabel_1))
-									.addGap(35)
+									.addGap(18)
 									.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
-										.addComponent(account, GroupLayout.PREFERRED_SIZE, 137, GroupLayout.PREFERRED_SIZE)
-										.addComponent(passwordField, GroupLayout.DEFAULT_SIZE, 86, Short.MAX_VALUE)))))
-						.addComponent(lblIpAdresaServeru))
+										.addComponent(passwordField, GroupLayout.DEFAULT_SIZE, 86, Short.MAX_VALUE)
+										.addComponent(account, GroupLayout.PREFERRED_SIZE, 154, GroupLayout.PREFERRED_SIZE)))))
+						.addGroup(gl_contentPane.createSequentialGroup()
+							.addComponent(lblIpAdresaServeru)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(ipServerTextF)))
 					.addContainerGap(72, Short.MAX_VALUE))
 				.addGroup(gl_contentPane.createSequentialGroup()
 					.addContainerGap(198, Short.MAX_VALUE)
@@ -199,7 +213,9 @@ public class LoginWindow extends JFrame implements KeyListener {
 		gl_contentPane.setVerticalGroup(
 			gl_contentPane.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_contentPane.createSequentialGroup()
-					.addComponent(lblIpAdresaServeru)
+					.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
+						.addComponent(lblIpAdresaServeru)
+						.addComponent(ipServerTextF, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
 					.addGap(25)
 					.addComponent(lblNewLabel)
 					.addGap(5)
