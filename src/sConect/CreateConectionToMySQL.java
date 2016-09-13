@@ -233,9 +233,14 @@ public class CreateConectionToMySQL implements ActionListener {
 	private boolean isNewestVersionGUI(ResultSet rs) throws SQLException{
 		if(rs.first()){
 			String verze = rs.getString(1);
-			if(verze.equals(LoginWindow.verzeGUI)){
-				return true;
+			String appVer = LoginWindow.verzeGUI;
+			// kontrolujeme prvni tøi pismena
+			for(int i = 0; i < 3; i++){
+				if (verze.charAt(i) != appVer.charAt(i)){
+					return false;
+				}
 			}
+			return true;
 		}
 		return false;
 	}

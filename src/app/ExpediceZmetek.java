@@ -312,7 +312,7 @@ public class ExpediceZmetek extends JPanel implements ActionListener //, ChangeL
 		
 		
 		
-		int width = 350;
+		int width = 130;
 		for(int i = 0; i < tableFyzkusyEx.getColumnCount() - 1; i++){
 			width += tableFyzkusyEx.getColumnModel().getColumn(i).getWidth();
 		}
@@ -429,7 +429,7 @@ public class ExpediceZmetek extends JPanel implements ActionListener //, ChangeL
 		fonty = sklad.getFonty();
 		
 		GridBagLayout gridBagLayout = new GridBagLayout();
-		gridBagLayout.columnWidths = new int[]{22, 160, 100, 20, 25, 66, 38, 60, 48, 40, 10, 0, 15, 10, 43, 20, 0, 30, 30, 20, 30, 20, 60, 70, 80, 20, 20, 0};
+		gridBagLayout.columnWidths = new int[]{22, 160, 100, 20, 25, 66, 38, 60, 48, 40, 10, 0, 15, 10, 43, 20, 0, 30, 30, 20, 30, 20, 60, 110, 80, 20, 20, 0};
 		gridBagLayout.rowHeights = new int[]{21, 0, 0, 12, 0, 0, 0, 0, 0, 0, 30, 25, 32, 32, 0, 32, 0, 32, 0, 20, 0};
 		gridBagLayout.columnWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, Double.MIN_VALUE};
 		gridBagLayout.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, Double.MIN_VALUE};

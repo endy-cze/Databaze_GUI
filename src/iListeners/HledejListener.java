@@ -140,7 +140,7 @@ public class HledejListener implements ActionListener, MouseListener {
 			}
 			
 		}
-		int width = 500;
+		int width = 130;
 		for(int i = 0; i < table.getColumnCount() - 1; i++){
 			width += table.getColumnModel().getColumn(i).getWidth();
 		}

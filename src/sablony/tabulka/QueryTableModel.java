@@ -374,7 +374,12 @@ public class QueryTableModel extends AbstractTableModel {
 		 * Slouží pouze pro kotrolu
 		 */
 		if(rs.first())rsCisloPrvnihoTydne = rs.getInt(2);
-		if(rs.last())rsCisloPoslednihoTydne = rs.getInt(2); 
+		if(rs.last()){
+			rsCisloPoslednihoTydne = rs.getInt(2); 
+		} else {
+			// mariadb konektor chybnì hodí false, když je v ResultSet jen jeden záznam (jeden øádek)
+			rsCisloPoslednihoTydne = rsCisloPrvnihoTydne;
+		}
 		
 		int cisloPrvnihoTydne = -1;
 		int cisloPoslednihoTydne = -1;
