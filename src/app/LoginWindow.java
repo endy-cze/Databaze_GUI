@@ -51,15 +51,15 @@ public class LoginWindow extends JFrame implements KeyListener {
 	/**
 	 * Verze
 	 */
-	public static final String verzeGUI = "1.91";
+	public static final String verzeGUI = "1.92";
 	/**
 	 * Ip adresa poèítaèe, na kterém se vyskytuje server, na který se budeme pøipojovat.
 	 */
 	private String ipServeru = "10.190.33.254";
 	//private String ipServeru = "localhost";
 	private String port = ":3306/";
-	private String prefix = "jdbc:mariadb://";
-	//private String prefix = "jdbc:mysql://";
+	//private String prefix = "jdbc:mariadb://";
+	private String prefix = "jdbc:mysql://";
 	/**
 	 * JButton prihlašení
 	 */

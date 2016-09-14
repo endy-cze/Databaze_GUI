@@ -97,7 +97,7 @@ public class CreateConectionToMySQL implements ActionListener {
         	try{
         		password = new String(pass);
         		Arrays.fill(pass,'0');
-        		Class.forName(driverMariaDB).newInstance();
+        		Class.forName(driverMysql).newInstance();
         		conn = DriverManager.getConnection(url,userName,password);
         		password = " ";
         		password = null;
