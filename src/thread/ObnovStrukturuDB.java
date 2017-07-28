@@ -20,7 +20,7 @@ import storage.SkladOdkazu;
 import app.ProgresBarFrame;
 import sablony.errorwin.ExceptionWin;
 
-public class ObnovDB extends SwingWorker<Boolean, Void>{
+public class ObnovStrukturuDB extends SwingWorker<Boolean, Void>{
 	public static final int ZADNYRESULTSET = -1;
 	public static final int SPATNYACTIONTYPE = -2;
 	public static final int SLOZNANEVYTVORENA = -3;
@@ -33,7 +33,7 @@ public class ObnovDB extends SwingWorker<Boolean, Void>{
 	private Connection conn;
 	private File obnovDBSqlFile;
 	
-	public ObnovDB(JFrame okno, JFrame bar, Connection conn, File obnovDBSqlFile){
+	public ObnovStrukturuDB(JFrame okno, JFrame bar, Connection conn, File obnovDBSqlFile){
 		hlavniOkno = okno;
 		this.bar  = bar;
 		this.conn = conn;

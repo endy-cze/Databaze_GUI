@@ -22,7 +22,7 @@ import app.LoginWindow;
 import app.MainFrame;
 import app.ProgresBarFrame;
 import sablony.errorwin.ExceptionWin;
-import thread.ObnovDB;
+import thread.ObnovStrukturuDB;
 import thread.ScriptRunner;
 
 /**
@@ -181,7 +181,7 @@ public class CreateConectionToMySQL implements ActionListener {
         }
         private void obnovaStrukturyDB(Connection conn, File obnovDBSqlFile){
         	prgbarFrame.setVisible(true);
-        	ObnovDB obnov = new ObnovDB(loginWindow, prgbarFrame, conn, obnovDBSqlFile);
+        	ObnovStrukturuDB obnov = new ObnovStrukturuDB(loginWindow, prgbarFrame, conn, obnovDBSqlFile);
         	obnov.execute();
     	}
        
