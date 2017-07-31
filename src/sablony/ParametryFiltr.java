@@ -173,7 +173,8 @@ public class ParametryFiltr extends JPanel {
 			"VypisVycistenychKusuZaObdobi", "MzdySlevacu", "VypisOdlitkuVKgKc",
 			"VypisOdlitychKusuOdDo", "VypisPolozekSOdhadHmot", "VypisDleTerminuExpedice",
 			"VypisExpedice od-do", "VypisZpozdeneVyroby", "InventuraRozpracVyroby",
-			"VypisSkladuKeDnesnimuDni", "VypisZmetkuZaObdobi", "VypisVinikuVKgKcMzdy", "VypisStavuZakazek"};
+			"VypisSkladuKeDnesnimuDni", "VypisZmetkuZaObdobi", "VypisVinikuVKgKcMzdy",
+			"VypisStavuZakazek", "VypisVytizeniKapacit"};
 	
 	private final int [] cisloAkceToStav ={FILTR_HLEDEJ_ZAKAZNIKY, FILTR_HLEDEJ_MODELY,
 			FILTR_HLEDEJ_ZAKAZKY, FILTR_HLEDEJ_FYZ_KUSY, FILTR_HLEDEJ_ZMETKY, FILTR_HLEDEJ_VINIKY,
@@ -183,7 +184,8 @@ public class ParametryFiltr extends JPanel {
 			FILTR_HLEDEJZAKAZKY_BEZ_UZAVRENO_PDF, FILTR_DATUM_OD_PDF, FILTR_DATUM_OD_DO_PDF, FILTR_DATUM_OD_DO_PDF,
 			FILTR_DATUM_OD_DO_PDF, FILTR_VYPIS_ODLITYCH_VYROBENYCH_KUSU_PDF, FILTR_PRAZDNY_PDF,
 			FILTR_POUZE_CISLO_TYDNE_CISLO_ROKU, FILTR_DATUM_OD_DO_PDF, FILTR_DATUM_OD,
-			FILTR_PRAZDNY_PDF, FILTR_PRAZDNY_PDF, FILTR_DATUM_OD_DO_PDF, FILTR_DATUM_OD_DO_PDF, FILTR_HLEDEJ_STAV_ZAKAZEK};
+			FILTR_PRAZDNY_PDF, FILTR_PRAZDNY_PDF, FILTR_DATUM_OD_DO_PDF, FILTR_DATUM_OD_DO_PDF,
+			FILTR_HLEDEJ_STAV_ZAKAZEK, FILTR_PRAZDNY_PDF};
 	
 	/**
 	 * Seznam všech výpisù a hledání, pomocí kterých získám jednoznaèný stav v ParametryFiltr ktery chci a taky
@@ -215,6 +217,7 @@ public class ParametryFiltr extends JPanel {
 	public static final int VypisZmetkuZaObdobi = 23;
 	public static final int VypisVinikuVKgKcMzdy = 24;
 	public static final int VypisStavuZakazek = 25;
+	public static final int VypisVytizeniKapacit = 26;
 
 	/**
 	 * Stavy ParametryFiltr. Slouží pro jednoznaèné urèení rozložení komponentù v ParametryFiltr.
@@ -570,6 +573,8 @@ public class ParametryFiltr extends JPanel {
 		case VypisVinikuVKgKcMzdy:
 			break;
 		case VypisStavuZakazek:
+			break;
+		case VypisVytizeniKapacit:
 			break;
 		default: JOptionPane.showMessageDialog(hlavniOkno, "Spatny vypis, ParametryFiltr.java -> upravTexty() " + cisloAkce);
 			break;

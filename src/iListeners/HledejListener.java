@@ -240,6 +240,9 @@ public class HledejListener implements ActionListener, MouseListener {
 				//this.vypisVinikyVKgKc(isVypis, i);
 				this.vypisStavuZakazek(isVypis, i);
 				break;
+			case ParametryFiltr.VypisVytizeniKapacit:
+				JOptionPane.showMessageDialog(hlavniOkno, "Musím dodìlat, Hledejlistener vypis()");
+				break;
 			case ParametryFiltr.ZaklPlanLiti:
 				zaklLiciPlan(isVypis, i);
 				break;
