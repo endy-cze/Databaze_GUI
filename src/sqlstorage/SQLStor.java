@@ -51,6 +51,7 @@ public class SQLStor {
 	public static final int maxDelkaCislaTavby = 10;
 	public static final int maxDelkaTeplotyLiti = 20;
 	private ProgresBarFrame prgbar = new ProgresBarFrame();
+	private final int POCET_TYDNU_VYTIZENI_KAPACIT = 10;
 	
 	/**
 	 * Statusy pro smazani fyzickeho kusu
@@ -75,7 +76,7 @@ public class SQLStor {
 			{"{CALL pomdb.vypisOdlituVKgKcOdDo(?,?)}", "{CALL pomdb.vypisZpozdeneVyroby(?)}", "{CALL pomdb.vypisDleTerminuExpediceCisloTydne(?,?)}", "{CALL pomdb.vypisPolozekSOdhadHmot()}", "{CALL pomdb.vypisMzdySlevacu(?,?)}",
 				"{CALL pomdb.vypisOdlitychKusuOdDo(?,?,?,?)}", "{CALL pomdb.vypisVycistenychKusuOdDo(?,?)}", "{CALL pomdb.vypisRozpracovaneVyroby()}", "{CALL pomdb.vypisExpedovanychKusuOdDo(?,?)}", "{CALL pomdb.vypisKusuNaSkladu()}",
 				"{CALL pomdb.vypisStavNeuzavrenychZakazek(?,?,?,?,?,?,?)}", "{CALL pomdb.vypisDenniOdlitychKusu(?)}", "{CALL pomdb.vypisZmetky(?,?)}", "{CALL pomdb.vypisVinikyVKgKc(?,?)}",
-				"{CALL pomdb.vypisStavNeuzavrenychZakazek_short(?,?,?,?,?,?,?)}", "{CALL pomdb.VypisStavZakazek(?,?,?,?,?)}"},
+				"{CALL pomdb.vypisStavNeuzavrenychZakazek_short(?,?,?,?,?,?,?)}", "{CALL pomdb.VypisStavZakazek(?,?,?,?,?)}", "{CALL pomdb.vypisVytizeniKapacit(?,?,?,?,?)}"},
 			{"{CALL pomdb.liciPlanZakl(?,?,?)}", "{CALL pomdb.liciPlanPlanovaci(?,?,?)}", "{CALL pomdb.vyberDilciTerminy(?)}", "{CALL pomdb.vyberDilciTerminySeJmeny(?)}", 
 				"{CALL pomdb.plan_expedice()}"},
 			{"{CALL pomdb.smaz_fyz_kus(?,?)}"},
@@ -1451,6 +1452,44 @@ public class SQLStor {
 		c.setDate("do_", pomDate);
 		c.execute();
 		return c;
+	}
+	
+	public ResultSet vypisVytizeniKapacit(int cisloTydne, int rok, int kapacita_M, int kapacita_S, int kapacita_T) throws SQLException{
+		if(cisloTydne < 1 || cisloTydne > 53){
+			JOptionPane.showMessageDialog(hlavniOkno, "Zadejte èíslo týdne musí být v rozmezí 1 - 53");
+			return null;
+		}
+		if(rok < 1800 || rok > 9999){
+			JOptionPane.showMessageDialog(hlavniOkno, "Rok musí být v rozmezí 1800 - 9999. (SQLStor.java 820)");
+		}
+		if(kapacita_M <= 0 || kapacita_S <= 0 || kapacita_T <=0){
+			JOptionPane.showMessageDialog(hlavniOkno, "Kapacity obsahují èísla menší nebo rovno nule");
+			return null;
+		}
+		int i = 5, j = 16;
+		if(cst[i][j] == null){
+			cst[i][j] = conn.prepareCall(sqlPrikazy[i][j]);
+			naposledyPouzito[i][j] = new Date();
+		}
+		c = cst[i][j];
+		
+		Calendar cal = Calendar.getInstance();
+		cal.set(Calendar.YEAR, rok);
+		cal.set(Calendar.WEEK_OF_YEAR, cisloTydne);
+		cal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+		java.util.Date datum = cal.getTime();
+		java.sql.Date pomDate = new java.sql.Date (datum.getTime());
+		c.setDate(1, pomDate);
+		cal.add(Calendar.WEEK_OF_YEAR, POCET_TYDNU_VYTIZENI_KAPACIT); // na 10 tydnu se bude dìlat
+		cal.set(Calendar.DAY_OF_WEEK, Calendar.SATURDAY);
+		datum = cal.getTime();
+		pomDate = new java.sql.Date (datum.getTime());
+		c.setDate(2, pomDate);
+		c.setInt("kapacita_M", kapacita_M);
+		c.setInt("kapacita_S", kapacita_S);
+		c.setInt("kapacita_T", kapacita_T);		
+		rs = c.executeQuery();
+		return rs;
 	}
 	
 	public void zadejCisloTavbyCisloFakturyTeplotuLiti(int idKusu, String cisloTavby, String cisloFaktury) throws SQLException{

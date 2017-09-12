@@ -45,6 +45,9 @@ public class TableToExcel {
 	public static final int STRINGDATA = 90;
 	public static final int DATEDATA = 91;
 	
+	private static final int KUM_ROZDIL_COLUMN = 4;
+	private static final int OBSAZENOST_PROCENTA = 5;
+	
 	private JFrame hlavniOkno;
 	//private static String [] columnNamesIsString = {"Èíslo modelu", "Cislo_modelu","Jméno zákazníka","Èíslo objednávky",
 	//		"Jméno modelu", "Materiál", "Vlastní materiál", "Cislo_tavby", "Èíslo tavby"};
@@ -142,8 +145,12 @@ public class TableToExcel {
 		short dateFormat = poiDateFormat.getFormat(excelFormatPattern);
 		dateStyle.setDataFormat(dateFormat);
 		
+		HSSFCellStyle doubleStyle = wb.createCellStyle();
+		doubleStyle.setDataFormat(wb.createDataFormat().getFormat("0.00 %"));
+		doubleStyle.setFont(font);
+		
 		//insert data
-		this.insertData(model, sheet, cisloExportu, font, dateStyle);
+		this.insertData(model, sheet, cisloExportu, font, dateStyle, doubleStyle);
 		//set First row as header at all printed pages
 		sheet.setRepeatingRows(CellRangeAddress.valueOf("1:1"));	
 		
@@ -182,7 +189,7 @@ public class TableToExcel {
 	 * @param font font ktery použijeme v bunkach
 	 * @throws Exception
 	 */
-	private void insertData(QueryTableModel model, HSSFSheet sheet, int cisloExportu, HSSFFont font, HSSFCellStyle dateStyle) throws Exception{
+	private void insertData(QueryTableModel model, HSSFSheet sheet, int cisloExportu, HSSFFont font, HSSFCellStyle dateStyle, HSSFCellStyle procentaStyle) throws Exception{
 		Row row = sheet.createRow(0);
 		Cell cell = null;
 		
@@ -224,6 +231,30 @@ public class TableToExcel {
 		//Format data
 		for(int i = 0; i < model.getColumnCount() -1 ; i++){//mam totiž jeden sloupec navic aby se mi srovnali tabulky viz QuerytableModel
 			sheet.autoSizeColumn(i);
+		}
+		
+		// Create export-specified formulas
+		createFormulas(cisloExportu, sheet, procentaStyle);
+	}
+	
+	private void createFormulas(int cisloExportu, HSSFSheet sheet, HSSFCellStyle procentaStyle){
+		// https://poi.apache.org/spreadsheet/formula.html
+		int rowsCount = sheet.getPhysicalNumberOfRows();
+		Row r;
+		Cell c;
+		switch(cisloExportu){
+		case ParametryFiltr.VypisVytizeniKapacit:
+			/* Vytvorit vzorce ktere si preji */
+			// Kum. rozdil
+			for(int i = 1; i < rowsCount; i++){
+				r = sheet.getRow(i);
+				c = r.getCell(KUM_ROZDIL_COLUMN);
+				c.setCellFormula("D"+(i+1)+"-C"+(i+1));
+				c = r.getCell(OBSAZENOST_PROCENTA);
+				c.setCellFormula("D"+(i+1)+"/C"+(i+1));
+				c.setCellStyle(procentaStyle);
+			}
+			break;
 		}
 	}
 	
@@ -285,6 +316,9 @@ public class TableToExcel {
 			break;
 		case ParametryFiltr.VypisVinikuVKgKcMzdy:
 			atr[0] = "Výpis viníkù v kg-Kè období";atr[1] = "Výpis viníkù v kg/Kè od ";atr[2] = "./vypisy";
+			break;
+		case ParametryFiltr.VypisVytizeniKapacit:
+			atr[0] = "Výpis vytížení kapacit";atr[1] = "Výpis vytížení kapacit na 10 týdnù";atr[2] = "./vypisy";
 			break;
 		case ParametryFiltr.ZaklPlanLiti:
 			atr[0] = "Základní licí plán";atr[1] = "Základní licí plán pro týden: ";atr[2] = "./lici_plany";

@@ -140,7 +140,7 @@ public class ParametryFiltr extends JPanel {
 	 *  vypisy[12] = JComboBox Vlastni material
 	 *  
 	 */
-	private Component [] vypisy = new Component[13];
+	private Component [] vypisy = new Component[15];
 	private JPanel panel;
 	private JLabel idZakazkyLabel;
 	private JTextField cisloTydneText;
@@ -185,7 +185,7 @@ public class ParametryFiltr extends JPanel {
 			FILTR_DATUM_OD_DO_PDF, FILTR_VYPIS_ODLITYCH_VYROBENYCH_KUSU_PDF, FILTR_PRAZDNY_PDF,
 			FILTR_POUZE_CISLO_TYDNE_CISLO_ROKU, FILTR_DATUM_OD_DO_PDF, FILTR_DATUM_OD,
 			FILTR_PRAZDNY_PDF, FILTR_PRAZDNY_PDF, FILTR_DATUM_OD_DO_PDF, FILTR_DATUM_OD_DO_PDF,
-			FILTR_HLEDEJ_STAV_ZAKAZEK, FILTR_PRAZDNY_PDF};
+			FILTR_HLEDEJ_STAV_ZAKAZEK, FILTR_VYTIZENI_KAPACIT_PDF};
 	
 	/**
 	 * Seznam všech výpisù a hledání, pomocí kterých získám jednoznaèný stav v ParametryFiltr ktery chci a taky
@@ -240,6 +240,8 @@ public class ParametryFiltr extends JPanel {
 	private static final int FILTR_CISLO_TYDNE_CISLO_ROKU_FORMOVNA = 16;
 	private static final int FILTR_CISLO_TYDNE_CISLO_ROKU_FORMOVNA_PDF = 17;
 	private static final int FILTR_HLEDEJ_STAV_ZAKAZEK = 18;
+	private static final int FILTR_VYTIZENI_KAPACIT_PDF = 19;
+
 	
 	private int stavAktualni = -1;
 	
@@ -250,6 +252,8 @@ public class ParametryFiltr extends JPanel {
 	private JLabel cisloTydneLabel;
 	private JLabel dateOdLabel;
 	private JLabel dateDoLabel;
+	private JLabel kapacityLabel;
+	private JTextField kapacityTextField;
 	
 	/**
 	 * Výpisy se mužou dìlat tady, ale vìtšina se dìlá v setVypisy()
@@ -367,6 +371,9 @@ public class ParametryFiltr extends JPanel {
 			pomMetoda();
 			break;
 		case FILTR_HLEDEJ_STAV_ZAKAZEK:
+			pomMetoda();
+			break;
+		case FILTR_VYTIZENI_KAPACIT_PDF:
 			pomMetoda();
 			break;
 		default: JOptionPane.showMessageDialog(hlavniOkno, "Spatny vypis, ParametryFiltr.java -> poskladejComponenty() "+stav);
@@ -508,6 +515,17 @@ public class ParametryFiltr extends JPanel {
 			this.idZakazky.setVisible(false);
 			this.idZakazkyLabel.setVisible(false);
 			break;
+		case FILTR_VYTIZENI_KAPACIT_PDF:
+			cisloTydneLabel.setVisible(true);
+			cisloTydneText.setVisible(true);
+			yearChooser.setVisible(true);
+			
+			prevodDoPdf.setVisible(true);
+			// kapacity textbox
+			kapacityTextField.setVisible(true);
+			kapacityLabel.setVisible(true);
+			napovedaCisloT.setVisible(true);
+			break;
 		default: JOptionPane.showMessageDialog(hlavniOkno, "Spatny vypis, ParametryFiltr.java -> poskladejComponenty() "+stav);
 			break;
 		}
@@ -575,6 +593,7 @@ public class ParametryFiltr extends JPanel {
 		case VypisStavuZakazek:
 			break;
 		case VypisVytizeniKapacit:
+			napovedaCisloT.setText("Vypíše se maximálnì prvních 10 týdnù pro každou formovnu");
 			break;
 		default: JOptionPane.showMessageDialog(hlavniOkno, "Spatny vypis, ParametryFiltr.java -> upravTexty() " + cisloAkce);
 			break;
@@ -632,9 +651,9 @@ public class ParametryFiltr extends JPanel {
 		panel.setBackground(barvy[0]);
 		GridBagLayout layout = new GridBagLayout();
 		layout.columnWidths = new int[]{98, 58, 60, 40, 45, 0, 54, 49, 39, 0, 49, 42, 36, 0, 0};
-		layout.rowHeights = new int[]{0, 0, 0, 0, 0, 0, 0, 0};
+		layout.rowHeights = new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0};
 		layout.columnWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE};
-		layout.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
+		layout.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
 		panel.setLayout(layout);
 		
 		jmenoZakaznikaLabelOrElse = new JLabel("Jm\u00E9no z\u00E1kazn\u00EDka:");
@@ -1046,6 +1065,29 @@ public class ParametryFiltr extends JPanel {
 		gbc_vlMaterialJbutton.gridy = 5;
 		panel.add(vlMaterialJbutton, gbc_vlMaterialJbutton);
 		
+		kapacityLabel = new JLabel("Kapacity [T;S;M]:");
+		vypisy[13] = kapacityLabel;
+		kapacityLabel.setFont(fonty[4]);
+		kapacityLabel.setForeground(barvy[11]);
+		GridBagConstraints gbc_kapacityLabel = new GridBagConstraints();
+		gbc_kapacityLabel.anchor = GridBagConstraints.WEST;
+		gbc_kapacityLabel.insets = new Insets(0, 0, 5, 5);
+		gbc_kapacityLabel.gridx = 0;
+		gbc_kapacityLabel.gridy = 6;
+		panel.add(kapacityLabel, gbc_kapacityLabel);
+		
+		kapacityTextField = new JTextField();
+		vypisy[14] = kapacityTextField;
+		kapacityTextField.setText("70 000;21 000;10 000");
+		GridBagConstraints gbc_kapacityTextField = new GridBagConstraints();
+		gbc_kapacityTextField.gridwidth = 2;
+		gbc_kapacityTextField.insets = new Insets(0, 0, 5, 5);
+		gbc_kapacityTextField.fill = GridBagConstraints.HORIZONTAL;
+		gbc_kapacityTextField.gridx = 1;
+		gbc_kapacityTextField.gridy = 6;
+		panel.add(kapacityTextField, gbc_kapacityTextField);
+		kapacityTextField.setColumns(10);
+		
 		
 		addListeners();
 		//setHledejZakazniky();
@@ -1141,5 +1183,8 @@ public class ParametryFiltr extends JPanel {
 	}
 	public String getFormovna2Vypisy(){
 		return  (String) comboBoxFormovna2.getSelectedItem();
+	}
+	public String getKapacity(){
+		return this.kapacityTextField.getText();
 	}
 }

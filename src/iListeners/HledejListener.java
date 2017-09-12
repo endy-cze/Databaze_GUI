@@ -237,11 +237,10 @@ public class HledejListener implements ActionListener, MouseListener {
 				this.vypisVinikyVKgKc(isVypis, i);
 				break;
 			case ParametryFiltr.VypisStavuZakazek:
-				//this.vypisVinikyVKgKc(isVypis, i);
 				this.vypisStavuZakazek(isVypis, i);
 				break;
 			case ParametryFiltr.VypisVytizeniKapacit:
-				JOptionPane.showMessageDialog(hlavniOkno, "Musím dodìlat, Hledejlistener vypis()");
+				vypisVytizeniKapacit(isVypis, i);
 				break;
 			case ParametryFiltr.ZaklPlanLiti:
 				zaklLiciPlan(isVypis, i);
@@ -634,6 +633,35 @@ public class HledejListener implements ActionListener, MouseListener {
 		//}
 	}
 	
+	private void vypisVytizeniKapacit(boolean isVypis, int cisloVypisu) throws Exception{ 
+		if(isVypis){
+			int [] data = getWeekAndYear();
+			if(data == null)return;
+			int M = 0, S = 0, T = 0;
+			String kapacity = getKapacity().replaceAll("\\s","");
+			String [] kap = kapacity.split(";");
+			if(kap.length == 3){
+				T = Integer.parseInt(kap[0]);
+				S = Integer.parseInt(kap[1]);
+				M = Integer.parseInt(kap[2]);
+			} else {
+				JOptionPane.showMessageDialog(hlavniOkno, "Kapacity jsou špatnì zapsané");
+				return;
+			}
+			ResultSet rs = sql.vypisVytizeniKapacit(data[0], data[1], M, S, T);
+			if (rs != null) {
+				QueryTableModel tm = new QueryTableModel(rs);
+				table.setModel(tm);
+				columAdjuster.adjustColumns();
+				rs.close();
+			}
+		}  else {
+			TableModel model = table.getModel();
+			String nadpisExt = "Od týdne "+ lastUsedWeekNumberAYear[0] + " roku "+lastUsedWeekNumberAYear[1];
+			TableToExcel.exportToExcelNaSirku(hlavniOkno, model, nadpisExt, (cisloVypisu+1- ParametryFiltr.VypisStavNeuzavrenychZakazek)+". "+"Vypis_vytizeni_kapacit", cisloVypisu);
+		}
+	}
+	
 	private Date get1Date() throws Exception{
 		Date od = filtr.getOdDate();
 		lastUsedDate1 = od;
@@ -644,6 +672,10 @@ public class HledejListener implements ActionListener, MouseListener {
 		Date do_ = filtr.getDoDate();
 		lastUsedDate2 = do_;
 		return do_;
+	}
+	
+	private String getKapacity() {
+		return filtr.getKapacity();
 	}
 	
 	/**
