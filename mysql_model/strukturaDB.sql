@@ -1,10 +1,10 @@
 CREATE DATABASE  IF NOT EXISTS `pomdb` /*!40100 DEFAULT CHARACTER SET utf8 */;
 USE `pomdb`;
--- MySQL dump 10.13  Distrib 5.7.12, for Win64 (x86_64)
+-- MySQL dump 10.13  Distrib 5.6.23, for Win32 (x86)
 --
 -- Host: localhost    Database: pomdb
 -- ------------------------------------------------------
--- Server version	5.5.51-MariaDB
+-- Server version	5.5.57-MariaDB
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -16,6 +16,37 @@ USE `pomdb`;
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+--
+-- Temporary view structure for view `complet`
+--
+
+DROP TABLE IF EXISTS `complet`;
+/*!50001 DROP VIEW IF EXISTS `complet`*/;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+/*!50001 CREATE VIEW `complet` AS SELECT 
+ 1 AS `Datum zmetku`,
+ 1 AS `Jméno viníka`,
+ 1 AS `Vada`,
+ 1 AS `ID zakázky`,
+ 1 AS `Jméno zákazníka`,
+ 1 AS `Číslo modelu`,
+ 1 AS `Paganýrka`,
+ 1 AS `Cena`,
+ 1 AS `ID modelu`,
+ 1 AS `Jméno modelu`,
+ 1 AS `Material`,
+ 1 AS `Vlastní materiál`,
+ 1 AS `Formovna`,
+ 1 AS `Hmotnost`,
+ 1 AS `Odhadová hmotnost`,
+ 1 AS `Norma slévač`,
+ 1 AS `ID zákazníka`,
+ 1 AS `Poznámka zakázky`,
+ 1 AS `Termín expedice`,
+ 1 AS `Přesná cena za kus`*/;
+SET character_set_client = @saved_cs_client;
 
 --
 -- Table structure for table `dilci_terminy`
@@ -63,7 +94,7 @@ CREATE TABLE `fyzkusy` (
   KEY `Id_modelu` (`Id_modelu_odlito`),
   CONSTRAINT `fk_fyzkusy_seznam_modelu1` FOREIGN KEY (`Id_modelu_odlito`) REFERENCES `seznam_modelu` (`Id_modelu`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_fyzkusy_seznam_zakazek` FOREIGN KEY (`Id_zakazky`) REFERENCES `seznam_zakazek` (`Id_zakazky`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=7140 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=10912 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -86,7 +117,7 @@ CREATE TABLE `seznam_modelu` (
   `Poznamka_model` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`Id_modelu`),
   KEY `cislo_modelu_index` (`Cislo_modelu`)
-) ENGINE=InnoDB AUTO_INCREMENT=951 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1325 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -117,7 +148,7 @@ CREATE TABLE `seznam_zakazek` (
   KEY `fk_seznam_zakazek_seznam_modelu1_idx` (`Id_modelu`),
   CONSTRAINT `fk_seznam_zakazek_seznam_modelu1` FOREIGN KEY (`Id_modelu`) REFERENCES `seznam_modelu` (`Id_modelu`) ON DELETE NO ACTION ON UPDATE CASCADE,
   CONSTRAINT `fk_seznam_zakazek_zakaznici1` FOREIGN KEY (`Id_zakaznika`) REFERENCES `zakaznici` (`Id_zakaznika`) ON DELETE NO ACTION ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=1676 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2432 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -132,7 +163,7 @@ CREATE TABLE `vady` (
   `vada` varchar(45) NOT NULL,
   PRIMARY KEY (`idvady`),
   UNIQUE KEY `vada_UNIQUE` (`vada`)
-) ENGINE=InnoDB AUTO_INCREMENT=35 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=53 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -147,7 +178,7 @@ CREATE TABLE `vinici` (
   `Jmeno_vinika` varchar(45) NOT NULL,
   PRIMARY KEY (`Id_vinika`),
   UNIQUE KEY `Jmeno_vinika_UNIQUE` (`Jmeno_vinika`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -162,7 +193,7 @@ CREATE TABLE `zakaznici` (
   `Jmeno_zakaznika` varchar(30) NOT NULL,
   PRIMARY KEY (`Id_zakaznika`),
   UNIQUE KEY `Jmeno_zakaznika_UNIQUE` (`Jmeno_zakaznika`)
-) ENGINE=InnoDB AUTO_INCREMENT=54 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=60 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -186,6 +217,10 @@ CREATE TABLE `zmetky_vady` (
   CONSTRAINT `fk_zmetky_vady_vinici1` FOREIGN KEY (`Id_vinika`) REFERENCES `vinici` (`Id_vinika`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping events for database 'pomdb'
+--
 
 --
 -- Dumping routines for database 'pomdb'
@@ -1352,7 +1387,7 @@ DELIMITER ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `verze`()
 BEGIN
-select '1.91';
+select '2.00';
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -1770,7 +1805,7 @@ DELIMITER ;
 /*!50003 SET character_set_results = utf8 */ ;
 /*!50003 SET collation_connection  = utf8_general_ci */ ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `vypisDenniOdlitychKusu`(datum date)
 BEGIN
@@ -1783,7 +1818,8 @@ SELECT
 	sum(Odlito) as Odlito,
 	seznam_modelu.Material as 'Materiál',
 	seznam_modelu.Material_vlastni as 'Materiál vlastní',
-	Cislo_tavby as 'Číslo tavby'
+	Cislo_tavby as 'Číslo tavby',
+    Teplota_liti as 'Teplota lití'
 FROM
     (((pomdb.seznam_zakazek
     join pomdb.seznam_modelu ON (seznam_zakazek.Id_modelu = seznam_modelu.Id_modelu))
@@ -1791,9 +1827,9 @@ FROM
         join
     fyzkusy ON (fyzkusy.Id_zakazky = seznam_zakazek.Id_zakazky))
 where fyzkusy.Datum_odliti = datum
-group by seznam_zakazek.Id_zakazky
+group by seznam_zakazek.Id_zakazky, Cislo_tavby, Teplota_liti
 order by Jmeno_zakaznika, Cislo_modelu;
-select '','','Celkem:',odlitoCelkemZaDen,'','','';
+select '','','Celkem:',odlitoCelkemZaDen,'','','','';
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -2241,7 +2277,7 @@ DELIMITER ;
 /*!50003 SET character_set_results = utf8 */ ;
 /*!50003 SET collation_connection  = utf8_general_ci */ ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `vypisOdlitychKusuOdDo`(od date, do_ date, formovna char(1), vlastni_material_reg_ex varchar(500))
 BEGIN
@@ -2257,7 +2293,9 @@ SELECT
     sum(fyzkusy.Odlito * returnPresnouCenuZaKus(fyzkusy.Id_kusu)) as `Celkem kč`, -- celkem kc
     sum(fyzkusy.Odlito * getHmotnostFyzKusu(fyzkusy.Id_kusu)) as `Celkem kg`, -- celkem kg
 	seznam_modelu.Material_vlastni as `Materiál vlastní`,
-	seznam_modelu.Formovna as `Formovna`
+	seznam_modelu.Formovna as `Formovna`,
+    Cislo_tavby as `Číslo tavby`,
+    Teplota_liti as `Teplota lití`
 FROM
     ((pomdb.seznam_zakazek
     join pomdb.seznam_modelu ON (seznam_zakazek.Id_modelu = seznam_modelu.Id_modelu))
@@ -2269,7 +2307,7 @@ where
     seznam_modelu.Formovna like pom_formovna and
 	seznam_modelu.Material_vlastni rlike vlastni_material_reg_ex and
     fyzkusy.Odlito = true
-group by seznam_zakazek.Id_zakazky
+group by seznam_zakazek.Id_zakazky, Cislo_tavby, Teplota_liti
 order by `zakaznici`.`Jmeno_zakaznika`, `seznam_modelu`.`Cislo_modelu`;
 END ;;
 DELIMITER ;
@@ -2700,7 +2738,7 @@ DELIMITER ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
 /*!50003 SET character_set_results = @saved_cs_results */ ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
-/*!50003 DROP PROCEDURE IF EXISTS `vypisZmetky` */;
+/*!50003 DROP PROCEDURE IF EXISTS `vypisVytizeniKapacit` */;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
 /*!50003 SET @saved_col_connection = @@collation_connection */ ;
@@ -2709,6 +2747,166 @@ DELIMITER ;
 /*!50003 SET collation_connection  = utf8_general_ci */ ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `vypisVytizeniKapacit`(od date, do_ date, kapacita_M int, kapacita_S int, kapacita_T int)
+BEGIN
+
+SET lc_time_names = 'cs_CZ';
+
+if kapacita_M > 0 and kapacita_S > 0 and kapacita_T > 0 then 
+SET @runtot:=0;
+
+drop temporary table if exists vytizeni_table;
+create temporary table if not exists vytizeni_table (formovna char(1), mesic varchar(30), tyden smallint, kapacita int, vytizeni int, kum_rozdil int, obsazenost smallint, serad char(1));
+
+-- vypocet
+-- tezka formovna
+SET @runtot:=0;
+insert into vytizeni_table (formovna, mesic, tyden, kapacita, vytizeni, kum_rozdil, obsazenost)
+SELECT
+   q1.formovna,
+   q1.mesic as 'Měsíc',
+   q1.tyden as 'Týden',
+   kapacita_T as 'Kapacita',
+   q1.vytizeni as 'Vytížení',
+   (@runtot := @runtot + q1.vytizeni - kapacita_T) AS rt,
+   kapacita_T/q1.vytizeni
+FROM
+   (
+SELECT
+	fyzkusy.Datum_liti,
+	MONTHNAME(fyzkusy.Datum_liti) as mesic,
+    weekofyear(fyzkusy.Datum_liti) as tyden,
+    sum(seznam_modelu.Norma_slevac) as vytizeni,
+    seznam_modelu.Formovna as formovna
+FROM
+    (((pomdb.seznam_zakazek
+    join pomdb.seznam_modelu ON (seznam_zakazek.Id_modelu = seznam_modelu.Id_modelu))
+    join pomdb.zakaznici ON (seznam_zakazek.Id_zakaznika = zakaznici.Id_zakaznika))
+        join
+    fyzkusy ON (fyzkusy.Id_zakazky = seznam_zakazek.Id_zakazky))
+where fyzkusy.Datum_liti >= od and fyzkusy.Datum_liti <= do_ and seznam_modelu.Formovna = 'T'
+group by weekofyear(fyzkusy.Datum_liti)
+order by fyzkusy.Datum_liti
+    ) AS q1;
+
+-- stredni formovna
+SET @runtot:=0;
+insert into vytizeni_table (formovna, mesic, tyden, kapacita, vytizeni, kum_rozdil)
+SELECT
+   q1.formovna,
+   q1.mesic as 'Měsíc',
+   q1.tyden as 'Týden',
+   kapacita_S as 'Kapacita',
+   q1.vytizeni as 'Vytížení',
+   (@runtot := @runtot + q1.vytizeni - kapacita_S) AS rt
+FROM
+   (
+SELECT
+	fyzkusy.Datum_liti,
+	MONTHNAME(fyzkusy.Datum_liti) as mesic,
+    weekofyear(fyzkusy.Datum_liti) as tyden,
+    sum(seznam_modelu.Norma_slevac) as vytizeni,
+    seznam_modelu.Formovna as formovna
+FROM
+    (((pomdb.seznam_zakazek
+    join pomdb.seznam_modelu ON (seznam_zakazek.Id_modelu = seznam_modelu.Id_modelu))
+    join pomdb.zakaznici ON (seznam_zakazek.Id_zakaznika = zakaznici.Id_zakaznika))
+        join
+    fyzkusy ON (fyzkusy.Id_zakazky = seznam_zakazek.Id_zakazky))
+where fyzkusy.Datum_liti >= od and fyzkusy.Datum_liti <= do_ and seznam_modelu.Formovna = 'S'
+group by weekofyear(fyzkusy.Datum_liti)
+order by fyzkusy.Datum_liti
+    ) AS q1;
+
+-- mala formovna
+SET @runtot:=0;
+insert into vytizeni_table (formovna, mesic, tyden, kapacita, vytizeni, kum_rozdil)
+SELECT
+   q1.formovna,
+   q1.mesic as 'Měsíc',
+   q1.tyden as 'Týden',
+   kapacita_M as 'Kapacita',
+   q1.vytizeni as 'Vytížení',
+   (@runtot := @runtot + q1.vytizeni - kapacita_M) AS rt
+FROM
+   (
+SELECT
+	fyzkusy.Datum_liti,
+	MONTHNAME(fyzkusy.Datum_liti) as mesic,
+    weekofyear(fyzkusy.Datum_liti) as tyden,
+    sum(seznam_modelu.Norma_slevac) as vytizeni,
+    seznam_modelu.Formovna as formovna
+FROM
+    (((pomdb.seznam_zakazek
+    join pomdb.seznam_modelu ON (seznam_zakazek.Id_modelu = seznam_modelu.Id_modelu))
+    join pomdb.zakaznici ON (seznam_zakazek.Id_zakaznika = zakaznici.Id_zakaznika))
+        join
+    fyzkusy ON (fyzkusy.Id_zakazky = seznam_zakazek.Id_zakazky))
+where fyzkusy.Datum_liti >= od and fyzkusy.Datum_liti <= do_ and seznam_modelu.Formovna = 'M'
+group by weekofyear(fyzkusy.Datum_liti)
+order by fyzkusy.Datum_liti
+    ) AS q1;
+
+
+
+
+-- sumace 1
+drop temporary table if exists vytizeni_table_sum;
+create temporary table vytizeni_table_sum select * from vytizeni_table;
+
+insert into vytizeni_table (formovna, mesic, tyden, kapacita, vytizeni, kum_rozdil, serad)
+SELECT
+   formovna,
+   'Celkem: ',
+   null,
+   sum(kapacita) as 'Kapacita',
+   sum(vytizeni) as 'Vytížení',
+   sum(vytizeni) - sum(kapacita)  as 'Kum. rozdíl',
+   'A'
+FROM
+	vytizeni_table_sum
+group by formovna
+order by formovna, tyden;
+
+
+
+
+
+-- vypis
+SELECT
+   tyden as 'Týden',
+   mesic as 'Měsíc',
+   kapacita as 'Kapacita',
+   vytizeni as 'Vytížení',
+   kum_rozdil as 'Kum. rozdíl',
+   cast(vytizeni/kapacita * 100 as DECIMAL(8,2)) as 'Obsazenost [%]',
+   formovna as 'Formovna'
+FROM
+	vytizeni_table
+order by formovna, serad, tyden;
+
+else select 'Chyba, kapacita je nulová, dělení nulou';
+end if;
+
+drop temporary table if exists vytizeni_table;
+drop temporary table if exists vytizeni_table_sum;
+
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `vypisZmetky` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `vypisZmetky`(od date, do_ date)
 BEGIN
@@ -3054,6 +3252,24 @@ DELIMITER ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
 /*!50003 SET character_set_results = @saved_cs_results */ ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
+
+--
+-- Final view structure for view `complet`
+--
+
+/*!50001 DROP VIEW IF EXISTS `complet`*/;
+/*!50001 SET @saved_cs_client          = @@character_set_client */;
+/*!50001 SET @saved_cs_results         = @@character_set_results */;
+/*!50001 SET @saved_col_connection     = @@collation_connection */;
+/*!50001 SET character_set_client      = utf8 */;
+/*!50001 SET character_set_results     = utf8 */;
+/*!50001 SET collation_connection      = utf8_general_ci */;
+/*!50001 CREATE ALGORITHM=UNDEFINED */
+/*!50013 DEFINER=`root`@`localhost` SQL SECURITY DEFINER */
+/*!50001 VIEW `complet` AS select `fyzkusy`.`Datum_zadani_zmetku` AS `Datum zmetku`,`vinici`.`Jmeno_vinika` AS `Jméno viníka`,`vady`.`vada` AS `Vada`,`seznam_zakazek`.`Id_zakazky` AS `ID zakázky`,`zakaznici`.`Jmeno_zakaznika` AS `Jméno zákazníka`,`seznam_modelu`.`Cislo_modelu` AS `Číslo modelu`,`seznam_zakazek`.`Paganyrka` AS `Paganýrka`,`seznam_zakazek`.`Cena` AS `Cena`,`seznam_zakazek`.`Id_modelu` AS `ID modelu`,`seznam_modelu`.`Jmeno_modelu` AS `Jméno modelu`,`seznam_modelu`.`Material` AS `Material`,`seznam_modelu`.`Material_vlastni` AS `Vlastní materiál`,`seznam_modelu`.`Formovna` AS `Formovna`,`seznam_modelu`.`Hmotnost` AS `Hmotnost`,`seznam_modelu`.`IsOdhadHmot` AS `Odhadová hmotnost`,`seznam_modelu`.`Norma_slevac` AS `Norma slévač`,`seznam_zakazek`.`Id_zakaznika` AS `ID zákazníka`,`seznam_zakazek`.`Poznamka` AS `Poznámka zakázky`,`seznam_zakazek`.`Termin_expedice` AS `Termín expedice`,`seznam_zakazek`.`Presna_cena_za_kus` AS `Přesná cena za kus` from (((`seznam_zakazek` join `seznam_modelu` on((`seznam_zakazek`.`Id_modelu` = `seznam_modelu`.`Id_modelu`))) join `zakaznici` on((`seznam_zakazek`.`Id_zakaznika` = `zakaznici`.`Id_zakaznika`))) join (((`fyzkusy` left join `zmetky_vady` on((`fyzkusy`.`Id_kusu` = `zmetky_vady`.`Id_kusu`))) left join `vinici` on((`vinici`.`Id_vinika` = `zmetky_vady`.`Id_vinika`))) left join `vady` on((`vady`.`idvady` = `zmetky_vady`.`Id_vady`))) on((`seznam_zakazek`.`Id_zakazky` = `fyzkusy`.`Id_zakazky`))) */;
+/*!50001 SET character_set_client      = @saved_cs_client */;
+/*!50001 SET character_set_results     = @saved_cs_results */;
+/*!50001 SET collation_connection      = @saved_col_connection */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -3064,4 +3280,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2016-09-13 20:29:45
+-- Dump completed on 2017-09-12 22:50:23
