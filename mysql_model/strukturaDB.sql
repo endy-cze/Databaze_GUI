@@ -1,6 +1,6 @@
 CREATE DATABASE  IF NOT EXISTS `pomdb` /*!40100 DEFAULT CHARACTER SET utf8 */;
 USE `pomdb`;
--- MySQL dump 10.13  Distrib 5.6.23, for Win32 (x86)
+-- MySQL dump 10.13  Distrib 5.7.17, for Win64 (x86_64)
 --
 -- Host: localhost    Database: pomdb
 -- ------------------------------------------------------
@@ -217,10 +217,6 @@ CREATE TABLE `zmetky_vady` (
   CONSTRAINT `fk_zmetky_vady_vinici1` FOREIGN KEY (`Id_vinika`) REFERENCES `vinici` (`Id_vinika`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping events for database 'pomdb'
---
 
 --
 -- Dumping routines for database 'pomdb'
@@ -1387,7 +1383,7 @@ DELIMITER ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `verze`()
 BEGIN
-select '2.00';
+select '2.10';
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -1805,7 +1801,7 @@ DELIMITER ;
 /*!50003 SET character_set_results = utf8 */ ;
 /*!50003 SET collation_connection  = utf8_general_ci */ ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `vypisDenniOdlitychKusu`(datum date)
 BEGIN
@@ -2277,7 +2273,7 @@ DELIMITER ;
 /*!50003 SET character_set_results = utf8 */ ;
 /*!50003 SET collation_connection  = utf8_general_ci */ ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `vypisOdlitychKusuOdDo`(od date, do_ date, formovna char(1), vlastni_material_reg_ex varchar(500))
 BEGIN
@@ -2757,12 +2753,12 @@ if kapacita_M > 0 and kapacita_S > 0 and kapacita_T > 0 then
 SET @runtot:=0;
 
 drop temporary table if exists vytizeni_table;
-create temporary table if not exists vytizeni_table (formovna char(1), mesic varchar(30), tyden smallint, kapacita int, vytizeni int, kum_rozdil int, obsazenost smallint, serad char(1));
+create temporary table if not exists vytizeni_table (formovna char(1), mesic varchar(30), tyden smallint, kapacita int, vytizeni int, kum_rozdil int, obsazenost smallint, serad char(1), datum date);
 
 -- vypocet
 -- tezka formovna
 SET @runtot:=0;
-insert into vytizeni_table (formovna, mesic, tyden, kapacita, vytizeni, kum_rozdil, obsazenost)
+insert into vytizeni_table (formovna, mesic, tyden, kapacita, vytizeni, kum_rozdil, obsazenost, datum)
 SELECT
    q1.formovna,
    q1.mesic as 'Měsíc',
@@ -2770,7 +2766,8 @@ SELECT
    kapacita_T as 'Kapacita',
    q1.vytizeni as 'Vytížení',
    (@runtot := @runtot + q1.vytizeni - kapacita_T) AS rt,
-   kapacita_T/q1.vytizeni
+   kapacita_T/q1.vytizeni,
+   Datum_liti
 FROM
    (
 SELECT
@@ -2792,14 +2789,15 @@ order by fyzkusy.Datum_liti
 
 -- stredni formovna
 SET @runtot:=0;
-insert into vytizeni_table (formovna, mesic, tyden, kapacita, vytizeni, kum_rozdil)
+insert into vytizeni_table (formovna, mesic, tyden, kapacita, vytizeni, kum_rozdil, datum)
 SELECT
    q1.formovna,
    q1.mesic as 'Měsíc',
    q1.tyden as 'Týden',
    kapacita_S as 'Kapacita',
    q1.vytizeni as 'Vytížení',
-   (@runtot := @runtot + q1.vytizeni - kapacita_S) AS rt
+   (@runtot := @runtot + q1.vytizeni - kapacita_S) AS rt,
+   Datum_liti
 FROM
    (
 SELECT
@@ -2821,14 +2819,15 @@ order by fyzkusy.Datum_liti
 
 -- mala formovna
 SET @runtot:=0;
-insert into vytizeni_table (formovna, mesic, tyden, kapacita, vytizeni, kum_rozdil)
+insert into vytizeni_table (formovna, mesic, tyden, kapacita, vytizeni, kum_rozdil, datum)
 SELECT
    q1.formovna,
    q1.mesic as 'Měsíc',
    q1.tyden as 'Týden',
    kapacita_M as 'Kapacita',
    q1.vytizeni as 'Vytížení',
-   (@runtot := @runtot + q1.vytizeni - kapacita_M) AS rt
+   (@runtot := @runtot + q1.vytizeni - kapacita_M) AS rt,
+   Datum_liti
 FROM
    (
 SELECT
@@ -2884,7 +2883,7 @@ SELECT
    formovna as 'Formovna'
 FROM
 	vytizeni_table
-order by formovna, serad, tyden;
+order by formovna, serad, datum;
 
 else select 'Chyba, kapacita je nulová, dělení nulou';
 end if;
@@ -2906,7 +2905,7 @@ DELIMITER ;
 /*!50003 SET character_set_results = utf8 */ ;
 /*!50003 SET collation_connection  = utf8_general_ci */ ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `vypisZmetky`(od date, do_ date)
 BEGIN
@@ -3280,4 +3279,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-09-12 22:50:23
+-- Dump completed on 2017-09-13 13:11:29
