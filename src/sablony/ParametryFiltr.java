@@ -953,10 +953,10 @@ public class ParametryFiltr extends JPanel {
 		cisloTydneText = new JTextField();
 		vypisy[5] = cisloTydneText;
 		cisloTydneText.setForeground(Color.WHITE);
-		cisloTydneText.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		cisloTydneText.setFont(fonty[4]);
 		cisloTydneText.setColumns(10);
-		cisloTydneText.setBorder(new EmptyBorder(2, 0, 2, 0));
-		cisloTydneText.setBackground(new Color(98, 98, 98));
+		cisloTydneText.setBorder(null);
+		cisloTydneText.setBackground(barvy[20]);
 		GridBagConstraints gbc_cisloTydneText = new GridBagConstraints();
 		gbc_cisloTydneText.insets = new Insets(0, 0, 5, 5);
 		gbc_cisloTydneText.fill = GridBagConstraints.HORIZONTAL;
@@ -1079,6 +1079,11 @@ public class ParametryFiltr extends JPanel {
 		kapacityTextField = new JTextField();
 		vypisy[14] = kapacityTextField;
 		kapacityTextField.setText("70 000;21 000;10 000");
+		kapacityTextField.setForeground(Color.WHITE);
+		kapacityTextField.setFont(fonty[4]);
+		kapacityTextField.setColumns(10);
+		kapacityTextField.setBorder(null);
+		kapacityTextField.setBackground(barvy[2]);
 		GridBagConstraints gbc_kapacityTextField = new GridBagConstraints();
 		gbc_kapacityTextField.gridwidth = 2;
 		gbc_kapacityTextField.insets = new Insets(0, 0, 5, 5);

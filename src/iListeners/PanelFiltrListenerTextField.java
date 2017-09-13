@@ -7,6 +7,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.InputMethodEvent;
 import java.awt.event.InputMethodListener;
 
+import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.border.LineBorder;
 import javax.swing.event.DocumentEvent;
@@ -62,17 +63,18 @@ public class PanelFiltrListenerTextField implements DocumentListener {
 				}
 			}
 		}
+		
 		for(int i = 0; i < vypisy.length; i++){
 			if(!vypisy[i].hasFocus())continue;
 			if(vypisy[i] instanceof JTextField){
 				if(((JTextField)vypisy[i]).getText().equalsIgnoreCase("")){
-					((JTextField)pole[i]).setBackground(barvy[20]);
-					((JTextField)pole[i]).setForeground(Color.BLACK);
-					((JTextField)pole[i]).setBorder(changedBorder);
+					((JTextField)vypisy[i]).setBackground(barvy[20]);
+					((JTextField)vypisy[i]).setForeground(Color.BLACK);
+					((JTextField)vypisy[i]).setBorder(changedBorder);
 				} else {
-					((JTextField)pole[i]).setBackground(barvy[2]);
-					((JTextField)pole[i]).setForeground(Color.WHITE);
-					((JTextField)pole[i]).setBorder(defaultBorder);
+					((JTextField)vypisy[i]).setBackground(barvy[2]);
+					((JTextField)vypisy[i]).setForeground(Color.WHITE);
+					((JTextField)vypisy[i]).setBorder(defaultBorder);
 				}
 			}
 		}
