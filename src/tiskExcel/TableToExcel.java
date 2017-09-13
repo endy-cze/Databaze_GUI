@@ -47,6 +47,8 @@ public class TableToExcel {
 	
 	private static final int KUM_ROZDIL_COLUMN = 4;
 	private static final int OBSAZENOST_PROCENTA = 5;
+	private static final int TYDEN_COLUMN = 0;
+	private static final int MESIC_COLUMN = 1;
 	
 	private JFrame hlavniOkno;
 	//private static String [] columnNamesIsString = {"Èíslo modelu", "Cislo_modelu","Jméno zákazníka","Èíslo objednávky",
@@ -240,19 +242,31 @@ public class TableToExcel {
 	private void createFormulas(int cisloExportu, HSSFSheet sheet, HSSFCellStyle procentaStyle){
 		// https://poi.apache.org/spreadsheet/formula.html
 		int rowsCount = sheet.getPhysicalNumberOfRows();
-		Row r;
-		Cell c;
+		Row r1,r2;
+		Cell c1,c2;
 		switch(cisloExportu){
 		case ParametryFiltr.VypisVytizeniKapacit:
 			/* Vytvorit vzorce ktere si preji */
-			// Kum. rozdil
+			// Kum. rozdil			
 			for(int i = 1; i < rowsCount; i++){
-				r = sheet.getRow(i);
-				c = r.getCell(KUM_ROZDIL_COLUMN);
-				c.setCellFormula("D"+(i+1)+"-C"+(i+1));
-				c = r.getCell(OBSAZENOST_PROCENTA);
-				c.setCellFormula("D"+(i+1)+"/C"+(i+1));
-				c.setCellStyle(procentaStyle);
+				r1 = sheet.getRow(i-1); // predchozi radek
+				r2 = sheet.getRow(i); // aktualni radek
+				c1 = r1.getCell(TYDEN_COLUMN);
+				c2 = r2.getCell(TYDEN_COLUMN);
+				if(c1.getCellType() == Cell.CELL_TYPE_NUMERIC && c2.getCellType() == Cell.CELL_TYPE_NUMERIC){ // obecny vzorec kumulativního rozdilu kromì pro prvni radek
+					// D3-C3+E2
+					c2 = r2.getCell(KUM_ROZDIL_COLUMN);
+					c2.setCellFormula("D"+(i+1)+"-C"+(i+1)+"+E"+(i));
+				} else { // prvni radek scitani kumulativniho rozdilu a radek celkoveho souctu
+					c2 = r2.getCell(KUM_ROZDIL_COLUMN);
+					c2.setCellFormula("D"+(i+1)+"-C"+(i+1));			
+				}			
+				
+				
+				// procenta jsou vzdy stejny vzorec
+				c2 = r2.getCell(OBSAZENOST_PROCENTA);
+				c2.setCellFormula("D"+(i+1)+"/C"+(i+1));
+				c2.setCellStyle(procentaStyle);
 			}
 			break;
 		}
