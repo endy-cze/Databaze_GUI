@@ -94,7 +94,7 @@ CREATE TABLE `fyzkusy` (
   KEY `Id_modelu` (`Id_modelu_odlito`),
   CONSTRAINT `fk_fyzkusy_seznam_modelu1` FOREIGN KEY (`Id_modelu_odlito`) REFERENCES `seznam_modelu` (`Id_modelu`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_fyzkusy_seznam_zakazek` FOREIGN KEY (`Id_zakazky`) REFERENCES `seznam_zakazek` (`Id_zakazky`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=10912 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -117,7 +117,7 @@ CREATE TABLE `seznam_modelu` (
   `Poznamka_model` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`Id_modelu`),
   KEY `cislo_modelu_index` (`Cislo_modelu`)
-) ENGINE=InnoDB AUTO_INCREMENT=1325 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -148,7 +148,7 @@ CREATE TABLE `seznam_zakazek` (
   KEY `fk_seznam_zakazek_seznam_modelu1_idx` (`Id_modelu`),
   CONSTRAINT `fk_seznam_zakazek_seznam_modelu1` FOREIGN KEY (`Id_modelu`) REFERENCES `seznam_modelu` (`Id_modelu`) ON DELETE NO ACTION ON UPDATE CASCADE,
   CONSTRAINT `fk_seznam_zakazek_zakaznici1` FOREIGN KEY (`Id_zakaznika`) REFERENCES `zakaznici` (`Id_zakaznika`) ON DELETE NO ACTION ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=2432 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -163,7 +163,7 @@ CREATE TABLE `vady` (
   `vada` varchar(45) NOT NULL,
   PRIMARY KEY (`idvady`),
   UNIQUE KEY `vada_UNIQUE` (`vada`)
-) ENGINE=InnoDB AUTO_INCREMENT=53 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -178,7 +178,7 @@ CREATE TABLE `vinici` (
   `Jmeno_vinika` varchar(45) NOT NULL,
   PRIMARY KEY (`Id_vinika`),
   UNIQUE KEY `Jmeno_vinika_UNIQUE` (`Jmeno_vinika`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -193,7 +193,7 @@ CREATE TABLE `zakaznici` (
   `Jmeno_zakaznika` varchar(30) NOT NULL,
   PRIMARY KEY (`Id_zakaznika`),
   UNIQUE KEY `Jmeno_zakaznika_UNIQUE` (`Jmeno_zakaznika`)
-) ENGINE=InnoDB AUTO_INCREMENT=60 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -342,6 +342,73 @@ set pocetNovychKusu = pocetNovychKusu - pocetNeZmetku;
 	values(Idzakazky, idModelu);
     SET pocetNovychKusu = pocetNovychKusu - 1;
   END WHILE;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `grant_user` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `grant_user`(jm varchar(45), ip_host varchar(45),povolani int)
+BEGIN
+set jm = QUOTE(jm);
+set ip_host = QUOTE(ip_host);
+
+if (povolani = 0) then
+	-- zruseni uzivatele
+	SET @query1 = concat('DROP USER ',jm,'@',ip_host,' ;'); PREPARE stmt FROM @query1; EXECUTE stmt; DEALLOCATE PREPARE stmt; 
+elseif (povolani = 1) then
+	-- prohlizeci
+SET @query1 = concat('Grant SELECT ON mysql.proc TO ',jm,'@',ip_host,' ;'); PREPARE stmt FROM @query1; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+SET @query1 = concat('Grant EXECUTE ON procedure `pomdb`.`kapacitniPropocet` TO ',jm,'@',ip_host,' ;'); PREPARE stmt FROM @query1; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+SET @query1 = concat('Grant EXECUTE ON procedure `pomdb`.`liciPlanPlanovaci` TO ',jm,'@',ip_host,' ;'); PREPARE stmt FROM @query1; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+SET @query1 = concat('Grant EXECUTE ON procedure `pomdb`.`liciPlanZakl` TO ',jm,'@',ip_host,' ;'); PREPARE stmt FROM @query1; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+SET @query1 = concat('Grant EXECUTE ON procedure `pomdb`.`plan_expedice` TO ',jm,'@',ip_host,' ;'); PREPARE stmt FROM @query1; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+SET @query1 = concat('Grant EXECUTE ON procedure `pomdb`.`planovaniRozvrh` TO ',jm,'@',ip_host,' ;'); PREPARE stmt FROM @query1; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+SET @query1 = concat('Grant EXECUTE ON procedure `pomdb`.`planovaniRozvrhVycisteno` TO ',jm,'@',ip_host,' ;'); PREPARE stmt FROM @query1; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+SET @query1 = concat('Grant EXECUTE ON procedure `pomdb`.`vyberDilciTerminy` TO ',jm,'@',ip_host,' ;'); PREPARE stmt FROM @query1; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+SET @query1 = concat('Grant EXECUTE ON procedure `pomdb`.`vyberFyzKusy` TO ',jm,'@',ip_host,' ;'); PREPARE stmt FROM @query1; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+SET @query1 = concat('Grant EXECUTE ON procedure `pomdb`.`vyberModely` TO ',jm,'@',ip_host,' ;'); PREPARE stmt FROM @query1; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+SET @query1 = concat('Grant EXECUTE ON procedure `pomdb`.`vyberVady` TO ',jm,'@',ip_host,' ;'); PREPARE stmt FROM @query1; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+SET @query1 = concat('Grant EXECUTE ON procedure `pomdb`.`vyberViniky` TO ',jm,'@',ip_host,' ;'); PREPARE stmt FROM @query1; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+SET @query1 = concat('Grant EXECUTE ON procedure `pomdb`.`vyberZakazky2` TO ',jm,'@',ip_host,' ;'); PREPARE stmt FROM @query1; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+SET @query1 = concat('Grant EXECUTE ON procedure `pomdb`.`vyberZakazniky` TO ',jm,'@',ip_host,' ;'); PREPARE stmt FROM @query1; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+SET @query1 = concat('Grant EXECUTE ON procedure `pomdb`.`vyberZmetky` TO ',jm,'@',ip_host,' ;'); PREPARE stmt FROM @query1; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+SET @query1 = concat('Grant EXECUTE ON procedure `pomdb`.`vypisDenniOdlitychKusu` TO ',jm,'@',ip_host,' ;'); PREPARE stmt FROM @query1; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+SET @query1 = concat('Grant EXECUTE ON procedure `pomdb`.`vypisDleTerminuExpediceCisloTydne` TO ',jm,'@',ip_host,' ;'); PREPARE stmt FROM @query1; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+SET @query1 = concat('Grant EXECUTE ON procedure `pomdb`.`vypisExpedovanychKusuOdDo` TO ',jm,'@',ip_host,' ;'); PREPARE stmt FROM @query1; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+SET @query1 = concat('Grant EXECUTE ON procedure `pomdb`.`vypisKusuNaSkladu` TO ',jm,'@',ip_host,' ;'); PREPARE stmt FROM @query1; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+SET @query1 = concat('Grant EXECUTE ON procedure `pomdb`.`vypisMzdySlevacu` TO ',jm,'@',ip_host,' ;'); PREPARE stmt FROM @query1; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+SET @query1 = concat('Grant EXECUTE ON procedure `pomdb`.`vypisOdlituVKgKcOdDo` TO ',jm,'@',ip_host,' ;'); PREPARE stmt FROM @query1; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+SET @query1 = concat('Grant EXECUTE ON procedure `pomdb`.`vypisOdlitychKusuOdDo` TO ',jm,'@',ip_host,' ;'); PREPARE stmt FROM @query1; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+SET @query1 = concat('Grant EXECUTE ON procedure `pomdb`.`vypisPolozekSOdhadHmot` TO ',jm,'@',ip_host,' ;'); PREPARE stmt FROM @query1; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+SET @query1 = concat('Grant EXECUTE ON procedure `pomdb`.`vypisRozpracovaneVyroby` TO ',jm,'@',ip_host,' ;'); PREPARE stmt FROM @query1; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+SET @query1 = concat('Grant EXECUTE ON procedure `pomdb`.`vypisStavNeuzavrenychZakazek` TO ',jm,'@',ip_host,' ;'); PREPARE stmt FROM @query1; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+SET @query1 = concat('Grant EXECUTE ON procedure `pomdb`.`vypisStavNeuzavrenychZakazek_short` TO ',jm,'@',ip_host,' ;'); PREPARE stmt FROM @query1; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+SET @query1 = concat('Grant EXECUTE ON procedure `pomdb`.`vypisVinikyVKgKc` TO ',jm,'@',ip_host,' ;'); PREPARE stmt FROM @query1; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+SET @query1 = concat('Grant EXECUTE ON procedure `pomdb`.`vypisVycistenychKusuOdDo` TO ',jm,'@',ip_host,' ;'); PREPARE stmt FROM @query1; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+SET @query1 = concat('Grant EXECUTE ON procedure `pomdb`.`vypisVytizeniKapacit` TO ',jm,'@',ip_host,' ;'); PREPARE stmt FROM @query1; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+SET @query1 = concat('Grant EXECUTE ON procedure `pomdb`.`vypisZmetky` TO ',jm,'@',ip_host,' ;'); PREPARE stmt FROM @query1; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+SET @query1 = concat('Grant EXECUTE ON procedure `pomdb`.`vypisZpozdeneVyroby` TO ',jm,'@',ip_host,' ;'); PREPARE stmt FROM @query1; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+SET @query1 = concat('Grant EXECUTE ON procedure `pomdb`.`zalohaDatabaze` TO ',jm,'@',ip_host,' ;'); PREPARE stmt FROM @query1; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+SET @query1 = concat('Grant EXECUTE ON procedure `pomdb`.`vyberVlastniMaterialy` TO ',jm,'@',ip_host,' ;'); PREPARE stmt FROM @query1; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+SET @query1 = concat('Grant EXECUTE ON procedure `pomdb`.`verze` TO ',jm,'@',ip_host,' ;'); PREPARE stmt FROM @query1; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+elseif (povolani = 2) then
+	-- executori	
+    SET @query1 = concat('Grant SELECT ON mysql.proc TO ',jm,'@',ip_host,' ;'); PREPARE stmt FROM @query1; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+    SET @query1 = concat('Grant EXECUTE ON `pomdb`.* TO ',jm,'@',ip_host,' ;'); PREPARE stmt FROM @query1; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+end if;
+
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -3232,7 +3299,7 @@ DELIMITER ;
 /*!50003 SET character_set_results = utf8 */ ;
 /*!50003 SET collation_connection  = utf8_general_ci */ ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `zalohaDatabaze`()
 BEGIN
@@ -3244,7 +3311,7 @@ select * from pomdb.dilci_terminy order by Id_zakazky, dilci_termin;
 SELECT * FROM pomdb.vady order by idvady;
 SELECT * FROM pomdb.vinici order by Id_vinika;
 SELECT * FROM pomdb.zmetky_vady order by Id_kusu;
-SELECT * FROM technologicka_karta_db.technologicka_karta order by idtechnologicka_karta;
+-- SELECT * FROM technologicka_karta_db.technologicka_karta order by idtechnologicka_karta;
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -3279,4 +3346,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-09-13 13:11:29
+-- Dump completed on 2018-02-08 12:49:06
