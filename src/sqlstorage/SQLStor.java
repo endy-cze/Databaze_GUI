@@ -80,7 +80,7 @@ public class SQLStor {
 			{"{CALL pomdb.liciPlanZakl(?,?,?)}", "{CALL pomdb.liciPlanPlanovaci(?,?,?)}", "{CALL pomdb.vyberDilciTerminy(?)}", "{CALL pomdb.vyberDilciTerminySeJmeny(?)}", 
 				"{CALL pomdb.plan_expedice()}"},
 			{"{CALL pomdb.smaz_fyz_kus(?,?)}"},
-			{"{CALL pomdb.zalohaDatabaze()}"}
+			{"{CALL pomdb.zalohaDatabaze()}","{CALL pomdb.grant_user(?,?,?)}"}
 	};
 	/**
 	 * Prikazy pro vybrani viniku a vad a vlastních materialu
@@ -2108,6 +2108,7 @@ public class SQLStor {
 			//System.out.println(querry);
 			st.executeQuery(querry);
 		}
+		st.close();
 		// done
 		return obnovaUspech;
 	}
@@ -2121,6 +2122,51 @@ public class SQLStor {
 		    return matcher.group();
 		}
 		return null;
+	}
+	
+	/**
+	 * Metoda, která vytvoøí uživatele, pokud již neexistuje, a pøidìlí mu daná privilegia dle cisla povolani.
+	 * @param jmeno uzivatele
+	 * @param host ip adresa uzivatele
+	 * @param heslo heslo uzivatele
+	 * @param cisloPovolani cislo povolani
+	 * @throws SQLException pokud nemate opravnìní nebo nespecifikovana SQL chyba
+	 */
+	public void pridejUzivateleSPrivilegii(String jmeno, String host, String heslo, int cisloPovolani) throws SQLException{
+		final String acesDenied = "execute command denied to user";
+		jmeno = escapeSQL(jmeno);
+		host = escapeSQL(host);
+		heslo = escapeSQL(heslo);
+		String querry = "create USER \'"+jmeno+"\'@\'"+host+"\' IDENTIFIED BY \'"+heslo+"\'";
+		Statement st = this.conn.createStatement();
+		try {
+			st.execute(querry); // vytvoreni uzivatele
+			st.close();
+		} catch(SQLException e){
+			st.close();
+			if(e.getLocalizedMessage().startsWith(acesDenied)){ // nemame opravneni
+				throw e;
+			} else if (e.getLocalizedMessage().startsWith("Operation CREATE USER failed for")){
+				// v poradku, uzivatel už existuje
+			} else {
+				throw e;
+			}
+		}
+		
+		
+		// prirazeni privilegii novemu uzivateli
+		int i = 8, j = 1;
+		if(cst[i][j] == null){
+			cst[i][j] = conn.prepareCall(sqlPrikazy[i][j]);
+			naposledyPouzito[i][j] = new Date();
+		}
+		String m = sqlPrikazy[i][j];
+		c = cst[i][j];
+		c.setString(1, jmeno);
+		c.setString(2, host);
+		c.setInt(3, cisloPovolani);
+		
+		c.execute();
 	}
 	
 	/**
@@ -2200,4 +2246,60 @@ public class SQLStor {
     		}
         }
     }
+
+	/**
+	 * Metoda, kterou jsem stahnul na netu pro escapovani SQL pøíkazù.
+	 * @param s string ktery chceme escapovat a vlozit do SQL pøíkazu
+	 * @return escapovany string
+	 */
+	public static String escapeSQL(String s) {
+		int length = s.length();
+		int newLength = length;
+		// first check for characters that might
+		// be dangerous and calculate a length
+		// of the string that has escapes.
+		for (int i = 0; i < length; i++) {
+			char c = s.charAt(i);
+			switch (c) {
+			case '\\':
+			case '\"':
+			case '\'':
+			case '\0': {
+				newLength += 1;
+			}
+				break;
+			}
+		}
+		if (length == newLength) {
+			// nothing to escape in the string
+			return s;
+		}
+		StringBuffer sb = new StringBuffer(newLength);
+		for (int i = 0; i < length; i++) {
+			char c = s.charAt(i);
+			switch (c) {
+			case '\\': {
+				sb.append("\\\\");
+			}
+				break;
+			case '\"': {
+				sb.append("\\\"");
+			}
+				break;
+			case '\'': {
+				sb.append("\\\'");
+			}
+				break;
+			case '\0': {
+				sb.append("\\0");
+			}
+				break;
+			default: {
+				sb.append(c);
+			}
+			}
+		}
+		return sb.toString();
+	}
+
 }

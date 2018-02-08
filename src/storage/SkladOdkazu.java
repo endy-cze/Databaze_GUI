@@ -62,7 +62,7 @@ public class SkladOdkazu {
 			{"UpravaZakaznika", "UpravaModelu", "UpravaZakazky"},
 			{"Pøidat viníky", "Pøidat druhy vad", "UpravVinika", "UpravVadu"},
 			{"SmazatFyzKusy"},
-			{"ZalohaDB", "ObnovaDB"}
+			{"ZalohaDB", "ObnovaDB","PridelPrivilegia"}
 	};
 
 	// hlavni okno

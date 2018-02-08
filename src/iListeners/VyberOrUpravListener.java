@@ -22,6 +22,7 @@ import sablony.errorwin.ExceptionWin;
 import sablony.tabulka.ColorCellTable;
 import sqlstorage.SQLStor;
 import storage.SkladOdkazu;
+import thread.PridelitPrivilegia;
 import thread.ZalohujDB;
 
 /**
@@ -428,8 +429,8 @@ public class VyberOrUpravListener implements ActionListener {
 	}
 	
 	/**
-	 * Záloha, obnova databáze
-	 * @param j index, ktery popup menu se dìla (obnova nebo zaloha, vìtšinou zaloha)
+	 * Záloha, obnova databáze, prideleni privilegia
+	 * @param j index, ktery popup menu se dìla (obnova nebo zaloha, vìtšinou zaloha, privilegia)
 	 * @throws Exception 
 	 */
 	private void index8(int j) throws Exception {
@@ -482,6 +483,24 @@ public class VyberOrUpravListener implements ActionListener {
 		    }
 		    
 		   
+			break;
+		case 2: // prideleni privilegia
+			JOptionPane.showMessageDialog(hlavniOkno, "Vyberte soubor hesla.xml");
+			File heslaXMLFile = null;
+			JFileChooser myChooser = new JFileChooser(new File("./"));
+			FileNameExtensionFilter myFfilter = new FileNameExtensionFilter("Soubor XML", "xml");
+			myChooser.setFileFilter(myFfilter);
+			myChooser.setName("Kokos");
+			myChooser.setDialogTitle("Vyberte soubor seznam_zakazek.csv");
+
+			int returnValue = myChooser.showOpenDialog(this.hlavniOkno);
+			if (returnValue == JFileChooser.APPROVE_OPTION) {
+				heslaXMLFile = myChooser.getSelectedFile();
+				ProgresBarFrame f = sklad.getBar();
+				PridelitPrivilegia p = new PridelitPrivilegia(hlavniOkno, f, heslaXMLFile, sklad);
+				f.setVisible(true);
+				p.execute();
+			}
 			break;
 		default: JOptionPane.showMessageDialog(hlavniOkno, "neco je spatne VyberorUpravListener index8()");	
 			break;

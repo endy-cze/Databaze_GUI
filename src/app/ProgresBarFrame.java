@@ -20,6 +20,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.SwingWorker;
 
 import java.awt.Toolkit;
 
@@ -38,7 +39,7 @@ public class ProgresBarFrame extends JFrame implements ActionListener {
 	private JProgressBar apProgresBar;
 	private JProgressBar dbProgressBar;
 	
-	private ZalohujDB threadToCancel;
+	private SwingWorker threadToCancel;
 
 	/**
 	 * Launch the application.
@@ -173,7 +174,7 @@ public class ProgresBarFrame extends JFrame implements ActionListener {
 		return apProgresBar;
 	}
 	
-	public void setThreadToCancel(ZalohujDB thread){
+	public void setThreadToCancel(SwingWorker thread){
 		threadToCancel = thread;
 	}
 	

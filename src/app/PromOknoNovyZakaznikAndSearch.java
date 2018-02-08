@@ -335,12 +335,18 @@ public class PromOknoNovyZakaznikAndSearch extends JPanel {
 		this.setVyhledejZakazku();
 	}
 	
-	public void setZalohaObnovaDB(boolean isZaloha){
+	public void setZalohaObnovaDB(int stav){
 		this.setVyhledejZakazku();
-		if(isZaloha){
+		switch(stav){
+		case 0:
 			vyberUprav.setText("Zálohovat databázi");
-		} else {
+			break;
+		case 1:
 			vyberUprav.setText("Obnovit databázi");
+			break;
+		case 2:
+			vyberUprav.setText("Pridìlit privilegia");
+			break;
 		}
 		jpanelFitr.setVisible(false);
 		table.setVisible(false);
