@@ -2803,15 +2803,21 @@ DELIMITER ;
 /*!50003 SET character_set_results = utf8 */ ;
 /*!50003 SET collation_connection  = utf8_general_ci */ ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `vypisVytizeniKapacit`(od date, do_ date, kapacita_M int, kapacita_S int, kapacita_T int)
 BEGIN
+
 SET lc_time_names = 'cs_CZ';
+
 if kapacita_M > 0 and kapacita_S > 0 and kapacita_T > 0 then 
 SET @runtot:=0;
+
 drop temporary table if exists vytizeni_table;
 create temporary table if not exists vytizeni_table (formovna char(1), mesic varchar(30), tyden smallint, kapacita int, vytizeni int, kum_rozdil int, obsazenost smallint, serad char(1), datum date);
+
+-- vypocet
+-- tezka formovna
 SET @runtot:=0;
 insert into vytizeni_table (formovna, mesic, tyden, kapacita, vytizeni, kum_rozdil, obsazenost, datum)
 SELECT
@@ -2841,6 +2847,8 @@ where fyzkusy.Datum_liti >= od and fyzkusy.Datum_liti <= do_ and seznam_modelu.F
 group by weekofyear(fyzkusy.Datum_liti)
 order by fyzkusy.Datum_liti
     ) AS q1;
+
+-- stredni formovna
 SET @runtot:=0;
 insert into vytizeni_table (formovna, mesic, tyden, kapacita, vytizeni, kum_rozdil, datum)
 SELECT
@@ -2869,6 +2877,8 @@ where fyzkusy.Datum_liti >= od and fyzkusy.Datum_liti <= do_ and seznam_modelu.F
 group by weekofyear(fyzkusy.Datum_liti)
 order by fyzkusy.Datum_liti
     ) AS q1;
+
+-- mala formovna
 SET @runtot:=0;
 insert into vytizeni_table (formovna, mesic, tyden, kapacita, vytizeni, kum_rozdil, datum)
 SELECT
@@ -2897,8 +2907,14 @@ where fyzkusy.Datum_liti >= od and fyzkusy.Datum_liti <= do_ and seznam_modelu.F
 group by weekofyear(fyzkusy.Datum_liti)
 order by fyzkusy.Datum_liti
     ) AS q1;
+
+
+
+
+-- sumace 1
 drop temporary table if exists vytizeni_table_sum;
 create temporary table vytizeni_table_sum select * from vytizeni_table;
+
 insert into vytizeni_table (formovna, mesic, tyden, kapacita, vytizeni, kum_rozdil, serad)
 SELECT
    formovna,
@@ -2912,6 +2928,12 @@ FROM
 	vytizeni_table_sum
 group by formovna
 order by formovna, tyden;
+
+
+
+
+
+-- vypis
 SELECT
    tyden as 'Týden',
    mesic as 'Měsíc',
@@ -2923,10 +2945,13 @@ SELECT
 FROM
 	vytizeni_table
 order by formovna, serad, datum;
+
 else select 'Chyba, kapacita je nulová, dělení nulou';
 end if;
+
 drop temporary table if exists vytizeni_table;
 drop temporary table if exists vytizeni_table_sum;
+
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -3314,4 +3339,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-02-09 11:31:53
+-- Dump completed on 2018-02-09 11:36:14
