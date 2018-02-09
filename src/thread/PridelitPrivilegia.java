@@ -20,6 +20,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 import storage.SkladOdkazu;
 import app.ProgresBarFrame;
@@ -29,10 +30,11 @@ import sqlstorage.SQLStor;
 public class PridelitPrivilegia extends SwingWorker<Integer, Void>{
 	public static final int NENIOPRAVNENI = -1;
 	public static final int SPATNECISLO = -2;
+	public static final int SPATNYFORMAT = -3;
 	public static final int ERROR = -4;
 	public static final int VPORADKU = 0;
 	
-	private static final String acesDenied = "execute command denied to user";
+	private static final String acesDenied = "Access denied";
 
 	
 	private SkladOdkazu sklad;
@@ -55,7 +57,12 @@ public class PridelitPrivilegia extends SwingWorker<Integer, Void>{
 		try {
 	        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 	        DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-	        Document doc = dBuilder.parse(heslaXMLFile);
+	        Document doc = null;
+	        try {
+	        	doc = dBuilder.parse(heslaXMLFile);
+	        } catch(SAXException e){
+	        	return SPATNYFORMAT;
+	        }
 	        doc.getDocumentElement().normalize();
 	        NodeList nList = doc.getElementsByTagName("uzivatel");
 			
@@ -113,6 +120,9 @@ public class PridelitPrivilegia extends SwingWorker<Integer, Void>{
 				break;
 			case NENIOPRAVNENI:
 				JOptionPane.showMessageDialog(hlavniOkno, "Na tuto operaci nemáte oprávnìní");
+				break;
+			case SPATNYFORMAT:
+				JOptionPane.showMessageDialog(hlavniOkno, "Soubor s hesly je špatnì naformátován");
 				break;
 			case SPATNECISLO:
 				JOptionPane.showMessageDialog(hlavniOkno, "Špatnì zapsané èíslo povolání v souboru u uživatele");
